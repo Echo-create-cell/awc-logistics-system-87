@@ -1,0 +1,149 @@
+
+import React from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { CheckCircle, XCircle, Clock, Eye, Edit, Trash2 } from 'lucide-react';
+import { Quotation } from '@/types';
+
+interface QuotationTableProps {
+  quotations: Quotation[];
+  userRole: string;
+  onApprove?: (id: string) => void;
+  onReject?: (id: string) => void;
+  onView?: (quotation: Quotation) => void;
+  onEdit?: (quotation: Quotation) => void;
+  onDelete?: (id: string) => void;
+}
+
+const QuotationTable = ({ 
+  quotations, 
+  userRole, 
+  onApprove, 
+  onReject, 
+  onView, 
+  onEdit, 
+  onDelete 
+}: QuotationTableProps) => {
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'won':
+        return <Badge className="bg-green-100 text-green-800">Won</Badge>;
+      case 'pending':
+        return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+      case 'lost':
+        return <Badge className="bg-red-100 text-red-800">Lost</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-slate-50 border-b">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Volume
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Buy Rate
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Client Quote
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Profit
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Quote Sent By
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-slate-200">
+            {quotations.map((quotation) => (
+              <tr key={quotation.id} className="hover:bg-slate-50">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
+                  {quotation.volume}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  {quotation.currency} {quotation.buyRate.toLocaleString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  {quotation.currency} {quotation.clientQuote.toLocaleString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  {quotation.currency} {quotation.profit.toLocaleString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  {quotation.quoteSentBy}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {getStatusBadge(quotation.status)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onView?.(quotation)}
+                  >
+                    <Eye size={16} />
+                  </Button>
+                  
+                  {userRole === 'admin' && quotation.status === 'pending' && (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onApprove?.(quotation.id)}
+                        className="text-green-600 hover:text-green-700"
+                      >
+                        <CheckCircle size={16} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onReject?.(quotation.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <XCircle size={16} />
+                      </Button>
+                    </>
+                  )}
+                  
+                  {userRole === 'sales_director' && (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onEdit?.(quotation)}
+                      >
+                        <Edit size={16} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onDelete?.(quotation.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default QuotationTable;
