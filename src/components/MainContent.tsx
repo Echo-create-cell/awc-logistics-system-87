@@ -58,65 +58,69 @@ const MainContent = (props: MainContentProps) => {
     handleCreateUser,
   } = props;
 
-  switch (activeTab) {
-    case 'dashboard':
-      return (
-        <DashboardView
-          userRole={user.role}
-          quotations={quotations}
-          onApprove={handleApproveQuotation}
-          onReject={handleRejectQuotation}
-          setActiveTab={setActiveTab}
-        />
-      );
-    case 'users':
-      return (
-        <UsersView
-          users={users}
-          onEdit={handleEditUser}
-          onDelete={handleDeleteUser}
-          onCreate={handleCreateUser}
-        />
-      );
-    case 'quotations':
-      return (
-        <QuotationsView
-          user={user}
-          quotations={quotations}
-          setActiveTab={setActiveTab}
-          onInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
-          onEdit={handleEditQuotation}
-          onApprove={handleApproveQuotation}
-          onReject={handleRejectQuotation}
-        />
-      );
-    case 'create':
-      return (
-        <CreateQuotationView
-          user={user}
-          onQuotationCreated={handleQuotationCreated}
-          setActiveTab={setActiveTab}
-        />
-      );
-    case 'invoices':
-      return (
-        <InvoicesView
-          user={user}
-          invoices={invoices}
-          quotations={quotations}
-          onSave={handleSaveInvoice}
-          onEdit={handleEditInvoice}
-          onPrint={handlePrintInvoice}
-          setActiveTab={setActiveTab}
-          invoiceQuotation={invoiceQuotation}
-          onInvoiceQuotationClear={() => setInvoiceQuotation(null)}
-        />
-      );
-    case 'reports':
-      return <ReportsView />;
-    default:
-      return <div>Content not found</div>;
-  }
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return (
+          <DashboardView
+            userRole={user.role}
+            quotations={quotations}
+            onApprove={handleApproveQuotation}
+            onReject={handleRejectQuotation}
+            setActiveTab={setActiveTab}
+          />
+        );
+      case 'users':
+        return (
+          <UsersView
+            users={users}
+            onEdit={handleEditUser}
+            onDelete={handleDeleteUser}
+            onCreate={handleCreateUser}
+          />
+        );
+      case 'quotations':
+        return (
+          <QuotationsView
+            user={user}
+            quotations={quotations}
+            setActiveTab={setActiveTab}
+            onInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
+            onEdit={handleEditQuotation}
+            onApprove={handleApproveQuotation}
+            onReject={handleRejectQuotation}
+          />
+        );
+      case 'create':
+        return (
+          <CreateQuotationView
+            user={user}
+            onQuotationCreated={handleQuotationCreated}
+            setActiveTab={setActiveTab}
+          />
+        );
+      case 'invoices':
+        return (
+          <InvoicesView
+            user={user}
+            invoices={invoices}
+            quotations={quotations}
+            onSave={handleSaveInvoice}
+            onEdit={handleEditInvoice}
+            onPrint={handlePrintInvoice}
+            setActiveTab={setActiveTab}
+            invoiceQuotation={invoiceQuotation}
+            onInvoiceQuotationClear={() => setInvoiceQuotation(null)}
+          />
+        );
+      case 'reports':
+        return <ReportsView />;
+      default:
+        return <div>Content not found</div>;
+    }
+  };
+
+  return <div className="animate-fade-in">{renderContent()}</div>;
 };
 
 export default MainContent;
