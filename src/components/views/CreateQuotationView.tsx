@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -34,6 +33,7 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
     handleSelectChange,
     getQuotationPayload,
     resetForm,
+    userList,
   } = useQuotationForm(null, user);
 
   const handleSaveQuotation = () => {
@@ -72,6 +72,7 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
           updateCommodity={updateCommodity}
           removeCommodity={removeCommodity}
           addCommodity={addCommodity}
+          users={userList}
         />
         <QuotationFormSidebar
           currency={currency}
