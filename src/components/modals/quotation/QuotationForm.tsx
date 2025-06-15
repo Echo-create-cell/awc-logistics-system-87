@@ -35,7 +35,6 @@ const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps)
     handleDetailsChange,
     handleSelectChange,
     getQuotationPayload,
-    userList,
   } = useQuotationForm(quotation, user);
   
   const handleSave = () => {
@@ -65,7 +64,6 @@ const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps)
           updateCommodity={updateCommodity}
           removeCommodity={removeCommodity}
           addCommodity={addCommodity}
-          users={userList}
         />
         <QuotationFormSidebar
           currency={currency}

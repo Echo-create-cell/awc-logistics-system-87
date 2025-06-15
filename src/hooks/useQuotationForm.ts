@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { Quotation, Client, User } from '@/types';
 import { QuotationCommodity } from '@/types/invoice';
 import { v4 as uuidv4 } from 'uuid';
-import { mockUsers } from '@/data/mockData';
 
 const mockClients: Client[] = [
   { id: '1', companyName: 'Michel-TLC', contactPerson: 'Michel', tinNumber: '', address: 'Goma', city: 'Goma', country: 'DRC', phone: '', email: 'michel@tlc.com' },
@@ -12,7 +11,6 @@ const mockClients: Client[] = [
 
 export const useQuotationForm = (initialQuotation: Quotation | null = null, user: User) => {
   const [clients] = useState<Client[]>(mockClients);
-  const [userList] = useState<User[]>(mockUsers);
   const [clientName, setClientName] = useState(initialQuotation?.clientName || '');
   const [commodities, setCommodities] = useState<QuotationCommodity[]>([]);
   const [buyRate, setBuyRate] = useState(0);
@@ -103,6 +101,7 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
         case 'doorDelivery': setDoorDelivery(value); break;
         case 'countryOfOrigin': setCountryOfOrigin(value); break;
         case 'cargoDescription': setCargoDescription(value); break;
+        case 'quoteSentBy': setQuoteSentBy(value); break;
     }
   };
 
@@ -111,7 +110,6 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
         case 'currency': setCurrency(value); break;
         case 'freightMode': setFreightMode(value as Quotation['freightMode']); break;
         case 'requestType': setRequestType(value as Quotation['requestType']); break;
-        case 'quoteSentBy': setQuoteSentBy(value); break;
       }
   };
 
@@ -178,7 +176,6 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
     countryOfOrigin,
     quoteSentBy,
     followUpDate,
-    userList,
     quotationData: {
       currency,
       destination,

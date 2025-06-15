@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,8 +43,7 @@ const QuotationFormMain = ({
   updateCommodity,
   removeCommodity,
   addCommodity,
-  users,
-}: QuotationFormMainProps) => {
+}: Omit<QuotationFormMainProps, 'users'>) => {
   return (
     <div className="lg:col-span-2 space-y-6">
       <Card>
@@ -96,14 +94,12 @@ const QuotationFormMain = ({
             </div>
              <div>
               <Label htmlFor="quoteSentBy">Quote Sent By</Label>
-              <Select onValueChange={(value) => onSelectChange('quoteSentBy', value)} value={quotationData.quoteSentBy}>
-                <SelectTrigger id="quoteSentBy"><SelectValue placeholder="Select user" /></SelectTrigger>
-                <SelectContent>
-                  {users.map(user => (
-                    <SelectItem key={user.id} value={user.name}>{user.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                id="quoteSentBy"
+                placeholder="Enter name"
+                value={quotationData.quoteSentBy}
+                onChange={onQuotationChange}
+              />
             </div>
             <div>
               <Label htmlFor="currency">Currency</Label>
@@ -144,4 +140,3 @@ const QuotationFormMain = ({
 };
 
 export default QuotationFormMain;
-
