@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   name: string;
@@ -9,6 +10,7 @@ export interface User {
 
 export interface Quotation {
   id: string;
+  clientId?: string;
   clientName?: string;
   volume: string;
   buyRate: number;
