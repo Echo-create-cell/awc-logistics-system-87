@@ -6,12 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { User, Quotation } from '@/types';
 
 interface DashboardViewProps {
-  userRole: User['role'];
+  user: User;
+  users: User[];
   quotations: Quotation[];
   setActiveTab: (tab: string) => void;
 }
 
-const DashboardView = ({ userRole, quotations, setActiveTab }: DashboardViewProps) => {
+const DashboardView = ({ user, users, quotations, setActiveTab }: DashboardViewProps) => {
   const recentPendingQuotations = quotations
     .filter(q => q.status === 'pending')
     .slice(0, 5);
@@ -25,10 +26,10 @@ const DashboardView = ({ userRole, quotations, setActiveTab }: DashboardViewProp
         </p>
       </div>
 
-      <DashboardStats quotations={quotations} />
+      <DashboardStats user={user} users={users} quotations={quotations} />
 
       <div className="grid grid-cols-1">
-        {userRole === 'admin' && (
+        {user.role === 'admin' && (
           <Card>
             <CardHeader>
               <CardTitle>Pending Quotation Approvals</CardTitle>
@@ -36,7 +37,7 @@ const DashboardView = ({ userRole, quotations, setActiveTab }: DashboardViewProp
             <CardContent>
               <RecentQuotations 
                 quotations={recentPendingQuotations} 
-                userRole={userRole}
+                userRole={user.role}
                 setActiveTab={setActiveTab}
               />
             </CardContent>

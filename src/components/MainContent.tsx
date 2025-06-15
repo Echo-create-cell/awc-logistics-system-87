@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
@@ -64,7 +63,8 @@ const MainContent = (props: MainContentProps) => {
       case 'dashboard':
         return (
           <DashboardView
-            userRole={user.role}
+            user={user}
+            users={users}
             quotations={quotations}
             setActiveTab={setActiveTab}
           />
