@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Download } from 'lucide-react';
@@ -13,6 +13,13 @@ import {
   TableHead,
   TableCell,
 } from '@/components/ui/table';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 interface TableColumn {
   key: string;
@@ -29,6 +36,7 @@ interface SearchableTableProps {
   onPrint?: (item: any) => void;
   onDownload?: (item: any) => void;
   filterOptions?: { key: string; label: string; options: { value: string; label: string }[] }[];
+  itemsPerPage?: number;
 }
 
 const SearchableTable = ({
@@ -36,10 +44,12 @@ const SearchableTable = ({
   data,
   columns,
   searchFields,
-  filterOptions = []
+  filterOptions = [],
+  itemsPerPage = 10,
 }: SearchableTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredData = useMemo(() => {
     return data.filter(item => {
@@ -57,6 +67,24 @@ const SearchableTable = ({
       return matchesSearch && matchesFilters;
     });
   }, [data, searchTerm, filters, searchFields]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filters]);
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredData.slice(startIndex, endIndex);
+  }, [filteredData, currentPage, itemsPerPage]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({
@@ -127,7 +155,7 @@ const SearchableTable = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredData.length > 0 && filteredData.map((item, index) => (
+              {paginatedData.length > 0 && paginatedData.map((item, index) => (
                 <TableRow key={item.id || index} className="hover:bg-muted/50">
                   {columns.map((column) => (
                     <TableCell key={column.key} className="text-sm text-foreground/90">
@@ -149,6 +177,32 @@ const SearchableTable = ({
             </div>
           )}
         </div>
+
+        {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-4 border-t mt-4">
+                <div className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                </div>
+                <Pagination>
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious
+                                href="#"
+                                onClick={(e) => { e.preventDefault(); handlePageChange(currentPage - 1); }}
+                                className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                            />
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationNext
+                                href="#"
+                                onClick={(e) => { e.preventDefault(); handlePageChange(currentPage + 1); }}
+                                className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            </div>
+        )}
       </CardContent>
     </Card>
   );
