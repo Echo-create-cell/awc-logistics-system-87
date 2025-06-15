@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { Quotation, Client, User } from '@/types';
 import { QuotationCommodity, InvoiceCharge } from '@/types/invoice';
@@ -5,7 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 const mockClients: Client[] = [
   { id: '1', companyName: 'Michel-TLC', contactPerson: 'Michel', tinNumber: '', address: 'Goma', city: 'Goma', country: 'DRC', phone: '', email: 'michel@tlc.com' },
-  { id: '2', companyName: 'ABC Corporation', contactPerson: 'John Doe', tinNumber: 'TIN123456', address: '123 Business St', city: 'Kigali', country: 'Rwanda', phone: '+250788123456', email: 'john@abc.com' }
+  { id: '2', companyName: 'ABC Corporation', contactPerson: 'John Doe', tinNumber: 'TIN123456', address: '123 Business St', city: 'Kigali', country: 'Rwanda', phone: '+250788123456', email: 'john@abc.com' },
+  { id: '3', companyName: 'Global Exports', contactPerson: 'Jane Smith', tinNumber: 'TIN789012', address: '789 Trade Ave', city: 'Nairobi', country: 'Kenya', phone: '+254712345678', email: 'jane@globalexports.com' }
 ];
 
 export const useQuotationForm = (initialQuotation: Quotation | null = null, user: User) => {
