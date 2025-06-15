@@ -158,22 +158,26 @@ const QuotationsView = ({
               Generate Invoice
             </Button>
           )}
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={() => handleEdit(row)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={() => handleDelete(row.id)} 
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-          </Button>
+          { !(user.role === 'sales_agent' && row.status === 'won') &&
+            <>
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                onClick={() => handleEdit(row)}
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              >
+                <Edit size={16} />
+              </Button>
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                onClick={() => handleDelete(row.id)} 
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 size={16} />
+              </Button>
+            </>
+          }
         </div>
       ),
     }
