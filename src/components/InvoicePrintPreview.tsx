@@ -59,7 +59,12 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
     onPrint();
   };
 
-  const emptyRowsCount = Math.max(0, 10 - invoice.items.length);
+  const totalRows = invoice.items.reduce((count, item) => {
+    // If an item has more than one charge, it takes a header row + one row per charge.
+    // Otherwise, it's just one row.
+    return count + (item.charges.length > 1 ? 1 + item.charges.length : 1);
+  }, 0);
+  const emptyRowsCount = Math.max(0, 10 - totalRows);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -141,15 +146,41 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                         </tr>
                     </thead>
                     <tbody>
-                        {invoice.items.map((item, index) => (
-                            <tr key={index} className="even:bg-gray-100">
-                                <td className="border border-black px-2 py-1 text-center">{item.quantityKg || ''}</td>
-                                <td className="border border-black px-2 py-1">{item.commodity}</td>
-                                <td className="border border-black px-2 py-1">{item.description}</td>
-                                <td className="border border-black px-2 py-1 text-right">{item.price !== 0 ? item.price.toFixed(2) : '0.00'}</td>
-                                <td className="border border-black px-2 py-1 text-right">{item.total.toFixed(2)}</td>
-                            </tr>
-                        ))}
+                        {invoice.items.map((item) => {
+                            if (item.charges.length === 1) {
+                                const charge = item.charges[0];
+                                return (
+                                    <tr key={item.id} className="even:bg-gray-100">
+                                        <td className="border border-black px-2 py-1 text-center">{item.quantityKg || ''}</td>
+                                        <td className="border border-black px-2 py-1">{item.commodity}</td>
+                                        <td className="border border-black px-2 py-1">{charge.description}</td>
+                                        <td className="border border-black px-2 py-1 text-right">{charge.rate.toFixed(2)}</td>
+                                        <td className="border border-black px-2 py-1 text-right">{item.total.toFixed(2)}</td>
+                                    </tr>
+                                );
+                            } else {
+                                return (
+                                    <React.Fragment key={item.id}>
+                                        <tr className="bg-gray-200/60 font-bold">
+                                            <td className="border border-black px-2 py-1 text-center">{item.quantityKg || ''}</td>
+                                            <td className="border border-black px-2 py-1" colSpan={2}>{item.commodity}</td>
+                                            <td className="border border-black px-2 py-1 text-right">
+                                                {(item.charges.reduce((sum, c) => sum + c.rate, 0)).toFixed(2)}
+                                            </td>
+                                            <td className="border border-black px-2 py-1 text-right">{item.total.toFixed(2)}</td>
+                                        </tr>
+                                        {item.charges.map(charge => (
+                                            <tr key={charge.id} className="even:bg-gray-100">
+                                                <td className="border border-black px-2 py-1"></td>
+                                                <td className="border border-black px-2 py-1 italic" colSpan={2}>- {charge.description}</td>
+                                                <td className="border border-black px-2 py-1 text-right">{charge.rate.toFixed(2)}</td>
+                                                <td className="border border-black px-2 py-1 text-right">{(item.quantityKg * charge.rate).toFixed(2)}</td>
+                                            </tr>
+                                        ))}
+                                    </React.Fragment>
+                                );
+                            }
+                        })}
                         {Array.from({ length: emptyRowsCount }).map((_, index) => (
                             <tr key={`empty-${index}`} className="even:bg-gray-100">
                                 <td className="border border-black px-2 py-1">&nbsp;</td>

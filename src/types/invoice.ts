@@ -1,9 +1,15 @@
+
+export interface InvoiceCharge {
+  id: string;
+  description: string;
+  rate: number;
+}
+
 export interface InvoiceItem {
   id: string;
   quantityKg: number;
   commodity: string;
-  description: string;
-  price: number;
+  charges: InvoiceCharge[];
   total: number;
 }
 

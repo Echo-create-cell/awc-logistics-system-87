@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Printer, Save } from 'lucide-react';
-import { InvoiceItem, InvoiceData, Client } from '@/types/invoice';
+import { InvoiceItem, InvoiceData, Client, InvoiceCharge } from '@/types/invoice';
 import { Quotation } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import ClientInformation from './invoice/ClientInformation';
@@ -62,41 +62,98 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       id: '1',
       quantityKg: 0,
       commodity: '',
-      description: '',
-      price: 0,
+      charges: [{ id: '1.1', description: '', rate: 0 }],
       total: 0
     }
   ]);
+
+  const calculateItemsWithTotals = useCallback((currentItems: InvoiceItem[]) => {
+    return currentItems.map(item => {
+      const itemTotal = item.charges.reduce((sum, charge) => {
+        const chargeRate = charge.rate || 0;
+        const itemQty = item.quantityKg || 0;
+        return sum + (itemQty * chargeRate);
+      }, 0);
+      return { ...item, total: itemTotal };
+    });
+  }, []);
 
   const addItem = () => {
     const newItem: InvoiceItem = {
       id: Date.now().toString(),
       quantityKg: 0,
       commodity: '',
-      description: '',
-      price: 0,
+      charges: [{ id: `${Date.now().toString()}.1`, description: '', rate: 0 }],
       total: 0
     };
-    setItems([...items, newItem]);
+    setItems(prevItems => calculateItemsWithTotals([...prevItems, newItem]));
   };
 
   const removeItem = (id: string) => {
     if (items.length > 1) {
-      setItems(items.filter(item => item.id !== id));
+      setItems(prevItems => calculateItemsWithTotals(prevItems.filter(item => item.id !== id)));
     }
   };
 
-  const updateItem = (id: string, field: keyof InvoiceItem, value: string | number) => {
-    setItems(items.map(item => {
-      if (item.id === id) {
-        const updated = { ...item, [field]: value };
-        if (field === 'quantityKg' || field === 'price') {
-          updated.total = updated.quantityKg * updated.price;
+  const updateItemField = (itemId: string, field: 'quantityKg' | 'commodity', value: any) => {
+    setItems(prevItems => {
+        const newItems = prevItems.map(item => {
+            if (item.id === itemId) {
+                return { ...item, [field]: value };
+            }
+            return item;
+        });
+        return calculateItemsWithTotals(newItems);
+    });
+  };
+
+  const addCharge = (itemId: string) => {
+    setItems(prevItems => {
+      const newItems = prevItems.map(item => {
+        if (item.id === itemId) {
+          const newCharge: InvoiceCharge = {
+            id: Date.now().toString(),
+            description: '',
+            rate: 0,
+          };
+          return { ...item, charges: [...item.charges, newCharge] };
         }
-        return updated;
-      }
-      return item;
-    }));
+        return item;
+      });
+      return calculateItemsWithTotals(newItems);
+    });
+  };
+
+  const removeCharge = (itemId: string, chargeId: string) => {
+    setItems(prevItems => {
+      const newItems = prevItems.map(item => {
+        if (item.id === itemId && item.charges.length > 1) {
+          const updatedCharges = item.charges.filter(c => c.id !== chargeId);
+          return { ...item, charges: updatedCharges };
+        }
+        return item;
+      });
+      return calculateItemsWithTotals(newItems);
+    });
+  };
+
+  const updateCharge = (itemId: string, chargeId: string, field: keyof InvoiceCharge, value: string | number) => {
+    setItems(prevItems => {
+      const newItems = prevItems.map(item => {
+        if (item.id === itemId) {
+          const updatedCharges = item.charges.map(charge => {
+            if (charge.id === chargeId) {
+              const newV = (field === 'rate') ? parseFloat(value as string) || 0 : value;
+              return { ...charge, [field]: newV };
+            }
+            return charge;
+          });
+          return { ...item, charges: updatedCharges };
+        }
+        return item;
+      });
+      return calculateItemsWithTotals(newItems);
+    });
   };
 
   const calculateTotals = () => {
@@ -145,14 +202,22 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       doorDelivery: quotation.doorDelivery || '',
       currency: quotation.currency || 'USD'
     }));
+    const quantity = !isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1;
+    const rate = quotation.clientQuote || 0;
+    
     setItems([
       {
         id: '1',
-        quantityKg: !isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1,
-        commodity: "Quoted Commodity",
-        description: quotation.remarks || `As per Quotation ${quotation.id}`,
-        price: quotation.clientQuote,
-        total: quotation.clientQuote * (!isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1)
+        quantityKg: quantity,
+        commodity: `Services as per Quotation ${quotation.id}`,
+        charges: [
+          {
+            id: '1.1',
+            description: quotation.remarks || 'Client quoted rate',
+            rate: rate,
+          }
+        ],
+        total: quantity * rate,
       }
     ]);
   }, [quotation]);
@@ -287,7 +352,10 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
         total={total}
         onAddItem={addItem}
         onRemoveItem={removeItem}
-        onUpdateItem={updateItem}
+        onUpdateItemField={updateItemField}
+        onAddCharge={addCharge}
+        onRemoveCharge={removeCharge}
+        onUpdateCharge={updateCharge}
       />
     </div>
   );
