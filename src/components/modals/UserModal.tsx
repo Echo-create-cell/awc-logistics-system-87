@@ -12,40 +12,48 @@ interface UserModalProps {
   open: boolean;
   user: User | null;
   onClose: () => void;
-  onSave: (user: User) => void;
+  onSave: (user: User | Partial<User>) => void;
   onDelete: (id: string) => void;
 }
 
 const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) => {
-  const [form, setForm] = useState<User | null>(user);
+  const isEditing = !!user;
+  const [form, setForm] = useState<Partial<User>>({});
 
   React.useEffect(() => {
-    setForm(user);
-  }, [user]);
-
-  if (!form) return null;
+    if (open) {
+      setForm(isEditing ? user : {
+        name: '',
+        email: '',
+        role: 'sales_agent',
+        status: 'active'
+      });
+    }
+  }, [user, open, isEditing]);
 
   const handleChange = (field: string, value: string) => {
     setForm(f => ({ ...f!, [field]: value }));
   };
 
   const handleSave = () => {
-    if (form) onSave(form);
-    onClose();
+    if (form.name && form.email) {
+      onSave(form);
+    }
   };
 
   const handleDelete = () => {
-    onDelete(form.id);
-    onClose();
+    if (isEditing && user) {
+      onDelete(user.id);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Edit User</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">{isEditing ? 'Edit User' : 'Add User'}</DialogTitle>
           <DialogDescription>
-            Make changes to user information. All fields are required.
+            {isEditing ? 'Make changes to user information.' : 'Enter details for the new user.'} All fields are required.
           </DialogDescription>
         </DialogHeader>
         
@@ -54,7 +62,7 @@ const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) =>
             <Label htmlFor="name" className="text-right font-medium">Name</Label>
             <Input
               id="name"
-              value={form.name}
+              value={form.name || ''}
               onChange={(e) => handleChange('name', e.target.value)}
               className="col-span-3"
               placeholder="Enter full name"
@@ -66,7 +74,7 @@ const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) =>
             <Input
               id="email"
               type="email"
-              value={form.email}
+              value={form.email || ''}
               onChange={(e) => handleChange('email', e.target.value)}
               className="col-span-3"
               placeholder="Enter email address"
@@ -75,7 +83,7 @@ const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) =>
           
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="role" className="text-right font-medium">Role</Label>
-            <Select value={form.role} onValueChange={(value) => handleChange('role', value)}>
+            <Select value={form.role} onValueChange={(value) => handleChange('role', value || 'sales_agent')}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
@@ -90,7 +98,7 @@ const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) =>
           
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="status" className="text-right font-medium">Status</Label>
-            <Select value={form.status} onValueChange={(value) => handleChange('status', value)}>
+            <Select value={form.status} onValueChange={(value) => handleChange('status', value || 'active')}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
@@ -102,34 +110,36 @@ const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) =>
           </div>
         </div>
         
-        <DialogFooter className="flex justify-between">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" className="mr-auto">Delete User</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the user
-                  "{form.name}" and remove all associated data.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+        <DialogFooter className="sm:justify-between">
+          {isEditing && user ? (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="mr-auto">Delete User</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the user
+                    "{user.name}" and remove all associated data.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          ) : <div></div>}
           
           <div className="flex gap-2">
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
             <Button onClick={handleSave} className="bg-primary text-white">
-              Save Changes
+              {isEditing ? 'Save Changes' : 'Add User'}
             </Button>
           </div>
         </DialogFooter>

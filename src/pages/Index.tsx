@@ -158,6 +158,19 @@ const Index = () => {
     });
   };
 
+  const handleCreateUser = (newUser: Omit<User, 'id' | 'createdAt'>) => {
+    const userWithId: User = {
+      ...newUser,
+      id: `user-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    } as User;
+    setUsers(prev => [userWithId, ...prev]);
+    toast({
+      title: "User Created",
+      description: `User ${userWithId.name} has been created successfully.`,
+    });
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -176,6 +189,7 @@ const Index = () => {
             users={users}
             onEdit={handleEditUser}
             onDelete={handleDeleteUser}
+            onCreate={handleCreateUser}
           />
         );
       case 'quotations':

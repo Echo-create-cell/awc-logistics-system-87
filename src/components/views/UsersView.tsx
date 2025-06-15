@@ -11,9 +11,10 @@ interface UsersViewProps {
   users: User[];
   onEdit?: (user: User) => void;
   onDelete?: (id: string) => void;
+  onCreate?: (user: Omit<User, 'id' | 'createdAt'>) => void;
 }
 
-const UsersView = ({ users, onEdit, onDelete }: UsersViewProps) => {
+const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
   const [modalUser, setModalUser] = useState<User|null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -21,9 +22,18 @@ const UsersView = ({ users, onEdit, onDelete }: UsersViewProps) => {
     setModalUser(user);
     setModalOpen(true);
   };
+  
+  const handleAddNewUser = () => {
+    setModalUser(null);
+    setModalOpen(true);
+  };
 
-  const handleSave = (updatedUser: User) => {
-    onEdit?.(updatedUser);
+  const handleSave = (userToSave: User | Partial<User>) => {
+    if ('id' in userToSave && userToSave.id) {
+      onEdit?.(userToSave as User);
+    } else {
+      onCreate?.(userToSave as Omit<User, 'id' | 'createdAt'>);
+    }
     setModalOpen(false);
   };
 
@@ -111,7 +121,7 @@ const UsersView = ({ users, onEdit, onDelete }: UsersViewProps) => {
           <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
           <p className="text-gray-600 mt-1">Manage system users and their permissions</p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90">
+        <Button onClick={handleAddNewUser} className="bg-primary hover:bg-primary/90">
           <Plus size={16} className="mr-2" />
           Add User
         </Button>
