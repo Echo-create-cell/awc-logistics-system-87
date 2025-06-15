@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react';
 import { Quotation, User } from '@/types';
 import QuotationModal from '../modals/QuotationModal';
 import { getQuotationColumns } from '../quotations/quotationTableColumns';
+import RejectQuotationModal from '../modals/RejectQuotationModal';
 
 interface QuotationsViewProps {
   user: User;
@@ -14,7 +15,7 @@ interface QuotationsViewProps {
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
   onApprove?: (id: string) => void;
-  onReject?: (id: string) => void;
+  onReject?: (id: string, reason: string) => void;
 }
 
 const QuotationsView = ({
@@ -22,6 +23,8 @@ const QuotationsView = ({
 }: QuotationsViewProps) => {
   const [modalQuotation, setModalQuotation] = useState<Quotation|null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
+  const [quotationToReject, setQuotationToReject] = useState<Quotation | null>(null);
 
   const handleEdit = (quotation: Quotation) => {
     setModalQuotation(quotation);
@@ -33,10 +36,23 @@ const QuotationsView = ({
     setModalOpen(false);
   };
 
+  const handleRequestReject = (quotation: Quotation) => {
+    setQuotationToReject(quotation);
+    setRejectionModalOpen(true);
+  };
+
+  const handleConfirmReject = (reason: string) => {
+    if (quotationToReject) {
+      onReject?.(quotationToReject.id, reason);
+    }
+    setRejectionModalOpen(false);
+    setQuotationToReject(null);
+  };
+
   const quotationColumns = getQuotationColumns({
     user,
     onApprove,
-    onReject,
+    onReject: handleRequestReject,
     onInvoiceFromQuotation,
     onEdit: handleEdit,
   });
@@ -92,6 +108,13 @@ const QuotationsView = ({
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
         user={user}
+      />
+
+      <RejectQuotationModal
+        open={rejectionModalOpen}
+        quotation={quotationToReject}
+        onClose={() => setRejectionModalOpen(false)}
+        onConfirm={handleConfirmReject}
       />
     </div>
   );

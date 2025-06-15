@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
@@ -18,7 +19,7 @@ interface MainContentProps {
     invoiceQuotation: Quotation | null;
     
     handleApproveQuotation: (id: string) => void;
-    handleRejectQuotation: (id: string) => void;
+    handleRejectQuotation: (id: string, reason: string) => void;
     handleEditQuotation: (quotation: Quotation) => void;
     handleGenerateInvoiceFromQuotation: (quotation: Quotation) => void;
     setActiveTab: (tab: string) => void;

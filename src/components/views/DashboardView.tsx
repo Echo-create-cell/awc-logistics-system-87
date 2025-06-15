@@ -1,44 +1,50 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import DashboardStats from '@/components/DashboardStats';
-import { Quotation } from '@/types';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 import RecentQuotations from '@/components/dashboard/RecentQuotations';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { User, Quotation } from '@/types';
 
 interface DashboardViewProps {
-  userRole: string;
+  userRole: User['role'];
   quotations: Quotation[];
   setActiveTab: (tab: string) => void;
 }
 
 const DashboardView = ({ userRole, quotations, setActiveTab }: DashboardViewProps) => {
-  // onApprove and onReject are not used by RecentQuotations, so they are removed from props
+  const recentPendingQuotations = quotations
+    .filter(q => q.status === 'pending')
+    .slice(0, 5);
+
   return (
-    <div className="space-y-8">
-      <DashboardStats userRole={userRole} />
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>Recent Quotations</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                A quick look at the latest quotation activities.
-              </p>
-            </div>
-            <Button variant="ghost" onClick={() => setActiveTab('quotations')}>
-              View All Quotations <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <RecentQuotations quotations={quotations.slice(0, 5)} />
-        </CardContent>
-      </Card>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
+        <p className="text-muted-foreground mt-1">
+          Welcome back! Here's a summary of your activities.
+        </p>
+      </div>
+
+      <DashboardStats quotations={quotations} />
+
+      <div className="grid grid-cols-1">
+        {userRole === 'admin' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Pending Quotation Approvals</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RecentQuotations 
+                quotations={recentPendingQuotations} 
+                userRole={userRole}
+                setActiveTab={setActiveTab}
+              />
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };
 
 export default DashboardView;
-

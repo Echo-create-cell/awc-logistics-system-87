@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Quotation, User } from '@/types';
 import { InvoiceData } from '@/types/invoice';
@@ -31,17 +30,19 @@ export const useAppData = () => {
     });
   };
 
-  const handleRejectQuotation = (id: string) => {
+  const handleRejectQuotation = (id: string, reason: string) => {
     setQuotations(prev =>
-      prev.map(q =>
-        q.id === id
-          ? { ...q, status: 'lost' as const }
-          : q
-      )
+      prev.map(q => {
+        if (q.id === id) {
+          const newRemarks = [q.remarks, `Reason for loss: ${reason}`].filter(Boolean).join('\n\n');
+          return { ...q, status: 'lost' as const, remarks: newRemarks };
+        }
+        return q;
+      })
     );
     toast({
       title: "Quotation Rejected",
-      description: "The quotation has been rejected.",
+      description: "The quotation has been marked as lost.",
       variant: "destructive",
     });
   };

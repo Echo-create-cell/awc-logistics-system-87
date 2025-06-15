@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +8,7 @@ interface QuotationActionsProps {
   quotation: Quotation;
   user: User;
   onApprove?: (id: string) => void;
-  onReject?: (id: string) => void;
+  onReject?: (quotation: Quotation) => void;
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
 }
@@ -38,7 +37,7 @@ const QuotationActions = ({
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => onReject?.(row.id)}
+            onClick={() => onReject?.(row)}
             className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1"
             title="Reject"
           >

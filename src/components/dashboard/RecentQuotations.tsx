@@ -1,66 +1,67 @@
 
 import React from 'react';
-import { Quotation } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Eye } from 'lucide-react';
+import { Quotation, User } from '@/types';
 
 interface RecentQuotationsProps {
   quotations: Quotation[];
+  userRole: User['role'];
+  setActiveTab: (tab: string) => void;
 }
 
-const getStatusClass = (status: Quotation['status']) => {
-  switch (status) {
-    case 'won': return 'bg-green-100 text-green-800 border-green-200';
-    case 'lost': return 'bg-red-100 text-red-800 border-red-200';
-    case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    default: return 'bg-gray-100 text-gray-800 border-gray-200';
-  }
-};
-
-const RecentQuotations = ({ quotations }: RecentQuotationsProps) => {
+const RecentQuotations = ({ quotations, userRole, setActiveTab }: RecentQuotationsProps) => {
   if (quotations.length === 0) {
     return (
-      <div className="text-center text-muted-foreground py-10">
-        <p>No recent quotations to display.</p>
+      <div className="text-center py-8 text-gray-500">
+        No pending quotations to review.
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-      {quotations.map((q) => (
-        <Card key={q.id} className="flex flex-col justify-between hover:shadow-md transition-shadow">
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <CardTitle className="text-base font-semibold leading-tight">{q.clientName}</CardTitle>
-              <Badge className={cn("text-xs", getStatusClass(q.status))}>
-                {q.status}
-              </Badge>
-            </div>
-            <p className="text-xs text-muted-foreground pt-1">
-              {new Date(q.createdAt).toLocaleDateString('en-GB', {
-                day: '2-digit', month: 'short', year: 'numeric'
-              })}
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm space-y-2">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Quote</span>
-                <span className="font-medium">{`${q.currency} ${q.clientQuote.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</span>
+    <div className="flow-root">
+      <ul role="list" className="-mb-8">
+        {quotations.map((quotation, eventIdx) => (
+          <li key={quotation.id}>
+            <div className="relative pb-8">
+              {eventIdx !== quotations.length - 1 ? (
+                <span className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
+              ) : null}
+              <div className="relative flex space-x-3 items-start">
+                <div>
+                  <span className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center ring-8 ring-white">
+                    <Badge className="bg-yellow-100 text-yellow-800">{quotation.status}</Badge>
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1 pt-1.5">
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm text-gray-500">
+                      New quotation for <span className="font-medium text-gray-900">{quotation.clientName}</span>
+                    </p>
+                    <time dateTime={quotation.createdAt} className="whitespace-nowrap text-right text-sm text-gray-500">
+                      {new Date(quotation.createdAt).toLocaleDateString()}
+                    </time>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-700">
+                    <p>Amount: {quotation.currency} {quotation.clientQuote.toLocaleString()}</p>
+                  </div>
+                  <div className="mt-2 flex gap-2">
+                     {userRole === 'admin' && quotation.status === 'pending' && (
+                      <Button variant="outline" size="sm" onClick={() => setActiveTab('quotations')}>
+                        <Eye className="mr-2 h-4 w-4" /> View Quotations
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
-               <div className="flex justify-between">
-                <span className="text-muted-foreground">Profit</span>
-                <span className="font-medium text-green-600">{`${q.currency} ${q.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</span>
-              </div>
             </div>
-          </CardContent>
-        </Card>
-      ))}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
 
 export default RecentQuotations;
-

@@ -1,4 +1,3 @@
-
 import { Quotation, User } from '@/types';
 import QuotationActions from './QuotationActions';
 import CargoDescriptionCell from './cells/CargoDescriptionCell';
@@ -10,7 +9,7 @@ import VolumeCell from './cells/VolumeCell';
 interface GetQuotationColumnsProps {
   user: User;
   onApprove?: (id: string) => void;
-  onReject?: (id: string) => void;
+  onReject?: (quotation: Quotation) => void;
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
 }
