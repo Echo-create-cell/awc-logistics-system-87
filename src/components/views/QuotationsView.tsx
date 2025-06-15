@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Edit, CheckCircle, XCircle } from 'lucide-react';
 import { Quotation, User } from '@/types';
 import QuotationModal from '../modals/QuotationModal';
 
@@ -13,13 +12,12 @@ interface QuotationsViewProps {
   setActiveTab: (tab: string) => void;
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
-  onDelete?: (id: string) => void;
   onApprove?: (id: string) => void;
   onReject?: (id: string) => void;
 }
 
 const QuotationsView = ({
-  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onDelete, onApprove, onReject
+  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onApprove, onReject
 }: QuotationsViewProps) => {
   const [modalQuotation, setModalQuotation] = useState<Quotation|null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -31,11 +29,6 @@ const QuotationsView = ({
 
   const handleSave = (updatedQuotation: Quotation) => {
     onEdit?.(updatedQuotation);
-    setModalOpen(false);
-  };
-
-  const handleDelete = (id: string) => {
-    onDelete?.(id);
     setModalOpen(false);
   };
 
@@ -173,16 +166,6 @@ const QuotationsView = ({
               >
                 <Edit size={16} />
               </Button>
-              {(!row.linkedInvoiceIds || row.linkedInvoiceIds.length === 0) &&
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  onClick={() => handleDelete(row.id)} 
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                >
-                  <Trash2 size={16} />
-                </Button>
-              }
             </>
           }
         </div>
@@ -240,7 +223,6 @@ const QuotationsView = ({
         quotation={modalQuotation}
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
-        onDelete={handleDelete}
       />
     </div>
   );

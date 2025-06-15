@@ -121,15 +121,6 @@ const Index = () => {
     });
   };
 
-  const handleDeleteQuotation = (id: string) => {
-    setQuotations(prev => prev.filter(q => q.id !== id));
-    toast({
-      title: "Quotation Deleted",
-      description: "Quotation has been successfully deleted.",
-      variant: "destructive",
-    });
-  };
-
   const handleEditUser = (updatedUser: User) => {
     setUsers(prev => prev.map(u => 
       u.id === updatedUser.id ? updatedUser : u
@@ -190,7 +181,6 @@ const Index = () => {
             setActiveTab={setActiveTab}
             onInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
             onEdit={handleEditQuotation}
-            onDelete={handleDeleteQuotation}
             onApprove={handleApproveQuotation}
             onReject={handleRejectQuotation}
           />

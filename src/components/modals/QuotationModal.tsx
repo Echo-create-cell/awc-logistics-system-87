@@ -5,17 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface QuotationModalProps {
   open: boolean;
   quotation: Quotation | null;
   onClose: () => void;
   onSave: (q: Quotation) => void;
-  onDelete: (id: string) => void;
 }
 
-const QuotationModal = ({ open, quotation, onClose, onSave, onDelete }: QuotationModalProps) => {
+const QuotationModal = ({ open, quotation, onClose, onSave }: QuotationModalProps) => {
   const [form, setForm] = useState<Quotation | null>(quotation);
 
   React.useEffect(() => {
@@ -37,11 +35,6 @@ const QuotationModal = ({ open, quotation, onClose, onSave, onDelete }: Quotatio
       };
       onSave(updatedForm);
     }
-    onClose();
-  };
-
-  const handleDelete = () => {
-    onDelete(form.id);
     onClose();
   };
 
@@ -168,40 +161,13 @@ const QuotationModal = ({ open, quotation, onClose, onSave, onDelete }: Quotatio
           </div>
         </div>
         
-        <DialogFooter className="flex justify-between items-center">
-          <div>
-            {(!form.linkedInvoiceIds || form.linkedInvoiceIds.length === 0) && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive">Delete Quotation</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the quotation
-                      for "{form.clientName}" and remove all associated data.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </div>
-          
-          <div className="flex gap-2">
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button onClick={handleSave} className="bg-primary text-white">
-              Save Changes
-            </Button>
-          </div>
+        <DialogFooter className="flex justify-end gap-2">
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <Button onClick={handleSave} className="bg-primary text-white">
+            Save Changes
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
