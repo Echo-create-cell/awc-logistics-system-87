@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Quotation } from "@/types";
@@ -73,7 +72,7 @@ const QuotationModal = ({ open, quotation, onClose, onSave }: QuotationModalProp
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="destination">Destination</Label>
+              <Label htmlFor="destination">Destination Country</Label>
               <Input
                 id="destination"
                 value={form.destination || ''}
@@ -83,14 +82,55 @@ const QuotationModal = ({ open, quotation, onClose, onSave }: QuotationModalProp
             </div>
           </div>
           
+          <div className="space-y-2">
+            <Label htmlFor="cargoDescription">Cargo Description</Label>
+            <Input
+              id="cargoDescription"
+              value={form.cargoDescription || ''}
+              onChange={(e) => handleChange('cargoDescription', e.target.value)}
+              placeholder="Enter cargo description"
+            />
+          </div>
+          
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="volume">Volume</Label>
+              <Label htmlFor="freightMode">Freight Mode</Label>
+              <Select value={form.freightMode} onValueChange={(value) => handleChange('freightMode', value || '')}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select freight mode" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Air Freight">Air Freight</SelectItem>
+                  <SelectItem value="Sea Freight">Sea Freight</SelectItem>
+                  <SelectItem value="Road Freight">Road Freight</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="requestType">Request Type</Label>
+              <Select value={form.requestType} onValueChange={(value) => handleChange('requestType', value || '')}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select request type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Import">Import</SelectItem>
+                  <SelectItem value="Export">Export</SelectItem>
+                  <SelectItem value="Re-Import">Re-Import</SelectItem>
+                  <SelectItem value="Project">Project</SelectItem>
+                  <SelectItem value="Local">Local</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="countryOfOrigin">Country of Origin</Label>
               <Input
-                id="volume"
-                value={form.volume}
-                onChange={(e) => handleChange('volume', e.target.value)}
-                placeholder="Enter volume"
+                id="countryOfOrigin"
+                value={form.countryOfOrigin || ''}
+                onChange={(e) => handleChange('countryOfOrigin', e.target.value)}
+                placeholder="Enter country of origin"
               />
             </div>
             <div className="space-y-2">

@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   name: string;
@@ -28,6 +29,11 @@ export interface Quotation {
   doorDelivery?: string;
   // Optionally add extra for linking invoices
   linkedInvoiceIds?: string[];
+  // New fields from Excel screenshot
+  freightMode?: 'Air Freight' | 'Sea Freight' | 'Road Freight';
+  cargoDescription?: string;
+  requestType?: 'Import' | 'Export' | 'Re-Import' | 'Project' | 'Local';
+  countryOfOrigin?: string;
 }
 
 export interface Invoice {

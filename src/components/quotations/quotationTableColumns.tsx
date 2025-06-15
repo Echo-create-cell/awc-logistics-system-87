@@ -1,4 +1,3 @@
-
 import { Badge } from '@/components/ui/badge';
 import { Quotation, User } from '@/types';
 import QuotationActions from './QuotationActions';
@@ -16,16 +15,69 @@ interface GetQuotationColumnsProps {
 export const getQuotationColumns = ({
   user, onApprove, onReject, onInvoiceFromQuotation, onEdit
 }: GetQuotationColumnsProps) => [
+  {
+    key: 'createdAt',
+    label: 'Q Ref Date',
+    render: (_: any, row: Quotation) => (
+       <div className="text-sm">
+        <div>{new Date(row.createdAt).toLocaleDateString()}</div>
+       </div>
+    )
+  },
   { 
     key: 'clientName', 
-    label: 'Client',
+    label: 'Client Name',
     render: (value: string) => (
       <div className="font-medium text-gray-900">{value || 'N/A'}</div>
     )
   },
+  {
+    key: 'freightMode',
+    label: 'Freight Mode',
+    render: (value: string) => <div className="text-gray-700">{value || 'N/A'}</div>
+  },
+  {
+    key: 'cargoDescription',
+    label: 'Cargo Description',
+    render: (value: string) => {
+      if (!value) return <span className="text-gray-400">N/A</span>;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p className="truncate cursor-pointer max-w-[150px]">{value}</p>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="max-w-[300px] whitespace-pre-wrap p-2">{value}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+  },
+  {
+    key: 'requestType',
+    label: 'Request Type',
+    render: (value: string) => <div className="text-gray-700">{value || 'N/A'}</div>
+  },
+  {
+    key: 'countryOfOrigin',
+    label: 'Country of Origin',
+    render: (value: string) => <div className="text-gray-700">{value || 'N/A'}</div>
+  },
+  { 
+    key: 'destination', 
+    label: 'Destination Country',
+    render: (value: string, row: Quotation) => (
+      <div>
+        <div className="text-gray-700">{value || 'N/A'}</div>
+        {row.doorDelivery && <div className="text-xs text-gray-500">Door: {row.doorDelivery}</div>}
+      </div>
+    )
+  },
   { 
     key: 'volume', 
-    label: 'Commodities',
+    label: 'Volume / Commodities',
     render: (value: string, row: Quotation) => {
       let commodities: QuotationCommodity[] = [];
       try {
@@ -69,26 +121,16 @@ export const getQuotationColumns = ({
       );
     }
   },
-  { 
-    key: 'destination', 
-    label: 'Destination',
-    render: (value: string, row: Quotation) => (
-      <div>
-        <div className="text-gray-700">{value || 'N/A'}</div>
-        {row.doorDelivery && <div className="text-xs text-gray-500">Door: {row.doorDelivery}</div>}
-      </div>
-    )
-  },
   {
     key: 'buyRate', 
-    label: 'Buy Rate',
+    label: 'Total Buy Rate',
     render: (value: number, row: Quotation) => (
       <div className="font-medium">{row.currency} {value.toLocaleString()}</div>
     )
   },
   {
     key: 'clientQuote', 
-    label: 'Client Quote',
+    label: 'Client Quote (Sell Rate)',
     render: (value: number, row: Quotation) => (
       <div className="font-medium text-blue-600">{row.currency} {value.toLocaleString()}</div>
     )
@@ -111,18 +153,8 @@ export const getQuotationColumns = ({
     )
   },
   {
-    key: 'createdAt',
-    label: 'Dates',
-    render: (_: any, row: Quotation) => (
-       <div className="text-sm">
-        <div>{new Date(row.createdAt).toLocaleDateString()}</div>
-        {row.followUpDate && <div className="text-xs text-orange-600 mt-1">Follow-up: {new Date(row.followUpDate).toLocaleDateString()}</div>}
-       </div>
-    )
-  },
-  {
     key: 'status', 
-    label: 'Status',
+    label: 'Quotation Status',
     render: (value: 'won' | 'pending' | 'lost', row: Quotation) => {
       const colors = {
         won: 'bg-green-100 text-green-800 hover:bg-green-200',
@@ -148,20 +180,25 @@ export const getQuotationColumns = ({
   },
   {
     key: 'remarks',
-    label: 'Remarks',
-    render: (value: string) => {
-      if (!value) return <span className="text-gray-400">N/A</span>;
+    label: 'Follow-up & Remarks',
+    render: (value: string, row: Quotation) => {
+      if (!value && !row.followUpDate) return <span className="text-gray-400">N/A</span>;
       return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <p className="truncate cursor-pointer max-w-[150px]">{value}</p>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="max-w-[300px] whitespace-pre-wrap p-2">{value}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className='space-y-1'>
+          {row.followUpDate && <div className="text-xs text-orange-600">Follow-up: {new Date(row.followUpDate).toLocaleDateString()}</div>}
+          {value && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <p className="truncate cursor-pointer max-w-[150px]">{value}</p>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-[300px] whitespace-pre-wrap p-2">{value}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
       );
     }
   },

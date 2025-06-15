@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,11 @@ const initialQuotationState = {
   destination: '',
   doorDelivery: '',
   quoteSentBy: '',
+  // New fields from Excel
+  freightMode: 'Air Freight' as Quotation['freightMode'],
+  requestType: 'Import' as Quotation['requestType'],
+  countryOfOrigin: '',
+  cargoDescription: '',
 };
 
 const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewProps) => {
@@ -60,8 +66,8 @@ const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewPr
     setNewQuotation(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleCurrencyChange = (value: string) => {
-    setNewQuotation(prev => ({ ...prev, currency: value }));
+  const handleSelectChange = (field: string, value: string) => {
+    setNewQuotation(prev => ({ ...prev, [field]: value }));
   };
   
   const handleAddCommodity = () => {
@@ -110,6 +116,11 @@ const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewPr
       createdAt: new Date().toISOString(),
       destination: newQuotation.destination,
       doorDelivery: newQuotation.doorDelivery,
+      // New fields from Excel
+      freightMode: newQuotation.freightMode,
+      requestType: newQuotation.requestType,
+      countryOfOrigin: newQuotation.countryOfOrigin,
+      cargoDescription: newQuotation.cargoDescription,
     };
     
     onQuotationCreated(newQuotationData);
@@ -128,7 +139,7 @@ const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewPr
           <QuotationFormDetails
             quotationData={newQuotation}
             onQuotationChange={handleNewQuotationChange}
-            onCurrencyChange={handleCurrencyChange}
+            onSelectChange={handleSelectChange}
           />
           
           <CommodityList
