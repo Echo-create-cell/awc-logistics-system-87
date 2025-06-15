@@ -1,4 +1,3 @@
-
 <?php
 require_once '../includes/functions.php';
 require_once '../config/database.php';
@@ -80,7 +79,7 @@ $company = $stmt->fetch(PDO::FETCH_ASSOC);
         .totals-table .value { text-align: right; }
         .totals-table .grand-total { font-size: 16px; font-weight: bold; border-top: 2px solid #dc3545; }
         .footer { text-align: center; margin-top: 40px; border-top: 1px solid #ccc; padding-top: 20px; }
-        .signature-area { margin-bottom: 20px; }
+        .signature-area { margin-top: 20px; padding-top: 60px; }
         .signature-img { width: 150px; opacity: 0.8; }
         .footer h3 { font-size: 16px; margin-bottom: 10px; }
         .footer p { color: #dc3545; font-weight: bold; }
@@ -95,7 +94,7 @@ $company = $stmt->fetch(PDO::FETCH_ASSOC);
     <div class="page">
         <div class="invoice-header">
             <div class="company-info">
-                <img src="/lovable-uploads/4ce8ac99-4c35-4cce-8481-cccc91145288.png" alt="AWC Logo" class="logo">
+                <img src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" alt="AWC Logo" class="logo" style="width: 192px;">
                 <h2 style="font-weight: bold;"><?php echo htmlspecialchars($company['company_name']); ?> TIN: <?php echo htmlspecialchars($company['tin_number']); ?></h2>
                 <p style="white-space: pre-line; margin: 5px 0;"><?php echo htmlspecialchars($company['address']); ?></p>
                 <p><strong>Bank of Kigali</strong></p>
@@ -179,29 +178,35 @@ $company = $stmt->fetch(PDO::FETCH_ASSOC);
             </tbody>
         </table>
 
-        <div class="totals-section">
-            <table class="totals-table">
-                <tbody>
-                    <tr>
-                        <td class="label">Sub-Total</td>
-                        <td class="value"><?php echo number_format($invoice['sub_total'], 2); ?></td>
-                    </tr>
-                    <tr>
-                        <td class="label">TVA</td>
-                        <td class="value"><?php echo number_format($invoice['tva'], 2); ?></td>
-                    </tr>
-                    <tr class="grand-total">
-                        <td class="label">TOTAL</td>
-                        <td class="value"><?php echo number_format($invoice['total_amount'], 2); ?></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="width: 66%;">
+                <div class="signature-area">
+                    <p>Signature and Stump ..............................</p>
+                </div>
+            </div>
+            <div style="width: 33%;">
+                <div class="totals-section" style="justify-content: flex-end;">
+                    <table class="totals-table" style="width: 100%;">
+                        <tbody>
+                            <tr>
+                                <td class="label">Sub-Total</td>
+                                <td class="value"><?php echo number_format($invoice['sub_total'], 2); ?></td>
+                            </tr>
+                            <tr>
+                                <td class="label">TVA</td>
+                                <td class="value"><?php echo number_format($invoice['tva'], 2); ?></td>
+                            </tr>
+                            <tr class="grand-total">
+                                <td class="label">TOTAL</td>
+                                <td class="value"><?php echo htmlspecialchars($invoice['currency']); ?> <?php echo number_format($invoice['total_amount'], 2); ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <div class="footer">
-            <div class="signature-area">
-                <img src="/lovable-uploads/4ce8ac99-4c35-4cce-8481-cccc91145288.png" alt="AWC Signature" class="signature-img">
-            </div>
             <h3>All checks are payable to <?php echo htmlspecialchars($company['company_name']); ?>.</h3>
             <p>WE THANK YOU FOR YOUR TRUST</p>
         </div>

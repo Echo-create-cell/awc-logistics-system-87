@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { InvoiceData } from '@/types/invoice';
 import { Button } from '@/components/ui/button';
@@ -83,7 +82,7 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 {/* Company Header */}
                 <div className="flex justify-between items-start mb-6 pb-4 border-b-2 border-red-600">
                     <div className="w-2/3 pr-4">
-                        <img src="/lovable-uploads/4ce8ac99-4c35-4cce-8481-cccc91145288.png" alt="AWC Logo" className="w-24 mb-2"/>
+                        <img src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" alt="AWC Logo" className="w-48 mb-2"/>
                         <h2 className="font-bold text-sm">Africa World Cargo Ltd/ TIN: 112933303 RW</h2>
                         <p className="text-xs whitespace-pre-line">KN 5 rd, Av18, 30 Remera{"\n"}Kigali, Rwanda</p>
                         <p className="text-xs mt-2"><strong>Bank of Kigali</strong></p>
@@ -165,8 +164,8 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
 
                 {/* Totals & Signature */}
                 <div className="flex justify-between items-start">
-                    <div className="w-2/3 pt-12">
-                         <img src="/lovable-uploads/4ce8ac99-4c35-4cce-8481-cccc91145288.png" alt="AWC Signature" className="w-32 opacity-70"/>
+                    <div className="w-2/3 pt-20">
+                         <p>Signature and Stump ..............................</p>
                     </div>
                     <div className="w-1/3">
                         <div className="w-full text-sm">
