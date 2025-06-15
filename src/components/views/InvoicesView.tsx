@@ -3,7 +3,7 @@ import InvoiceGenerator from '@/components/InvoiceGenerator';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Edit, Trash2, Printer } from 'lucide-react';
+import { Edit, Trash2, Printer } from 'lucide-react';
 import { InvoiceData } from '@/types/invoice';
 import { User, Quotation } from '@/types';
 import InvoiceModal from '../modals/InvoiceModal';
@@ -167,10 +167,6 @@ const InvoicesView = ({
           <h2 className="text-2xl font-bold text-gray-900">Invoices</h2>
           <p className="text-gray-600 mt-1">Manage and track all generated invoices</p>
         </div>
-        <Button onClick={() => setActiveTab('invoices')} className="bg-primary hover:bg-primary/90">
-          <FileText size={16} className="mr-2" />
-          New Invoice
-        </Button>
       </div>
       
       <SearchableTable

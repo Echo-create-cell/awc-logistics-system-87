@@ -1,17 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Minus, FileText, Printer, Save } from 'lucide-react';
+import { Printer, Save } from 'lucide-react';
 import { InvoiceItem, InvoiceData, Client } from '@/types/invoice';
 import { Quotation } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
+import ClientInformation from './invoice/ClientInformation';
+import InvoiceDetails from './invoice/InvoiceDetails';
+import InvoiceItems from './invoice/InvoiceItems';
 
 // Mock clients data
 const mockClients: Client[] = [
@@ -40,7 +36,7 @@ const mockClients: Client[] = [
 ];
 
 interface InvoiceGeneratorProps {
-  quotation?: Quotation;
+  quotation: Quotation;
   onSave?: (invoice: InvoiceData) => void;
   onPrint?: (invoice: InvoiceData) => void;
 }
@@ -119,49 +115,46 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
   };
 
   useEffect(() => {
-    if (quotation) {
-      const clientFromList = mockClients.find(c => c.companyName === quotation.clientName);
+    const clientFromList = mockClients.find(c => c.companyName === quotation.clientName);
 
-      if (clientFromList) {
-        setSelectedClient(clientFromList);
-        if (clientsForSelection.length > mockClients.length) {
-            setClientsForSelection(mockClients);
-        }
-      } else {
-        // Fallback for when client is not in the list
-        const newClient: Client = {
-          id: `custom-${quotation.id}`,
-          companyName: quotation.clientName || 'N/A',
-          contactPerson: '',
-          tinNumber: '',
-          address: quotation.doorDelivery || '',
-          city: '',
-          country: '',
-          phone: '',
-          email: ''
-        };
-        setClientsForSelection([newClient, ...mockClients]);
-        setSelectedClient(newClient);
+    if (clientFromList) {
+      setSelectedClient(clientFromList);
+      if (clientsForSelection.length > mockClients.length) {
+          setClientsForSelection(mockClients);
       }
-
-      setInvoiceData(prev => ({
-        ...prev,
-        destination: quotation.destination || '',
-        doorDelivery: quotation.doorDelivery || '',
-        currency: quotation.currency || 'USD'
-      }));
-      setItems([
-        {
-          id: '1',
-          quantityKg: !isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1,
-          commodity: "Quoted Commodity",
-          description: quotation.remarks || `As per Quotation ${quotation.id}`,
-          price: quotation.clientQuote,
-          total: quotation.clientQuote * (!isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1)
-        }
-      ]);
+    } else {
+      // Fallback for when client is not in the list
+      const newClient: Client = {
+        id: `custom-${quotation.id}`,
+        companyName: quotation.clientName || 'N/A',
+        contactPerson: '',
+        tinNumber: '',
+        address: quotation.doorDelivery || '',
+        city: '',
+        country: '',
+        phone: '',
+        email: ''
+      };
+      setClientsForSelection([newClient, ...mockClients]);
+      setSelectedClient(newClient);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    setInvoiceData(prev => ({
+      ...prev,
+      destination: quotation.destination || '',
+      doorDelivery: quotation.doorDelivery || '',
+      currency: quotation.currency || 'USD'
+    }));
+    setItems([
+      {
+        id: '1',
+        quantityKg: !isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1,
+        commodity: "Quoted Commodity",
+        description: quotation.remarks || `As per Quotation ${quotation.id}`,
+        price: quotation.clientQuote,
+        total: quotation.clientQuote * (!isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1)
+      }
+    ]);
   }, [quotation]);
 
   const handleSave = () => {
@@ -251,6 +244,10 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
     onPrint?.(invoice);
   };
 
+  const handleInvoiceDataChange = (field: string, value: string) => {
+    setInvoiceData(prev => ({ ...prev, [field]: value }));
+  };
+
   const { subTotal, tva, total } = calculateTotals();
 
   return (
@@ -270,212 +267,28 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Client Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Client Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="client">Select Client</Label>
-              <Select 
-                value={selectedClient?.id}
-                onValueChange={(value) => {
-                const client = clientsForSelection.find(c => c.id === value);
-                setSelectedClient(client || null);
-              }}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose a client" />
-                </SelectTrigger>
-                <SelectContent>
-                  {clientsForSelection.map((client) => (
-                    <SelectItem key={client.id} value={client.id}>
-                      {client.companyName}{client.contactPerson ? ` - ${client.contactPerson}` : ''}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {selectedClient && (
-              <div className="p-3 bg-gray-50 rounded-lg space-y-2">
-                <p><strong>Company:</strong> {selectedClient.companyName}</p>
-                <p><strong>Contact:</strong> {selectedClient.contactPerson}</p>
-                <p><strong>TIN:</strong> {selectedClient.tinNumber || 'N/A'}</p>
-                <p><strong>Address:</strong> {selectedClient.address}, {selectedClient.city}, {selectedClient.country}</p>
-                <p><strong>Email:</strong> {selectedClient.email}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Invoice Details */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Invoice Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="destination">Destination</Label>
-                <Input
-                  id="destination"
-                  value={invoiceData.destination}
-                  onChange={(e) => setInvoiceData({...invoiceData, destination: e.target.value})}
-                  placeholder="Destination"
-                />
-              </div>
-              <div>
-                <Label htmlFor="doorDelivery">Door Delivery</Label>
-                <Input
-                  id="doorDelivery"
-                  value={invoiceData.doorDelivery}
-                  onChange={(e) => setInvoiceData({...invoiceData, doorDelivery: e.target.value})}
-                  placeholder="Door delivery address"
-                />
-              </div>
-              <div>
-                <Label htmlFor="deliverDate">Delivery Date</Label>
-                <Input
-                  id="deliverDate"
-                  type="date"
-                  value={invoiceData.deliverDate}
-                  onChange={(e) => setInvoiceData({...invoiceData, deliverDate: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="validityDate">Validity Date</Label>
-                <Input
-                  id="validityDate"
-                  type="date"
-                  value={invoiceData.validityDate}
-                  onChange={(e) => setInvoiceData({...invoiceData, validityDate: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="awbNumber">AWB Number</Label>
-                <Input
-                  id="awbNumber"
-                  value={invoiceData.awbNumber}
-                  onChange={(e) => setInvoiceData({...invoiceData, awbNumber: e.target.value})}
-                  placeholder="Air Waybill number"
-                />
-              </div>
-              <div>
-                <Label htmlFor="currency">Currency</Label>
-                <Select value={invoiceData.currency} onValueChange={(value) => setInvoiceData({...invoiceData, currency: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="USD">USD ($)</SelectItem>
-                    <SelectItem value="EUR">EUR (€)</SelectItem>
-                    <SelectItem value="RWF">RWF</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div>
-              <Label htmlFor="paymentConditions">Payment Conditions</Label>
-              <Textarea
-                id="paymentConditions"
-                value={invoiceData.paymentConditions}
-                onChange={(e) => setInvoiceData({...invoiceData, paymentConditions: e.target.value})}
-                placeholder="Payment terms and conditions"
-              />
-            </div>
-          </CardContent>
-        </Card>
+        <ClientInformation
+          clientsForSelection={clientsForSelection}
+          selectedClient={selectedClient}
+          onClientChange={setSelectedClient}
+          disabled={true} // Client is set from quotation, so disable selection
+        />
+        <InvoiceDetails 
+          invoiceData={invoiceData}
+          onInvoiceDataChange={handleInvoiceDataChange}
+        />
       </div>
 
-      {/* Items Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Invoice Items</CardTitle>
-            <Button onClick={addItem} size="sm">
-              <Plus size={16} className="mr-2" />
-              Add Item
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {items.map((item, index) => (
-              <div key={item.id} className="grid grid-cols-12 gap-2 items-end p-3 border rounded-lg">
-                <div className="col-span-2">
-                  <Label className="text-xs">Quantity (KG)</Label>
-                  <Input
-                    type="number"
-                    value={item.quantityKg}
-                    onChange={(e) => updateItem(item.id, 'quantityKg', parseFloat(e.target.value) || 0)}
-                    placeholder="0.00"
-                  />
-                </div>
-                <div className="col-span-3">
-                  <Label className="text-xs">Commodity</Label>
-                  <Input
-                    value={item.commodity}
-                    onChange={(e) => updateItem(item.id, 'commodity', e.target.value)}
-                    placeholder="Item name"
-                  />
-                </div>
-                <div className="col-span-3">
-                  <Label className="text-xs">Description</Label>
-                  <Input
-                    value={item.description}
-                    onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                    placeholder="Description"
-                  />
-                </div>
-                <div className="col-span-2">
-                  <Label className="text-xs">Price</Label>
-                  <Input
-                    type="number"
-                    value={item.price}
-                    onChange={(e) => updateItem(item.id, 'price', parseFloat(e.target.value) || 0)}
-                    placeholder="0.00"
-                  />
-                </div>
-                <div className="col-span-1">
-                  <Label className="text-xs">Total</Label>
-                  <p className="p-2 bg-gray-50 rounded text-sm font-medium">
-                    {item.total.toFixed(2)}
-                  </p>
-                </div>
-                <div className="col-span-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeItem(item.id)}
-                    disabled={items.length === 1}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Minus size={16} />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Totals */}
-          <div className="mt-6 space-y-2 border-t pt-4">
-            <div className="flex justify-between items-center">
-              <span className="font-medium">Sub Total:</span>
-              <span className="font-bold">{invoiceData.currency} {subTotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="font-medium">TVA (18%):</span>
-              <span className="font-bold">{invoiceData.currency} {tva.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center text-lg border-t pt-2">
-              <span className="font-bold">Total Amount:</span>
-              <span className="font-bold text-green-600">{invoiceData.currency} {total.toFixed(2)}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <InvoiceItems
+        items={items}
+        currency={invoiceData.currency}
+        subTotal={subTotal}
+        tva={tva}
+        total={total}
+        onAddItem={addItem}
+        onRemoveItem={removeItem}
+        onUpdateItem={updateItem}
+      />
     </div>
   );
 };
