@@ -1,166 +1,204 @@
-
-import React from "react";
-import { Quotation, User } from "@/types";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+import React, { useState, useEffect } from 'react';
+import { Quotation, Client } from '@/types';
+import { QuotationCommodity, InvoiceCharge } from '@/types/invoice';
+import { useToast } from '@/hooks/use-toast';
+import { v4 as uuidv4 } from 'uuid';
+import { mockClients } from '@/data/mockData';
+import CommodityList from '../../quotations/CommodityList';
+import QuotationSummary from '../../quotations/QuotationSummary';
+import QuotationFormDetails from '../../quotations/QuotationFormDetails';
+import { Button } from '@/components/ui/button';
 
 interface QuotationFormProps {
-  form: Quotation;
-  user: User;
-  handleChange: (field: string, value: string | number) => void;
+  quotation: Quotation | null;
+  onSave: (quotation: Quotation, isDraft: boolean) => void;
+  onClose: () => void;
 }
 
-const QuotationForm = ({ form, user, handleChange }: QuotationFormProps) => {
-  return (
-    <div className="grid gap-4 py-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="clientName">Client Name</Label>
-          <Input
-            id="clientName"
-            value={form.clientName || ''}
-            onChange={(e) => handleChange('clientName', e.target.value)}
-            placeholder="Enter client name"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="countryOfOrigin">Country of Origin</Label>
-          <Input
-            id="countryOfOrigin"
-            value={form.countryOfOrigin || ''}
-            onChange={(e) => handleChange('countryOfOrigin', e.target.value)}
-            placeholder="Enter country of origin"
-          />
-        </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Label>Destination & Door Delivery</Label>
-        <Input
-          id="destination"
-          value={form.destination || ''}
-          onChange={(e) => handleChange('destination', e.target.value)}
-          placeholder="Destination Country"
-        />
-        <Input
-          id="doorDelivery"
-          value={form.doorDelivery || ''}
-          onChange={(e) => handleChange('doorDelivery', e.target.value)}
-          placeholder="Door Delivery details"
-          className="mt-2"
-        />
-      </div>
+const QuotationForm = ({ quotation, onSave, onClose }: QuotationFormProps) => {
+  const { toast } = useToast();
+  const [clients, setClients] = useState<Client[]>(mockClients);
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [commodities, setCommodities] = useState<QuotationCommodity[]>([]);
+  const [buyRate, setBuyRate] = useState(0);
+  const [clientQuote, setClientQuote] = useState(0);
+  const [profit, setProfit] = useState(0);
+  const [profitPercentage, setProfitPercentage] = useState(0);
+  const [remarks, setRemarks] = useState('');
+  const [destination, setDestination] = useState('');
+  const [doorDelivery, setDoorDelivery] = useState('');
+  const [currency, setCurrency] = useState('USD');
 
-      <div className="space-y-2">
-        <Label htmlFor="cargoDescription">Cargo Description</Label>
-        <Input
-          id="cargoDescription"
-          value={form.cargoDescription || ''}
-          onChange={(e) => handleChange('cargoDescription', e.target.value)}
-          placeholder="Enter cargo description"
-        />
-      </div>
-      
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="freightMode">Freight Mode</Label>
-          <Select value={form.freightMode} onValueChange={(value) => handleChange('freightMode', value || '')}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select freight mode" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Air Freight">Air Freight</SelectItem>
-              <SelectItem value="Sea Freight">Sea Freight</SelectItem>
-              <SelectItem value="Road Freight">Road Freight</SelectItem>
-            </SelectContent>
-          </Select>
+  useEffect(() => {
+    if (quotation) {
+      setSelectedClientId(quotation.client_id);
+      setClientQuote(quotation.client_quote);
+      setRemarks(quotation.remarks);
+      setDestination(quotation.destination);
+      setDoorDelivery(quotation.doorDelivery || '');
+      setCurrency(quotation.currency);
+
+      try {
+        const parsed = JSON.parse(quotation.volume);
+        if (Array.isArray(parsed)) {
+            const commoditiesWithCharges = parsed.map((c: any) => {
+                if (c.rate !== undefined && !c.charges) {
+                    return {
+                        ...c,
+                        id: c.id || uuidv4(),
+                        charges: [{ id: uuidv4(), description: `Charge for ${c.name}`, rate: c.rate }],
+                    };
+                }
+                return {...c, id: c.id || uuidv4(), charges: c.charges || [{ id: uuidv4(), description: '', rate: 0 }] };
+            });
+            setCommodities(commoditiesWithCharges);
+        }
+      } catch (e) {
+        console.error("Failed to parse commodities from quotation volume", e);
+        setCommodities([]);
+      }
+    } else {
+      addCommodity();
+    }
+  }, [quotation]);
+
+  const addCommodity = () => {
+    const newCommodity: QuotationCommodity = {
+      id: uuidv4(),
+      name: '',
+      quantityKg: 0,
+      charges: [{ id: uuidv4(), description: '', rate: 0 }]
+    };
+    setCommodities([...commodities, newCommodity]);
+  };
+
+  const removeCommodity = (id: string) => {
+    if (commodities.length > 1) {
+      setCommodities(commodities.filter(c => c.id !== id));
+    }
+  };
+
+  const updateCommodity = (id: string, field: 'name' | 'quantityKg', value: string | number) => {
+    setCommodities(commodities.map(c =>
+      c.id === id ? { ...c, [field]: value } : c
+    ));
+  };
+  
+  const addCharge = (commodityId: string) => {
+    setCommodities(commodities.map(c => {
+      if (c.id === commodityId) {
+        const newCharge: InvoiceCharge = { id: uuidv4(), description: '', rate: 0 };
+        return { ...c, charges: [...c.charges, newCharge] };
+      }
+      return c;
+    }));
+  };
+
+  const removeCharge = (commodityId: string, chargeId: string) => {
+    setCommodities(commodities.map(c => {
+      if (c.id === commodityId) {
+        if (c.charges.length > 1) {
+          return { ...c, charges: c.charges.filter(charge => charge.id !== chargeId) };
+        }
+      }
+      return c;
+    }));
+  };
+  
+  const updateCharge = (commodityId: string, chargeId: string, field: keyof Omit<InvoiceCharge, 'id'>, value: string | number) => {
+    setCommodities(commodities.map(c => {
+      if (c.id === commodityId) {
+        return {
+          ...c,
+          charges: c.charges.map(charge =>
+            charge.id === chargeId ? { ...charge, [field]: value } : charge
+          )
+        };
+      }
+      return c;
+    }));
+  };
+
+  useEffect(() => {
+    calculateTotals();
+  }, [commodities, clientQuote]);
+
+  const calculateTotals = () => {
+    const totalBuyRate = commodities.reduce((sum, commodity) => {
+      const commodityRate = commodity.charges.reduce((chargeSum, charge) => chargeSum + (Number(charge.rate) || 0), 0);
+      const quantity = Number(commodity.quantityKg) || 0;
+      return sum + (commodityRate * quantity);
+    }, 0);
+    setBuyRate(totalBuyRate);
+    
+    const p = (clientQuote || 0) - totalBuyRate;
+    const pp = totalBuyRate > 0 ? (p / totalBuyRate) * 100 : 0;
+    setProfit(p);
+    setProfitPercentage(pp);
+  };
+  
+  const handleSave = (isDraft: boolean) => {
+    onSave({
+      client_id: selectedClientId || '',
+      client_quote: clientQuote,
+      remarks,
+      destination,
+      doorDelivery,
+      currency,
+      volume: JSON.stringify(commodities),
+      status: 'pending',
+    }, isDraft);
+  };
+
+  return (
+    <div className="space-y-6 p-1">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+                <QuotationFormDetails
+                    clients={clients}
+                    selectedClientId={selectedClientId}
+                    onClientChange={setSelectedClientId}
+                    destination={destination}
+                    onDestinationChange={setDestination}
+                    doorDelivery={doorDelivery}
+                    onDoorDeliveryChange={setDoorDelivery}
+                    currency={currency}
+                    onCurrencyChange={setCurrency}
+                />
+                <div>
+                    <h3 className="text-lg font-semibold mb-2">Commodities</h3>
+                    <CommodityList
+                        commodities={commodities}
+                        onUpdateCommodity={updateCommodity}
+                        onRemoveCommodity={removeCommodity}
+                        onAddCharge={addCharge}
+                        onRemoveCharge={removeCharge}
+                        onUpdateCharge={updateCharge}
+                        currency={currency}
+                    />
+                    <Button onClick={addCommodody} variant="outline" className="mt-4">
+                        Add Another Commodity
+                    </Button>
+                </div>
+            </div>
+            <div className="lg:col-span-1 space-y-6">
+                <QuotationSummary
+                    buyRate={buyRate}
+                    clientQuote={clientQuote}
+                    onClientQuoteChange={setClientQuote}
+                    profit={profit}
+                    profitPercentage={profitPercentage}
+                    currency={currency}
+                    remarks={remarks}
+                    onRemarksChange={setRemarks}
+                />
+            </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="requestType">Request Type</Label>
-          <Select value={form.requestType} onValueChange={(value) => handleChange('requestType', value || '')}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select request type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Import">Import</SelectItem>
-              <SelectItem value="Export">Export</SelectItem>
-              <SelectItem value="Re-Import">Re-Import</SelectItem>
-              <SelectItem value="Project">Project</SelectItem>
-              <SelectItem value="Local">Local</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={onClose}>Cancel</Button>
+            <Button onClick={() => handleSave(true)}>Save as Draft</Button>
+            <Button onClick={() => handleSave(false)}>Submit for Approval</Button>
         </div>
-      </div>
-      
-      <div className="grid grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="currency">Currency</Label>
-          <Select value={form.currency} onValueChange={(value) => handleChange('currency', value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select currency" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="USD">USD</SelectItem>
-              <SelectItem value="EUR">EUR</SelectItem>
-              <SelectItem value="GBP">GBP</SelectItem>
-              <SelectItem value="NGN">NGN</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="buyRate">Buy Rate</Label>
-          <Input
-            id="buyRate"
-            type="number"
-            value={form.buyRate}
-            onChange={(e) => handleChange('buyRate', parseFloat(e.target.value) || 0)}
-            placeholder="0.00"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="clientQuote">Client Quote</Label>
-          <Input
-            id="clientQuote"
-            type="number"
-            value={form.clientQuote}
-            onChange={(e) => handleChange('clientQuote', parseFloat(e.target.value) || 0)}
-            placeholder="0.00"
-          />
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="status">Status</Label>
-          <Select value={form.status} onValueChange={(value) => handleChange('status', value)} disabled={user.role !== 'admin'}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="won">Won</SelectItem>
-              <SelectItem value="lost">Lost</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label>Calculated Profit</Label>
-          <div className="p-2 bg-gray-50 rounded border text-sm font-medium">
-            {form.currency} {(form.clientQuote - form.buyRate).toLocaleString()}
-          </div>
-        </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="quoteSentBy">Quote Sent By</Label>
-        <Input
-          id="quoteSentBy"
-          value={form.quoteSentBy}
-          onChange={(e) => handleChange('quoteSentBy', e.target.value)}
-          placeholder="Enter sender name"
-        />
-      </div>
     </div>
   );
 };

@@ -1,167 +1,205 @@
-
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Plus } from 'lucide-react';
-import { Quotation, User } from '@/types';
-import { QuotationCommodity } from '@/types/invoice';
 import { v4 as uuidv4 } from 'uuid';
-import QuotationFormDetails from '../quotations/QuotationFormDetails';
+import { Quotation, Client } from '@/types';
+import { QuotationCommodity, InvoiceCharge } from '@/types/invoice';
+import { useAuth } from '@/contexts/AuthContext';
 import CommodityList from '../quotations/CommodityList';
+import { mockClients } from '@/data/mockData';
 import QuotationSummary from '../quotations/QuotationSummary';
+import QuotationActions from '../quotations/QuotationActions';
+import QuotationFormDetails from '../quotations/QuotationFormDetails';
 
 interface CreateQuotationViewProps {
-  user: User;
-  onQuotationCreated: (quotation: Quotation) => void;
+  onSave: (quotation: Omit<Quotation, 'id' | 'status' | 'created_at' | 'quote_sent_by' | 'approved_by' | 'approved_at'>, isDraft: boolean) => void;
+  setActiveTab: (tab: string) => void;
 }
 
-const initialQuotationState = {
-  clientName: '',
-  currency: 'USD',
-  buyRate: '',
-  followUpDate: '',
-  remarks: '',
-  destination: '',
-  doorDelivery: '',
-  quoteSentBy: '',
-  // New fields from Excel
-  freightMode: 'Air Freight' as Quotation['freightMode'],
-  requestType: 'Import' as Quotation['requestType'],
-  countryOfOrigin: '',
-  cargoDescription: '',
-};
-
-const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewProps) => {
+const CreateQuotationView = ({ onSave, setActiveTab }: CreateQuotationViewProps) => {
+  const { user } = useAuth();
   const { toast } = useToast();
-  const [newQuotation, setNewQuotation] = useState(initialQuotationState);
-  const [commodities, setCommodities] = useState<QuotationCommodity[]>([
-    { id: uuidv4(), name: '', quantityKg: 0, rate: 0 },
-  ]);
-
-  const [calculatedProfit, setCalculatedProfit] = useState({
-    profit: 0,
-    profitPercentage: '0.00%',
-  });
-
-  const clientQuoteTotal = commodities.reduce((acc, commodity) => {
-    return acc + (commodity.quantityKg || 0) * (commodity.rate || 0);
-  }, 0);
-
-  useEffect(() => {
-    const buyRate = parseFloat(newQuotation.buyRate);
-
-    if (!isNaN(buyRate) && buyRate > 0) {
-      const profit = clientQuoteTotal - buyRate;
-      const profitPercentage = `${((profit / buyRate) * 100).toFixed(2)}%`;
-      setCalculatedProfit({ profit, profitPercentage });
-    } else {
-      const profit = !isNaN(clientQuoteTotal) && !isNaN(buyRate) ? clientQuoteTotal - buyRate : 0;
-      setCalculatedProfit({ profit: profit, profitPercentage: 'N/A' });
-    }
-  }, [newQuotation.buyRate, clientQuoteTotal]);
-
-  const handleNewQuotationChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target;
-    setNewQuotation(prev => ({ ...prev, [id]: value }));
-  };
-
-  const handleSelectChange = (field: string, value: string) => {
-    setNewQuotation(prev => ({ ...prev, [field]: value }));
-  };
+  const [clients, setClients] = useState<Client[]>(mockClients);
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [commodities, setCommodities] = useState<QuotationCommodity[]>([]);
+  const [buyRate, setBuyRate] = useState(0);
+  const [clientQuote, setClientQuote] = useState(0);
+  const [profit, setProfit] = useState(0);
+  const [profitPercentage, setProfitPercentage] = useState(0);
+  const [remarks, setRemarks] = useState('');
+  const [destination, setDestination] = useState('');
+  const [doorDelivery, setDoorDelivery] = useState('');
+  const [currency, setCurrency] = useState('USD');
   
-  const handleAddCommodity = () => {
-    setCommodities([...commodities, { id: uuidv4(), name: '', quantityKg: 0, rate: 0 }]);
+  useEffect(() => {
+    addCommodity();
+  }, []);
+
+  const addCommodity = () => {
+    const newCommodity: QuotationCommodity = {
+      id: uuidv4(),
+      name: '',
+      quantityKg: 0,
+      charges: [{ id: uuidv4(), description: '', rate: 0 }]
+    };
+    setCommodities([...commodities, newCommodity]);
   };
 
-  const handleRemoveCommodity = (id: string) => {
+  const removeCommodity = (id: string) => {
     if (commodities.length > 1) {
       setCommodities(commodities.filter(c => c.id !== id));
     }
   };
 
-  const handleCommodityChange = (id: string, field: keyof QuotationCommodity, value: string | number) => {
+  const updateCommodity = (id: string, field: 'name' | 'quantityKg', value: string | number) => {
+    setCommodities(commodities.map(c =>
+      c.id === id ? { ...c, [field]: value } : c
+    ));
+  };
+  
+  const addCharge = (commodityId: string) => {
     setCommodities(commodities.map(c => {
-      if (c.id === id) {
-        const parsedValue = (field === 'quantityKg' || field === 'rate') ? parseFloat(value as string) || 0 : value;
-        return { ...c, [field]: parsedValue };
+      if (c.id === commodityId) {
+        const newCharge: InvoiceCharge = { id: uuidv4(), description: '', rate: 0 };
+        return { ...c, charges: [...c.charges, newCharge] };
       }
       return c;
     }));
   };
 
-  const handleCreateQuotation = () => {
-    if (!newQuotation.clientName || clientQuoteTotal <= 0 || !newQuotation.buyRate || !newQuotation.quoteSentBy) {
+  const removeCharge = (commodityId: string, chargeId: string) => {
+    setCommodities(commodities.map(c => {
+      if (c.id === commodityId) {
+        if (c.charges.length > 1) {
+          return { ...c, charges: c.charges.filter(charge => charge.id !== chargeId) };
+        }
+      }
+      return c;
+    }));
+  };
+  
+  const updateCharge = (commodityId: string, chargeId: string, field: keyof Omit<InvoiceCharge, 'id'>, value: string | number) => {
+    setCommodities(commodities.map(c => {
+      if (c.id === commodityId) {
+        return {
+          ...c,
+          charges: c.charges.map(charge =>
+            charge.id === chargeId ? { ...charge, [field]: value } : charge
+          )
+        };
+      }
+      return c;
+    }));
+  };
+
+  useEffect(() => {
+    calculateTotals();
+  }, [commodities, clientQuote]);
+
+  const calculateTotals = () => {
+    const totalBuyRate = commodities.reduce((sum, commodity) => {
+      const commodityRate = commodity.charges.reduce((chargeSum, charge) => chargeSum + (Number(charge.rate) || 0), 0);
+      const quantity = Number(commodity.quantityKg) || 0;
+      return sum + (commodityRate * quantity);
+    }, 0);
+    setBuyRate(totalBuyRate);
+    
+    const p = (clientQuote || 0) - totalBuyRate;
+    const pp = totalBuyRate > 0 ? (p / totalBuyRate) * 100 : 0;
+    setProfit(p);
+    setProfitPercentage(pp);
+  };
+  
+  const handleSaveQuotation = (isDraft: boolean) => {
+    if (!selectedClientId || clientQuote <= 0 || !buyRate || !currency) {
       toast({
         title: "Missing Fields",
-        description: "Please fill in client, commodities, buy rate, and sender details.",
+        description: "Please select a client, fill in commodities, buy rate, and currency.",
         variant: "destructive",
       });
       return;
     }
 
-    const newQuotationData: Quotation = {
-      id: `q${Date.now()}`,
-      clientName: newQuotation.clientName,
+    const newQuotationData: Omit<Quotation, 'id' | 'status' | 'created_at' | 'quote_sent_by' | 'approved_by' | 'approved_at'> = {
+      clientName: selectedClientId,
       volume: JSON.stringify(commodities), // Serialize commodities
-      currency: newQuotation.currency,
-      buyRate: parseFloat(newQuotation.buyRate),
-      clientQuote: clientQuoteTotal,
-      profit: calculatedProfit.profit,
-      profitPercentage: calculatedProfit.profitPercentage,
-      quoteSentBy: newQuotation.quoteSentBy,
-      status: 'pending',
-      followUpDate: newQuotation.followUpDate,
-      remarks: newQuotation.remarks,
-      createdAt: new Date().toISOString(),
-      destination: newQuotation.destination,
-      doorDelivery: newQuotation.doorDelivery,
+      currency,
+      buyRate,
+      clientQuote,
+      profit,
+      profitPercentage,
+      remarks,
+      destination,
+      doorDelivery,
       // New fields from Excel
-      freightMode: newQuotation.freightMode,
-      requestType: newQuotation.requestType,
-      countryOfOrigin: newQuotation.countryOfOrigin,
-      cargoDescription: newQuotation.cargoDescription,
+      freightMode: 'Air Freight' as Quotation['freightMode'],
+      requestType: 'Import' as Quotation['requestType'],
+      countryOfOrigin: '',
+      cargoDescription: '',
     };
     
-    onQuotationCreated(newQuotationData);
-    setNewQuotation(initialQuotationState);
+    onSave(newQuotationData, isDraft);
     setCommodities([{ id: uuidv4(), name: '', quantityKg: 0, rate: 0 }]);
   };
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Create New Quotation</h2>
-      <Card>
-        <CardHeader>
-          <CardTitle>Quotation Details</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Create New Quotation</h2>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
           <QuotationFormDetails
-            quotationData={newQuotation}
-            onQuotationChange={handleNewQuotationChange}
-            onSelectChange={handleSelectChange}
+            clients={clients}
+            selectedClientId={selectedClientId}
+            onClientChange={setSelectedClientId}
+            destination={destination}
+            onDestinationChange={setDestination}
+            doorDelivery={doorDelivery}
+            onDoorDeliveryChange={setDoorDelivery}
+            currency={currency}
+            onCurrencyChange={setCurrency}
           />
-          
-          <CommodityList
-            commodities={commodities}
-            onAddCommodity={handleAddCommodity}
-            onRemoveCommodity={handleRemoveCommodity}
-            onCommodityChange={handleCommodityChange}
-          />
-          
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Commodities</h3>
+            <CommodityList
+              commodities={commodities}
+              onUpdateCommodity={updateCommodity}
+              onRemoveCommodity={removeCommodity}
+              onAddCharge={addCharge}
+              onRemoveCharge={removeCharge}
+              onUpdateCharge={updateCharge}
+              currency={currency}
+            />
+            <Button onClick={addCommodity} variant="outline" className="mt-4">
+              Add Another Commodity
+            </Button>
+          </div>
+        </div>
+
+        <div className="lg:col-span-1 space-y-6">
           <QuotationSummary
-            quotationData={newQuotation}
-            clientQuoteTotal={clientQuoteTotal}
-            calculatedProfit={calculatedProfit}
-            onQuotationChange={handleNewQuotationChange}
+            buyRate={buyRate}
+            clientQuote={clientQuote}
+            onClientQuoteChange={setClientQuote}
+            profit={profit}
+            profitPercentage={profitPercentage}
+            currency={currency}
+            remarks={remarks}
+            onRemarksChange={setRemarks}
           />
-          
-          <Button className="w-full" onClick={handleCreateQuotation}>
-            <Plus size={16} className="mr-2" />
-            Create Quotation
-          </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+      
+      <QuotationActions
+        onSave={handleSaveQuotation}
+        onCancel={() => setActiveTab("allQuotations")}
+      />
     </div>
   );
 };

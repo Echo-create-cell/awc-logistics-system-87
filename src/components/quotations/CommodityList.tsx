@@ -1,57 +1,105 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Plus, Minus } from 'lucide-react';
-import { QuotationCommodity } from '@/types/invoice';
+import { QuotationCommodity, InvoiceCharge } from "@/types/invoice";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Trash2, PlusCircle } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from '../ui/label';
 
 interface CommodityListProps {
   commodities: QuotationCommodity[];
-  onAddCommodity: () => void;
+  onUpdateCommodity: (id: string, field: 'name' | 'quantityKg', value: string | number) => void;
   onRemoveCommodity: (id: string) => void;
-  onCommodityChange: (id: string, field: keyof QuotationCommodity, value: string | number) => void;
+  onAddCharge: (commodityId: string) => void;
+  onRemoveCharge: (commodityId: string, chargeId: string) => void;
+  onUpdateCharge: (commodityId: string, chargeId: string, field: keyof Omit<InvoiceCharge, 'id'>, value: string | number) => void;
+  currency: string;
 }
 
-const CommodityList = ({ commodities, onAddCommodity, onRemoveCommodity, onCommodityChange }: CommodityListProps) => {
+const CommodityList = ({
+  commodities,
+  onUpdateCommodity,
+  onRemoveCommodity,
+  onAddCharge,
+  onRemoveCharge,
+  onUpdateCharge,
+  currency,
+}: CommodityListProps) => {
   return (
-    <div className="space-y-4 pt-4 border-t">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Commodities</h3>
-        <Button onClick={onAddCommodity} size="sm" variant="outline">
-          <Plus size={16} className="mr-2" />
-          Add Commodity
-        </Button>
-      </div>
-      <div className="space-y-2">
-        {commodities.map((commodity) => (
-          <div key={commodity.id} className="grid grid-cols-12 gap-2 items-center p-2 rounded-md bg-gray-50">
-            <div className="col-span-12 md:col-span-5">
-               <Label className="text-xs">Commodity Name</Label>
-              <Input placeholder="e.g. Fresh Flowers" value={commodity.name} onChange={(e) => onCommodityChange(commodity.id, 'name', e.target.value)} />
-            </div>
-            <div className="col-span-6 md:col-span-2">
-               <Label className="text-xs">Qty (KG)</Label>
-              <Input type="number" placeholder="0.00" value={commodity.quantityKg} onChange={(e) => onCommodityChange(commodity.id, 'quantityKg', e.target.value)} />
-            </div>
-            <div className="col-span-6 md:col-span-2">
-               <Label className="text-xs">Rate</Label>
-              <Input type="number" placeholder="0.00" value={commodity.rate} onChange={(e) => onCommodityChange(commodity.id, 'rate', e.target.value)} />
-            </div>
-             <div className="col-span-10 md:col-span-2">
-               <Label className="text-xs">Total</Label>
-               <p className="p-2 h-10 flex items-center bg-white rounded text-sm font-medium border">
-                  {((commodity.quantityKg || 0) * (commodity.rate || 0)).toFixed(2)}
-               </p>
-            </div>
-            <div className="col-span-2 md:col-span-1 flex items-end justify-end">
-              <Button variant="ghost" size="icon" onClick={() => onRemoveCommodity(commodity.id)} disabled={commodities.length === 1} className="text-red-500 hover:text-red-600">
-                <Minus size={16} />
+    <div className="space-y-4">
+      {commodities.map((commodity, index) => (
+        <Card key={commodity.id}>
+          <CardContent className="p-4">
+            <div className="flex justify-between items-start mb-4">
+              <h4 className="font-semibold text-md">Commodity #{index + 1}</h4>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-red-500 hover:text-red-600"
+                onClick={() => onRemoveCommodity(commodity.id)}
+              >
+                <Trash2 size={16} />
               </Button>
             </div>
-          </div>
-        ))}
-      </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <Label>Commodity Name</Label>
+                <Input
+                  value={commodity.name}
+                  onChange={(e) => onUpdateCommodity(commodity.id, 'name', e.target.value)}
+                  placeholder="e.g. Electronics"
+                />
+              </div>
+              <div>
+                <Label>Quantity (kg)</Label>
+                <Input
+                  type="number"
+                  value={commodity.quantityKg}
+                  onChange={(e) => onUpdateCommodity(commodity.id, 'quantityKg', parseFloat(e.target.value) || 0)}
+                  placeholder="e.g. 100"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="font-medium">Charges</Label>
+              {commodity.charges.map((charge) => (
+                <div key={charge.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                  <Input
+                    value={charge.description}
+                    onChange={(e) => onUpdateCharge(commodity.id, charge.id, 'description', e.target.value)}
+                    placeholder="Charge description (e.g., Freight)"
+                    className="flex-grow"
+                  />
+                  <div className="relative w-32">
+                    <Input
+                      type="number"
+                      value={charge.rate}
+                      onChange={(e) => onUpdateCharge(commodity.id, charge.id, 'rate', parseFloat(e.target.value) || 0)}
+                      placeholder="Rate"
+                      className="pr-12"
+                    />
+                    <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-gray-500">{currency}/kg</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-red-500 hover:text-red-600 shrink-0"
+                    onClick={() => onRemoveCharge(commodity.id, charge.id)}
+                    disabled={commodity.charges.length <= 1}
+                  >
+                    <Trash2 size={14} />
+                  </Button>
+                </div>
+              ))}
+              <Button variant="outline" size="sm" onClick={() => onAddCharge(commodity.id)} className="mt-2">
+                <PlusCircle size={14} className="mr-2" /> Add Charge
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 };
