@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
@@ -91,6 +90,7 @@ const QuotationsView = ({
         quotation={modalQuotation}
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
+        user={user}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { Quotation } from "@/types";
+import { Quotation, User } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,9 +11,10 @@ interface QuotationModalProps {
   quotation: Quotation | null;
   onClose: () => void;
   onSave: (q: Quotation) => void;
+  user: User;
 }
 
-const QuotationModal = ({ open, quotation, onClose, onSave }: QuotationModalProps) => {
+const QuotationModal = ({ open, quotation, onClose, onSave, user }: QuotationModalProps) => {
   const [form, setForm] = useState<Quotation | null>(quotation);
 
   React.useEffect(() => {
@@ -38,13 +39,6 @@ const QuotationModal = ({ open, quotation, onClose, onSave }: QuotationModalProp
         profitPercentage,
       };
 
-      // If a rejected (lost) quotation is edited, resubmit it by setting its status to 'pending'.
-      if (quotation?.status === 'lost') {
-        updatedForm.status = 'pending';
-        updatedForm.approvedBy = undefined;
-        updatedForm.approvedAt = undefined;
-      }
-      
       onSave(updatedForm);
     }
     onClose();
@@ -184,7 +178,7 @@ const QuotationModal = ({ open, quotation, onClose, onSave }: QuotationModalProp
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <Select value={form.status} onValueChange={(value) => handleChange('status', value)}>
+              <Select value={form.status} onValueChange={(value) => handleChange('status', value)} disabled={user.role !== 'admin'}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
