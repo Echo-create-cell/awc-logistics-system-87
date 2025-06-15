@@ -5,12 +5,38 @@ import { mockQuotations, mockUsers } from '@/data/mockData';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 
+const mockInvoices: InvoiceData[] = Array.from({ length: 15 }, (_, i) => ({
+    id: `inv-id-${i + 1}`,
+    invoiceNumber: `INV-2025-${String(i + 1).padStart(4, '0')}`,
+    quotationId: `qt-2025-${i + 1}`,
+    clientName: `Client Corp ${i % 4 + 1}`,
+    clientAddress: `${i+1} Business Avenue`,
+    clientTin: `TIN${1000+i}`,
+    destination: "Kigali",
+    doorDelivery: "Yes",
+    salesperson: i % 2 === 0 ? "John Sales Director" : "Mike Sales Agent",
+    deliverDate: new Date().toISOString(),
+    paymentConditions: '30 days',
+    validityDate: new Date().toISOString(),
+    awbNumber: `AWB-00${i+1}`,
+    items: [{ id: 'item-1', quantityKg: 100, commodity: 'General Goods', charges: [], total: 1200 }],
+    subTotal: 1200,
+    tva: 216,
+    totalAmount: 1416,
+    currency: 'USD',
+    issueDate: new Date(new Date().setDate(new Date().getDate() - (i*3))).toISOString(),
+    dueDate: new Date(new Date().setDate(new Date().getDate() + 30 - (i*3))).toISOString(),
+    status: ['pending', 'paid', 'overdue'][i % 3] as 'pending' | 'paid' | 'overdue',
+    createdBy: 'Admin User',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - (i*3))).toISOString(),
+}));
+
 export const useAppData = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [quotations, setQuotations] = useState<Quotation[]>(mockQuotations);
   const [users, setUsers] = useState<User[]>(mockUsers);
-  const [invoices, setInvoices] = useState<InvoiceData[]>([]);
+  const [invoices, setInvoices] = useState<InvoiceData[]>(mockInvoices);
   const [printPreview, setPrintPreview] = useState<InvoiceData | null>(null);
   const [invoiceQuotation, setInvoiceQuotation] = useState<Quotation | null>(null);
   const { toast } = useToast();
@@ -62,7 +88,7 @@ export const useAppData = () => {
   };
 
   const handleSaveInvoice = (invoice: InvoiceData) => {
-    setInvoices(prev => [...prev, invoice]);
+    setInvoices(prev => [invoice, ...prev]);
 
     if (invoice.quotationId) {
       setQuotations((prev) => prev.map(q =>
