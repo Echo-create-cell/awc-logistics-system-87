@@ -3,14 +3,17 @@ import React from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus } from 'lucide-react';
+import { Plus, Eye, Edit, Trash2 } from 'lucide-react';
 import { User } from '@/types';
 
 interface UsersViewProps {
   users: User[];
+  onView?: (user: User) => void;
+  onEdit?: (user: User) => void;
+  onDelete?: (id: string) => void;
 }
 
-const UsersView = ({ users }: UsersViewProps) => {
+const UsersView = ({ users, onView, onEdit, onDelete }: UsersViewProps) => {
   const userColumns = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
@@ -31,6 +34,29 @@ const UsersView = ({ users }: UsersViewProps) => {
           {value}
         </Badge>
       )
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (_: any, row: User) => (
+        <div className="flex gap-1">
+          {onView && (
+            <Button size="sm" variant="ghost" onClick={() => onView(row)}>
+              <Eye size={16} />
+            </Button>
+          )}
+          {onEdit && (
+            <Button size="sm" variant="ghost" onClick={() => onEdit(row)}>
+              <Edit size={16} />
+            </Button>
+          )}
+          {onDelete && (
+            <Button size="sm" variant="ghost" onClick={() => onDelete(row.id)} className="text-red-600 hover:text-red-700">
+              <Trash2 size={16} />
+            </Button>
+          )}
+        </div>
+      ),
     }
   ];
 

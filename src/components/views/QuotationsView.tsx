@@ -3,7 +3,7 @@ import React from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus } from 'lucide-react';
+import { Plus, Eye, Edit, Trash2 } from 'lucide-react';
 import { Quotation, User } from '@/types';
 
 interface QuotationsViewProps {
@@ -12,38 +12,35 @@ interface QuotationsViewProps {
   onView: (quotation: Quotation) => void;
   setActiveTab: (tab: string) => void;
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
+  onEdit?: (quotation: Quotation) => void;
+  onDelete?: (id: string) => void;
 }
 
-const QuotationsView = ({ user, quotations, onView, setActiveTab, onInvoiceFromQuotation }: QuotationsViewProps) => {
-  const quotationColumns: {
-    key: keyof Quotation | "actions",
-    label: string,
-    render?: (value: any, row: Quotation) => React.ReactNode
-  }[] = [
-    { key: 'clientName', label: 'Client', render: value => value || 'N/A' },
+const QuotationsView = ({
+  user, quotations, onView, setActiveTab, onInvoiceFromQuotation, onEdit, onDelete
+}: QuotationsViewProps) => {
+
+  const quotationColumns = [
+    { key: 'clientName', label: 'Client', render: (value: string) => value || 'N/A' },
     { key: 'volume', label: 'Volume' },
-    { key: 'destination', label: 'Destination', render: value => value || 'N/A' },
-    { key: 'doorDelivery', label: 'Door Delivery', render: value => value || 'N/A' },
+    { key: 'destination', label: 'Destination', render: (value: string) => value || 'N/A' },
+    { key: 'doorDelivery', label: 'Door Delivery', render: (value: string) => value || 'N/A' },
     {
-      key: 'buyRate',
-      label: 'Buy Rate',
-      render: (value, row) => `${row.currency} ${value.toLocaleString()}`
+      key: 'buyRate', label: 'Buy Rate',
+      render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
     },
     {
-      key: 'clientQuote',
-      label: 'Client Quote',
-      render: (value, row) => `${row.currency} ${value.toLocaleString()}`
+      key: 'clientQuote', label: 'Client Quote',
+      render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
     },
     {
-      key: 'profit',
-      label: 'Profit',
-      render: (value, row) => `${row.currency} ${value.toLocaleString()}`
+      key: 'profit', label: 'Profit',
+      render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
     },
     { key: 'quoteSentBy', label: 'Quote Sent By' },
     {
-      key: 'status',
-      label: 'Status',
-      render: value => {
+      key: 'status', label: 'Status',
+      render: (value: string) => {
         const colors = {
           won: 'bg-green-100 text-green-800',
           pending: 'bg-yellow-100 text-yellow-800',
@@ -53,25 +50,43 @@ const QuotationsView = ({ user, quotations, onView, setActiveTab, onInvoiceFromQ
       }
     },
     {
-      key: 'approvedBy',
-      label: 'Approved By',
-      render: (value, row) => value && row.approvedAt ? `${value} on ${new Date(row.approvedAt).toLocaleDateString()}` : 'N/A'
+      key: 'approvedBy', label: 'Approved By',
+      render: (value: string, row: Quotation) => value && row.approvedAt
+        ? `${value} on ${new Date(row.approvedAt).toLocaleDateString()}`
+        : 'N/A'
     },
     {
-      key: 'actions',
-      label: 'Actions',
-      render: (_value, row) =>
-        (user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won' ? (
-          <Button
-            className="ml-2 px-2 py-1 text-white bg-fuchsia-700 rounded hover:bg-fuchsia-900 text-xs"
-            onClick={() => onInvoiceFromQuotation?.(row)}
-          >
-            Generate Invoice
+      key: 'actions', label: 'Actions',
+      render: (_: any, row: Quotation) => (
+        <div className="flex gap-1">
+          <Button size="sm" variant="ghost" onClick={() => onView(row)}>
+            <Eye size={16} />
           </Button>
-        ) : null,
-    },
+          {(user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won' && (
+            <Button
+              size="sm"
+              className="px-2 py-1 text-white bg-fuchsia-700 rounded hover:bg-fuchsia-900 text-xs"
+              onClick={() => onInvoiceFromQuotation?.(row)}
+            >
+              Generate Invoice
+            </Button>
+          )}
+          {onEdit && (
+            <Button size="sm" variant="ghost" onClick={() => onEdit(row)}>
+              <Edit size={16} />
+            </Button>
+          )}
+          {onDelete && (
+            <Button size="sm" variant="ghost" onClick={() => onDelete(row.id)} className="text-red-600 hover:text-red-700">
+              <Trash2 size={16} />
+            </Button>
+          )}
+        </div>
+      ),
+    }
   ];
 
+  // Admins see only pending, others see all
   const filteredQuotations = user.role === 'admin'
     ? quotations.filter(q => q.status === 'pending')
     : quotations;
@@ -88,30 +103,23 @@ const QuotationsView = ({ user, quotations, onView, setActiveTab, onInvoiceFromQ
           </Button>
         )}
       </div>
-      <div>
-        <table className="w-full text-xs">
-          <thead>
-            <tr>
-              {quotationColumns.map(col =>
-                <th key={col.key as string} className="p-2 bg-slate-100 text-left">{col.label}</th>
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredQuotations.map(q =>
-              <tr key={q.id} className="border-b hover:bg-slate-50">
-                {quotationColumns.map(col =>
-                  <td key={col.key as string} className="p-2">
-                    {col.render
-                      ? col.render((q as any)[col.key], q)
-                      : (q as any)[col.key]}
-                  </td>
-                )}
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <SearchableTable
+        title="Quotations"
+        data={filteredQuotations}
+        columns={quotationColumns}
+        searchFields={['clientName', 'destination', 'quoteSentBy', 'status', 'approvedBy']}
+        filterOptions={[
+          {
+            key: 'status',
+            label: 'Status',
+            options: [
+              { value: 'pending', label: 'Pending' },
+              { value: 'won', label: 'Won' },
+              { value: 'lost', label: 'Lost' }
+            ]
+          }
+        ]}
+      />
     </div>
   );
 };

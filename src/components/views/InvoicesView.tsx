@@ -21,7 +21,7 @@ interface InvoicesViewProps {
 
 const InvoicesView = ({
   user, invoices, onSave, onPrint, onView, setActiveTab, quotations, invoiceQuotation, onInvoiceQuotationClear
-}: InvoicesViewProps) => {
+}: any) => {
   // If user is creating invoice from a quotation, show InvoiceGenerator pre-filled
   if ((user.role === 'sales_director' || user.role === 'sales_agent') && invoiceQuotation) {
     return (
@@ -49,7 +49,7 @@ const InvoicesView = ({
     {
       key: 'totalAmount',
       label: 'Amount',
-      render: (value: number, row: InvoiceData) => `${row.currency} ${value.toLocaleString()}`
+      render: (value: number, row: any) => `${row.currency} ${value.toLocaleString()}`
     },
     {
       key: 'issueDate',
@@ -71,7 +71,7 @@ const InvoicesView = ({
     {
       key: 'actions',
       label: 'Actions',
-      render: (_: any, row: InvoiceData) => (
+      render: (_: any, row: any) => (
         <div className="flex space-x-2">
           <Button
             variant="ghost"
@@ -84,7 +84,7 @@ const InvoicesView = ({
             onClick={() => onPrint(row)}
           >Print</Button>
         </div>
-      )
+      ),
     }
   ];
 
@@ -101,7 +101,7 @@ const InvoicesView = ({
         title="Generated Invoices"
         data={invoices}
         columns={invoiceColumns}
-        searchFields={['invoiceNumber', 'clientName']}
+        searchFields={['invoiceNumber', 'clientName', 'status']}
         filterOptions={[
           {
             key: 'status',

@@ -23,6 +23,10 @@ const Index = () => {
   const [invoices, setInvoices] = useState<InvoiceData[]>([]);
   const [printPreview, setPrintPreview] = useState<InvoiceData | null>(null);
   const [invoiceQuotation, setInvoiceQuotation] = useState<Quotation | null>(null);
+  const [editQuotation, setEditQuotation] = useState<Quotation | null>(null);
+  const [deleteQuotationId, setDeleteQuotationId] = useState<string | null>(null);
+  const [editUser, setEditUser] = useState<User | null>(null);
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const { toast } = useToast();
 
   if (!user) {
@@ -111,6 +115,38 @@ const Index = () => {
     setPrintPreview(invoice);
   };
 
+  const handleEditQuotation = (quotation: Quotation) => {
+    setEditQuotation(quotation);
+    alert(`Edit Quotation: ${quotation.id}`); // Or open an edit modal
+  };
+  const handleDeleteQuotation = (id: string) => {
+    setDeleteQuotationId(id);
+    if (window.confirm('Are you sure you want to delete this quotation?')) {
+      setQuotations(prev => prev.filter(q => q.id !== id));
+      toast({
+        title: "Quotation Deleted",
+        description: "Quotation was successfully deleted.",
+      });
+      setDeleteQuotationId(null);
+    }
+  };
+
+  const handleEditUser = (userObj: User) => {
+    setEditUser(userObj);
+    alert(`Edit User: ${userObj.name}`); // Or open an edit modal
+  };
+  const handleDeleteUser = (userId: string) => {
+    setDeleteUserId(userId);
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      setUsers(prev => prev.filter(u => u.id !== userId));
+      toast({
+        title: "User Deleted",
+        description: "User was successfully deleted.",
+      });
+      setDeleteUserId(null);
+    }
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -124,7 +160,14 @@ const Index = () => {
           />
         );
       case 'users':
-        return <UsersView users={users} />;
+        return (
+          <UsersView
+            users={users}
+            onView={(userObj) => alert(`View User: ${userObj.name}`)}
+            onEdit={handleEditUser}
+            onDelete={handleDeleteUser}
+          />
+        );
       case 'quotations':
         return (
           <QuotationsView
@@ -133,6 +176,8 @@ const Index = () => {
             onView={handleViewQuotation}
             setActiveTab={setActiveTab}
             onInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
+            onEdit={handleEditQuotation}
+            onDelete={handleDeleteQuotation}
           />
         );
       case 'create':
