@@ -60,6 +60,8 @@ CREATE TABLE invoices (
     quotation_id INT NOT NULL,
     invoice_number VARCHAR(50) UNIQUE NOT NULL,
     client_id INT NOT NULL,
+    destination VARCHAR(100),
+    door_delivery VARCHAR(100),
     salesperson VARCHAR(100),
     deliver_date DATE,
     payment_conditions TEXT,
@@ -115,5 +117,5 @@ INSERT INTO users (name, email, password, role) VALUES
 INSERT INTO company_settings (id) VALUES (1);
 
 INSERT INTO clients (company_name, contact_person, tin_number, address, city, country, phone, email) VALUES 
-('Michel-TLC', 'Michel', '', '', 'Goma-DRC', 'DRC', '', ''),
+('Michel-TLC', 'Michel', '', 'Goma', 'Goma', 'DRC', '', 'michel@tlc.com'),
 ('ABC Corporation', 'John Doe', 'TIN123456', '123 Business St', 'Kigali', 'Rwanda', '+250788123456', 'john@abc.com');

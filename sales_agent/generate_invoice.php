@@ -4,7 +4,7 @@ require_once '../includes/functions.php';
 require_once '../config/database.php';
 
 checkAuth();
-checkRole(['sales_agent']);
+checkRole(['sales_agent', 'sales_director']);
 
 $database = new Database();
 $conn = $database->getConnection();
@@ -27,7 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $conn->beginTransaction();
 
         // Generate invoice number
-        $invoice_number = 'INV-' . date('Y') . '-' . str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
+        $year = date('Y');
+        $stmt = $conn->prepare("SELECT COUNT(*) as count FROM invoices WHERE YEAR(issue_date) = ?");
+        $stmt->execute([$year]);
+        $count = $stmt->fetch()['count'] + 1;
+        $invoice_number = 'INV-' . $year . '-' . str_pad($count, 6, '0', STR_PAD_LEFT);
         
         // Calculate totals
         $sub_total = 0;
@@ -44,20 +48,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Insert invoice
         $stmt = $conn->prepare("
-            INSERT INTO invoices (quotation_id, invoice_number, client_id, salesperson, deliver_date, 
+            INSERT INTO invoices (quotation_id, invoice_number, client_id, destination, door_delivery, salesperson, deliver_date, 
                                 payment_conditions, validity_date, awb_number, sub_total, tva, 
                                 total_amount, currency, issue_date, due_date, created_by) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         
         $stmt->execute([
             $_POST['quotation_id'],
             $invoice_number,
             $_POST['client_id'],
+            $_POST['destination'],
+            $_POST['door_delivery'],
             $_POST['salesperson'],
-            $_POST['deliver_date'],
+            empty($_POST['deliver_date']) ? null : $_POST['deliver_date'],
             $_POST['payment_conditions'],
-            $_POST['validity_date'],
+            empty($_POST['validity_date']) ? null : $_POST['validity_date'],
             $_POST['awb_number'],
             $sub_total,
             $tva,
@@ -80,11 +86,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (!empty($item['description']) || !empty($item['total_amount'])) {
                 $stmt->execute([
                     $invoice_id,
-                    floatval($item['quantity_kg']) ?? 0,
+                    empty($item['quantity_kg']) ? 0 : floatval($item['quantity_kg']),
                     $item['commodity'] ?? '',
                     $item['description'] ?? '',
-                    floatval($item['price']) ?? 0,
-                    floatval($item['total_amount']) ?? 0
+                    empty($item['price']) ? 0 : floatval($item['price']),
+                    empty($item['total_amount']) ? 0 : floatval($item['total_amount'])
                 ]);
             }
         }
@@ -92,7 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $conn->commit();
         $success = "Invoice #{$invoice_number} created successfully!";
         
-        // Redirect to print invoice
         header("Location: print_invoice.php?id={$invoice_id}");
         exit();
         
@@ -111,49 +116,20 @@ $company = $stmt->fetch();
 $stmt = $conn->prepare("SELECT * FROM clients ORDER BY company_name");
 $stmt->execute();
 $clients = $stmt->fetchAll();
+
+$pageTitle = "Generate Invoice";
+require_once '../includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate Invoice - AWC Logistics</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
 <body class="bg-gray-100">
     <div class="flex">
-        <!-- Sidebar -->
-        <div class="bg-slate-900 text-white w-64 min-h-screen p-4">
-            <div class="mb-8">
-                <h1 class="text-xl font-bold text-blue-400">AWC Logistics</h1>
-                <p class="text-sm text-slate-400">Sales Agent</p>
-            </div>
-            
-            <nav class="space-y-2">
-                <a href="index.php" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800">
-                    <span>Dashboard</span>
-                </a>
-                <a href="approved_quotations.php" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800">
-                    <span>Approved Quotations</span>
-                </a>
-                <a href="invoices.php" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800">
-                    <span>Invoices</span>
-                </a>
-                <a href="generate_invoice.php" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg bg-blue-600 text-white">
-                    <span>Generate Invoice</span>
-                </a>
-                <a href="../auth/logout.php" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800">
-                    <span>Logout</span>
-                </a>
-            </nav>
-        </div>
+        <?php require_once '../includes/sidebar.php'; ?>
 
         <!-- Main Content -->
         <div class="flex-1 p-8">
             <div class="mb-8">
                 <h2 class="text-3xl font-bold text-gray-800">Generate Invoice</h2>
-                <p class="text-gray-600">Create a new invoice from approved quotation</p>
+                <p class="text-gray-600">Create a new invoice from an approved quotation or from scratch.</p>
             </div>
 
             <?php if (isset($success)): ?>
@@ -171,11 +147,12 @@ $clients = $stmt->fetchAll();
             <div class="bg-white rounded-lg shadow p-6">
                 <form method="POST" id="invoiceForm">
                     <!-- Invoice Header -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 border-b pb-8">
                         <div>
-                            <label class="block text-gray-700 text-sm font-bold mb-2">Quotation ID</label>
-                            <input type="number" name="quotation_id" value="<?php echo $quotation['id'] ?? ''; ?>" required 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">From Quotation ID</label>
+                            <input type="number" name="quotation_id" value="<?php echo $quotation['id'] ?? ''; ?>" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                                   placeholder="Optional">
                         </div>
 
                         <div>
@@ -184,10 +161,28 @@ $clients = $stmt->fetchAll();
                                 <option value="">Select Client</option>
                                 <?php foreach ($clients as $client): ?>
                                 <option value="<?php echo $client['id']; ?>" <?php echo ($quotation && $quotation['client_id'] == $client['id']) ? 'selected' : ''; ?>>
-                                    <?php echo $client['company_name']; ?>
+                                    <?php echo htmlspecialchars($client['company_name']); ?>
                                 </option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">AWB Number</label>
+                            <input type="text" name="awb_number"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Destination</label>
+                            <input type="text" name="destination" value="<?php echo htmlspecialchars($quotation['destination'] ?? ''); ?>"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Door Delivery</label>
+                            <input type="text" name="door_delivery" value="<?php echo htmlspecialchars($quotation['door_delivery'] ?? ''); ?>"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
                         </div>
 
                         <div>
@@ -195,10 +190,10 @@ $clients = $stmt->fetchAll();
                             <input type="date" name="issue_date" value="<?php echo date('Y-m-d'); ?>" required 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
                         </div>
-
-                        <div>
+                        
+                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">Salesperson</label>
-                            <input type="text" name="salesperson" value="<?php echo $_SESSION['user_name']; ?>" required 
+                            <input type="text" name="salesperson" value="<?php echo htmlspecialchars($_SESSION['user_name']); ?>" required 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
                         </div>
 
@@ -219,13 +214,7 @@ $clients = $stmt->fetchAll();
                             <input type="text" name="payment_conditions" value="Transfer at Bank" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
                         </div>
-
-                        <div>
-                            <label class="block text-gray-700 text-sm font-bold mb-2">AWB Number</label>
-                            <input type="text" name="awb_number" 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
-                        </div>
-
+                        
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">Currency</label>
                             <select name="currency" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
@@ -246,78 +235,48 @@ $clients = $stmt->fetchAll();
                     <div class="mb-8">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold text-gray-800">Invoice Items</h3>
-                            <button type="button" onclick="addInvoiceItem()" 
+                            <button type="button" id="add-item-btn"
                                     class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
                                 Add Item
                             </button>
                         </div>
 
                         <div class="overflow-x-auto">
-                            <table class="w-full border border-gray-300">
+                            <table class="w-full border-collapse">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="px-4 py-2 border-b text-left">Quantity (kg)</th>
-                                        <th class="px-4 py-2 border-b text-left">Commodity</th>
-                                        <th class="px-4 py-2 border-b text-left">Description</th>
-                                        <th class="px-4 py-2 border-b text-left">Price</th>
-                                        <th class="px-4 py-2 border-b text-left">Total Amount</th>
-                                        <th class="px-4 py-2 border-b text-left">Action</th>
+                                        <th class="px-4 py-2 border text-left text-sm">Quantity (kg)</th>
+                                        <th class="px-4 py-2 border text-left text-sm">Commodity</th>
+                                        <th class="px-4 py-2 border text-left text-sm w-1/3">Description</th>
+                                        <th class="px-4 py-2 border text-left text-sm">Price</th>
+                                        <th class="px-4 py-2 border text-left text-sm">Total Amount</th>
+                                        <th class="px-4 py-2 border text-left text-sm">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody id="invoice-items">
-                                    <!-- Default rows -->
-                                    <tr class="invoice-item-row">
-                                        <td class="px-4 py-2 border-b">
-                                            <input type="number" step="0.01" name="items[0][quantity_kg]" 
-                                                   class="w-full px-2 py-1 border rounded">
-                                        </td>
-                                        <td class="px-4 py-2 border-b">
-                                            <input type="text" name="items[0][commodity]" 
-                                                   class="w-full px-2 py-1 border rounded">
-                                        </td>
-                                        <td class="px-4 py-2 border-b">
-                                            <input type="text" name="items[0][description]" placeholder="Transit Bond"
-                                                   class="w-full px-2 py-1 border rounded">
-                                        </td>
-                                        <td class="px-4 py-2 border-b">
-                                            <input type="number" step="0.01" name="items[0][price]" 
-                                                   onchange="calculateItemTotal(0)"
-                                                   class="w-full px-2 py-1 border rounded">
-                                        </td>
-                                        <td class="px-4 py-2 border-b">
-                                            <input type="number" step="0.01" name="items[0][total_amount]" 
-                                                   onchange="calculateSubTotal()"
-                                                   class="w-full px-2 py-1 border rounded">
-                                        </td>
-                                        <td class="px-4 py-2 border-b">
-                                            <button type="button" onclick="removeInvoiceItem(this)" 
-                                                    class="text-red-600 hover:text-red-800">Remove</button>
-                                        </td>
-                                    </tr>
+                                <tbody id="invoice-items-body">
+                                    <!-- Item rows will be injected by JS -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
                     <!-- Invoice Totals -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div></div>
-                        <div class="space-y-4">
+                    <div class="flex justify-end mb-6">
+                        <div class="w-full md:w-1/3 space-y-3">
                             <div class="flex justify-between">
                                 <label class="font-semibold">Sub-Total:</label>
-                                <input type="number" step="0.01" name="sub_total" id="sub_total" readonly 
-                                       class="px-2 py-1 border rounded bg-gray-100 text-right w-32">
+                                <input type="number" step="0.01" id="sub_total_display" readonly 
+                                       class="px-2 py-1 border rounded bg-gray-100 text-right w-40">
                             </div>
-                            <div class="flex justify-between">
+                            <div class="flex justify-between items-center">
                                 <label class="font-semibold">TVA:</label>
-                                <input type="number" step="0.01" name="tva" id="tva" value="0" 
-                                       onchange="calculateTotal()"
-                                       class="px-2 py-1 border rounded text-right w-32">
+                                <input type="number" step="0.01" name="tva" id="tva_input" value="0" 
+                                       class="px-2 py-1 border rounded text-right w-40">
                             </div>
-                            <div class="flex justify-between text-lg font-bold">
+                            <div class="flex justify-between text-lg font-bold border-t pt-2">
                                 <label>TOTAL:</label>
-                                <input type="number" step="0.01" name="total" id="total" readonly 
-                                       class="px-2 py-1 border rounded bg-gray-100 text-right w-32 font-bold">
+                                <input type="number" step="0.01" id="total_display" readonly 
+                                       class="px-2 py-1 border rounded bg-gray-100 text-right w-40 font-bold">
                             </div>
                         </div>
                     </div>
@@ -325,7 +284,7 @@ $clients = $stmt->fetchAll();
                     <div class="flex space-x-4">
                         <button type="submit" 
                                 class="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 transition duration-200">
-                            Generate Invoice
+                            Generate & Print Invoice
                         </button>
                         <a href="invoices.php" 
                            class="bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700 transition duration-200">
@@ -336,82 +295,68 @@ $clients = $stmt->fetchAll();
             </div>
         </div>
     </div>
-
     <script>
-        let itemCount = 1;
+        document.addEventListener('DOMContentLoaded', function() {
+            let itemCount = 0;
+            const invoiceItemsBody = document.getElementById('invoice-items-body');
+            const addItemBtn = document.getElementById('add-item-btn');
+            const tvaInput = document.getElementById('tva_input');
 
-        function addInvoiceItem() {
-            const tbody = document.getElementById('invoice-items');
-            const newRow = document.createElement('tr');
-            newRow.className = 'invoice-item-row';
-            newRow.innerHTML = `
-                <td class="px-4 py-2 border-b">
-                    <input type="number" step="0.01" name="items[${itemCount}][quantity_kg]" 
-                           class="w-full px-2 py-1 border rounded">
-                </td>
-                <td class="px-4 py-2 border-b">
-                    <input type="text" name="items[${itemCount}][commodity]" 
-                           class="w-full px-2 py-1 border rounded">
-                </td>
-                <td class="px-4 py-2 border-b">
-                    <input type="text" name="items[${itemCount}][description]" 
-                           class="w-full px-2 py-1 border rounded">
-                </td>
-                <td class="px-4 py-2 border-b">
-                    <input type="number" step="0.01" name="items[${itemCount}][price]" 
-                           onchange="calculateItemTotal(${itemCount})"
-                           class="w-full px-2 py-1 border rounded">
-                </td>
-                <td class="px-4 py-2 border-b">
-                    <input type="number" step="0.01" name="items[${itemCount}][total_amount]" 
-                           onchange="calculateSubTotal()"
-                           class="w-full px-2 py-1 border rounded">
-                </td>
-                <td class="px-4 py-2 border-b">
-                    <button type="button" onclick="removeInvoiceItem(this)" 
-                            class="text-red-600 hover:text-red-800">Remove</button>
-                </td>
-            `;
-            tbody.appendChild(newRow);
-            itemCount++;
-        }
+            function addInvoiceItem(item = {}) {
+                const newRow = document.createElement('tr');
+                newRow.className = 'invoice-item-row';
+                newRow.innerHTML = `
+                    <td class="border px-2 py-1"><input type="number" step="0.01" name="items[${itemCount}][quantity_kg]" value="${item.quantity_kg || ''}" class="w-full px-2 py-1 border rounded"></td>
+                    <td class="border px-2 py-1"><input type="text" name="items[${itemCount}][commodity]" value="${item.commodity || ''}" class="w-full px-2 py-1 border rounded"></td>
+                    <td class="border px-2 py-1"><input type="text" name="items[${itemCount}][description]" value="${item.description || ''}" class="w-full px-2 py-1 border rounded"></td>
+                    <td class="border px-2 py-1"><input type="number" step="0.01" name="items[${itemCount}][price]" value="${item.price || ''}" class="w-full px-2 py-1 border rounded"></td>
+                    <td class="border px-2 py-1"><input type="number" step="0.01" name="items[${itemCount}][total_amount]" value="${item.total_amount || ''}" class="w-full px-2 py-1 border rounded item-total"></td>
+                    <td class="border px-2 py-1 text-center"><button type="button" class="text-red-600 hover:text-red-800 remove-item-btn">Remove</button></td>
+                `;
+                invoiceItemsBody.appendChild(newRow);
+                itemCount++;
+                updateCalculations();
+            }
 
-        function removeInvoiceItem(button) {
-            const row = button.closest('tr');
-            row.remove();
-            calculateSubTotal();
-        }
+            function updateCalculations() {
+                let subTotal = 0;
+                document.querySelectorAll('.item-total').forEach(input => {
+                    subTotal += parseFloat(input.value) || 0;
+                });
+                
+                const tva = parseFloat(tvaInput.value) || 0;
+                const total = subTotal + tva;
 
-        function calculateItemTotal(index) {
-            const quantity = parseFloat(document.querySelector(`input[name="items[${index}][quantity_kg]"]`).value) || 0;
-            const price = parseFloat(document.querySelector(`input[name="items[${index}][price]"]`).value) || 0;
-            const total = quantity * price;
-            document.querySelector(`input[name="items[${index}][total_amount]"]`).value = total.toFixed(2);
-            calculateSubTotal();
-        }
+                document.getElementById('sub_total_display').value = subTotal.toFixed(2);
+                document.getElementById('total_display').value = total.toFixed(2);
+            }
 
-        function calculateSubTotal() {
-            let subTotal = 0;
-            const totalInputs = document.querySelectorAll('input[name*="[total_amount]"]');
-            totalInputs.forEach(input => {
-                subTotal += parseFloat(input.value) || 0;
+            addItemBtn.addEventListener('click', () => addInvoiceItem());
+
+            invoiceItemsBody.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-item-btn')) {
+                    e.target.closest('tr').remove();
+                    updateCalculations();
+                }
             });
-            document.getElementById('sub_total').value = subTotal.toFixed(2);
-            calculateTotal();
-        }
 
-        function calculateTotal() {
-            const subTotal = parseFloat(document.getElementById('sub_total').value) || 0;
-            const tva = parseFloat(document.getElementById('tva').value) || 0;
-            const total = subTotal + tva;
-            document.getElementById('total').value = total.toFixed(2);
-        }
+            document.getElementById('invoiceForm').addEventListener('input', function(e) {
+                if (e.target.classList.contains('item-total') || e.target.id === 'tva_input') {
+                    updateCalculations();
+                }
+            });
 
-        // Pre-populate if quotation data exists
-        <?php if ($quotation): ?>
-        document.querySelector('input[name="items[0][total_amount]"]').value = '<?php echo $quotation["client_quote"]; ?>';
-        calculateSubTotal();
-        <?php endif; ?>
+            // Pre-populate if quotation data exists
+            <?php if ($quotation): ?>
+                addInvoiceItem({
+                    description: 'Services as per quotation #<?php echo $quotation["id"]; ?>',
+                    total_amount: '<?php echo $quotation["client_quote"]; ?>'
+                });
+            <?php else: ?>
+                // Add one empty row to start
+                addInvoiceItem();
+            <?php endif; ?>
+        });
     </script>
 </body>
 </html>
