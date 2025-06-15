@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginForm from '@/components/LoginForm';
 import Sidebar from '@/components/Sidebar';
@@ -29,6 +28,87 @@ const Index = () => {
   const [invoices, setInvoices] = useState<InvoiceData[]>([]);
   const [printPreview, setPrintPreview] = useState<InvoiceData | null>(null);
   const { toast } = useToast();
+
+  const [newQuotation, setNewQuotation] = useState({
+    clientName: '',
+    volume: '',
+    currency: 'USD',
+    buyRate: '',
+    clientQuote: '',
+    followUpDate: '',
+    remarks: '',
+  });
+
+  const [calculatedProfit, setCalculatedProfit] = useState({
+    profit: 0,
+    profitPercentage: '0.00%',
+  });
+
+  useEffect(() => {
+    const buyRate = parseFloat(newQuotation.buyRate);
+    const clientQuote = parseFloat(newQuotation.clientQuote);
+
+    if (!isNaN(buyRate) && !isNaN(clientQuote) && buyRate > 0) {
+      const profit = clientQuote - buyRate;
+      const profitPercentage = `${((profit / buyRate) * 100).toFixed(2)}%`;
+      setCalculatedProfit({ profit, profitPercentage });
+    } else {
+      const profit = !isNaN(clientQuote) && !isNaN(buyRate) ? clientQuote - buyRate : 0;
+      setCalculatedProfit({ profit: profit, profitPercentage: 'N/A' });
+    }
+  }, [newQuotation.buyRate, newQuotation.clientQuote]);
+  
+  const handleNewQuotationChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setNewQuotation(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleCurrencyChange = (value: string) => {
+    setNewQuotation(prev => ({ ...prev, currency: value }));
+  };
+
+  const handleCreateQuotation = () => {
+    if (!newQuotation.clientName || !newQuotation.volume || !newQuotation.buyRate || !newQuotation.clientQuote) {
+      toast({
+        title: "Missing Fields",
+        description: "Please fill in all required quotation details.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newQuotationData: Quotation = {
+      id: `q${Date.now()}`,
+      clientName: newQuotation.clientName,
+      volume: newQuotation.volume,
+      currency: newQuotation.currency,
+      buyRate: parseFloat(newQuotation.buyRate),
+      clientQuote: parseFloat(newQuotation.clientQuote),
+      profit: calculatedProfit.profit,
+      profitPercentage: calculatedProfit.profitPercentage,
+      quoteSentBy: user!.name,
+      status: 'pending',
+      followUpDate: newQuotation.followUpDate,
+      remarks: newQuotation.remarks,
+      createdAt: new Date().toISOString(),
+    };
+
+    setQuotations(prev => [newQuotationData, ...prev]);
+    toast({
+      title: "Quotation Created",
+      description: `Quotation for ${newQuotation.clientName} has been saved.`,
+    });
+    setNewQuotation({
+      clientName: '',
+      volume: '',
+      currency: 'USD',
+      buyRate: '',
+      clientQuote: '',
+      followUpDate: '',
+      remarks: '',
+    });
+    setActiveTab('quotations');
+  };
 
   // Show login form if not authenticated
   if (!user) {
@@ -162,6 +242,7 @@ const Index = () => {
 
       case 'quotations':
         const quotationColumns = [
+          { key: 'clientName', label: 'Client', render: (value: string) => value || 'N/A' },
           { key: 'volume', label: 'Volume' },
           { 
             key: 'buyRate', 
@@ -214,7 +295,7 @@ const Index = () => {
               title="Quotations"
               data={filteredQuotations}
               columns={quotationColumns}
-              searchFields={['volume', 'quoteSentBy', 'currency']}
+              searchFields={['volume', 'quoteSentBy', 'currency', 'clientName']}
               filterOptions={[
                 {
                   key: 'status',
@@ -231,7 +312,7 @@ const Index = () => {
                   options: [
                     { value: 'USD', label: 'USD' },
                     { value: 'EUR', label: 'EUR' },
-                    { value: 'RWF', label: 'RWF' }
+                    { value: 'RWF' }
                   ]
                 }
               ]}
@@ -250,14 +331,18 @@ const Index = () => {
                 <CardTitle>Quotation Details</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="clientName">Client Name</Label>
+                    <Input id="clientName" placeholder="Client name" value={newQuotation.clientName} onChange={handleNewQuotationChange} />
+                  </div>
                   <div>
                     <Label htmlFor="volume">Volume</Label>
-                    <Input id="volume" placeholder="e.g., 2.4KGS, 20FT" />
+                    <Input id="volume" placeholder="e.g., 2.4KGS, 20FT" value={newQuotation.volume} onChange={handleNewQuotationChange} />
                   </div>
                   <div>
                     <Label htmlFor="currency">Currency</Label>
-                    <Select>
+                    <Select value={newQuotation.currency} onValueChange={handleCurrencyChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select currency" />
                       </SelectTrigger>
@@ -269,27 +354,34 @@ const Index = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="buyRate">Buy Rate</Label>
-                    <Input id="buyRate" type="number" placeholder="0.00" />
-                  </div>
-                  <div>
-                    <Label htmlFor="clientQuote">Client Quote</Label>
-                    <Input id="clientQuote" type="number" placeholder="0.00" />
-                  </div>
-                  <div>
                     <Label htmlFor="followUpDate">Follow Up Date</Label>
-                    <Input id="followUpDate" type="date" />
+                    <Input id="followUpDate" type="date" value={newQuotation.followUpDate} onChange={handleNewQuotationChange} />
                   </div>
                   <div>
-                    <Label htmlFor="clientName">Client Name</Label>
-                    <Input id="clientName" placeholder="Client name" />
+                    <Label htmlFor="buyRate">Total Buy Rate</Label>
+                    <Input id="buyRate" type="number" placeholder="0.00" value={newQuotation.buyRate} onChange={handleNewQuotationChange} />
+                  </div>
+                  <div>
+                    <Label htmlFor="clientQuote">Client Quote (Sell Rate)</Label>
+                    <Input id="clientQuote" type="number" placeholder="0.00" value={newQuotation.clientQuote} onChange={handleNewQuotationChange} />
+                  </div>
+                  <div>
+                    <Label htmlFor="profit">Profit (Absolute)</Label>
+                    <Input id="profit" type="text" value={`${newQuotation.currency} ${calculatedProfit.profit.toLocaleString()}`} readOnly disabled className="bg-slate-100" />
+                  </div>
+                  <div>
+                    <Label htmlFor="profitPercentage">Profit (% of Cost)</Label>
+                    <Input id="profitPercentage" type="text" value={calculatedProfit.profitPercentage} readOnly disabled className="bg-slate-100" />
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="remarks">Remarks</Label>
-                  <Textarea id="remarks" placeholder="Additional notes or remarks" />
+                  <Label htmlFor="remarks">Remarks (inc. reasons for lost business)</Label>
+                  <Textarea id="remarks" placeholder="Additional notes or remarks" value={newQuotation.remarks} onChange={handleNewQuotationChange} />
                 </div>
-                <Button className="w-full">Create Quotation</Button>
+                <Button className="w-full" onClick={handleCreateQuotation}>
+                  <Plus size={16} className="mr-2" />
+                  Create Quotation
+                </Button>
               </CardContent>
             </Card>
           </div>

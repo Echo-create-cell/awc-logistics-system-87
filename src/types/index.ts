@@ -10,6 +10,7 @@ export interface User {
 
 export interface Quotation {
   id: string;
+  clientName?: string;
   volume: string;
   buyRate: number;
   currency: string;

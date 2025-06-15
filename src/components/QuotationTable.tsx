@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -44,6 +43,9 @@ const QuotationTable = ({
           <thead className="bg-slate-50 border-b">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Client
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Volume
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
@@ -69,6 +71,9 @@ const QuotationTable = ({
           <tbody className="bg-white divide-y divide-slate-200">
             {quotations.map((quotation) => (
               <tr key={quotation.id} className="hover:bg-slate-50">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  {quotation.clientName || 'N/A'}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
                   {quotation.volume}
                 </td>
