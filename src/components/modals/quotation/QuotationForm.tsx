@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { Quotation, User } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useQuotationForm } from '@/hooks/useQuotationForm';
 import QuotationFormMain from './QuotationFormMain';
 import QuotationFormSidebar from './QuotationFormSidebar';
+import { useToast } from '@/hooks/use-toast';
 
 interface QuotationFormProps {
   quotation: Quotation;
@@ -13,6 +15,7 @@ interface QuotationFormProps {
 }
 
 const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps) => {
+  const { toast } = useToast();
   const {
     clientName,
     setClientName,
@@ -36,6 +39,14 @@ const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps)
   } = useQuotationForm(quotation, user);
   
   const handleSave = () => {
+    if (!clientName || clientQuote <= 0 || !buyRate || !currency || !quotationData.quoteSentBy) {
+      toast({
+        title: "Missing Fields",
+        description: "Please ensure client name, commodities, pricing, and 'Quote Sent By' are all filled in.",
+        variant: "destructive",
+      });
+      return;
+    }
     const updatedQuotation = getQuotationPayload();
     onSave(updatedQuotation);
   };

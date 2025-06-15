@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -36,10 +37,10 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
   } = useQuotationForm(null, user);
 
   const handleSaveQuotation = () => {
-    if (!clientName || clientQuote <= 0 || !buyRate || !currency) {
+    if (!clientName || clientQuote <= 0 || !buyRate || !currency || !quotationData.quoteSentBy) {
       toast({
         title: "Missing Fields",
-        description: "Please enter a client name, and fill in commodities and pricing details.",
+        description: "Please ensure client name, commodities, pricing, and 'Quote Sent By' are all filled in.",
         variant: "destructive",
       });
       return;
