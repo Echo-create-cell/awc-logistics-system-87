@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import InvoiceGenerator from '@/components/InvoiceGenerator';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Printer } from 'lucide-react';
+import { Edit, Printer } from 'lucide-react';
 import { InvoiceData } from '@/types/invoice';
 import { User, Quotation } from '@/types';
 import InvoiceModal from '../modals/InvoiceModal';
@@ -125,14 +126,16 @@ const InvoicesView = ({
       label: 'Actions',
       render: (_: any, row: InvoiceData) => (
         <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onPrint(row)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          >
-            <Printer size={16} />
-          </Button>
+          {row.status === 'paid' && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onPrint(row)}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              <Printer size={16} />
+            </Button>
+          )}
           {row.status !== 'paid' && (
             <Button
               size="sm"

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { InvoiceData } from "@/types/invoice";
@@ -144,15 +145,19 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
         </div>
         
         <DialogFooter className="flex justify-end gap-2">
-          <Button onClick={handlePrint} variant="outline" className="bg-blue-50 hover:bg-blue-100">
-            Print Invoice
-          </Button>
+          {isPaid && (
+            <Button onClick={handlePrint} variant="outline" className="bg-blue-50 hover:bg-blue-100">
+              Print Invoice
+            </Button>
+          )}
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button onClick={handleSave} className="bg-primary text-white" disabled={isPaid}>
-            Save Changes
-          </Button>
+          {!isPaid && (
+            <Button onClick={handleSave} className="bg-primary text-white">
+              Save Changes
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
