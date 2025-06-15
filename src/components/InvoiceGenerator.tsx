@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -118,17 +119,25 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
 
   useEffect(() => {
     if (quotation) {
-      setSelectedClient({
-        id: 'custom',
-        companyName: quotation.clientName || '',
-        contactPerson: '',
-        tinNumber: '',
-        address: quotation.doorDelivery || '',
-        city: '',
-        country: '',
-        phone: '',
-        email: ''
-      });
+      const clientFromList = mockClients.find(c => c.companyName === quotation.clientName);
+
+      if (clientFromList) {
+        setSelectedClient(clientFromList);
+      } else {
+        // Fallback for when client is not in the list
+        setSelectedClient({
+          id: 'custom',
+          companyName: quotation.clientName || '',
+          contactPerson: '',
+          tinNumber: '',
+          address: quotation.doorDelivery || '',
+          city: '',
+          country: '',
+          phone: '',
+          email: ''
+        });
+      }
+
       setInvoiceData(prev => ({
         ...prev,
         destination: quotation.destination || '',
@@ -140,7 +149,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
           id: '1',
           quantityKg: !isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1,
           commodity: "Quoted Commodity",
-          description: quotation.remarks || "As per Quotation",
+          description: quotation.remarks || `As per Quotation ${quotation.id}`,
           price: quotation.clientQuote,
           total: quotation.clientQuote * (!isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1)
         }
@@ -263,7 +272,9 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="client">Select Client</Label>
-              <Select onValueChange={(value) => {
+              <Select 
+                value={selectedClient?.id}
+                onValueChange={(value) => {
                 const client = mockClients.find(c => c.id === value);
                 setSelectedClient(client || null);
               }}>
