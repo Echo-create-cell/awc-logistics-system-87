@@ -46,7 +46,7 @@ const SearchableTable = ({
       
       // Additional filters
       const matchesFilters = Object.entries(filters).every(([key, value]) => {
-        if (!value) return true;
+        if (!value || value === '__all__') return true;
         return item[key] === value;
       });
 
@@ -89,14 +89,14 @@ const SearchableTable = ({
           {filterOptions.map((filter) => (
             <Select
               key={filter.key}
-              value={filters[filter.key] || ''}
+              value={filters[filter.key] || '__all__'}
               onValueChange={(value) => handleFilterChange(filter.key, value)}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder={filter.label} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All {filter.label}</SelectItem>
+                <SelectItem value="__all__">All {filter.label}</SelectItem>
                 {filter.options.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -177,3 +177,4 @@ const SearchableTable = ({
 };
 
 export default SearchableTable;
+
