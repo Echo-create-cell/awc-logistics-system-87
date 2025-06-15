@@ -24,6 +24,9 @@ export interface Quotation {
   createdAt: string;
   approvedBy?: string;
   approvedAt?: string;
+  // Added for full screenshot coverage
+  destination?: string;
+  doorDelivery?: string;
 }
 
 export interface Invoice {

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -50,6 +49,12 @@ const QuotationTable = ({
                 Volume
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Destination
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Door Delivery
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Buy Rate
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
@@ -80,6 +85,12 @@ const QuotationTable = ({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
                   {quotation.volume}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  {quotation.destination || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  {quotation.doorDelivery || 'N/A'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {quotation.currency} {quotation.buyRate.toLocaleString()}
@@ -118,7 +129,6 @@ const QuotationTable = ({
                   >
                     <Eye size={16} />
                   </Button>
-                  
                   {userRole === 'admin' && quotation.status === 'pending' && (
                     <>
                       <Button
@@ -139,7 +149,6 @@ const QuotationTable = ({
                       </Button>
                     </>
                   )}
-                  
                   {userRole === 'sales_director' && (
                     <>
                       <Button

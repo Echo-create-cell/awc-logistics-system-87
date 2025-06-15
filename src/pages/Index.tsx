@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginForm from '@/components/LoginForm';
@@ -30,9 +29,13 @@ const Index = () => {
   }
 
   const handleApproveQuotation = (id: string) => {
-    setQuotations(prev => prev.map(q => 
-      q.id === id ? { ...q, status: 'won' as const, approvedBy: user.name, approvedAt: new Date().toISOString() } : q
-    ));
+    setQuotations(prev =>
+      prev.map(q =>
+        q.id === id
+          ? { ...q, status: 'won' as const, approvedBy: user.name, approvedAt: new Date().toISOString() }
+          : q
+      )
+    );
     toast({
       title: "Quotation Approved",
       description: "The quotation has been successfully approved.",
@@ -40,9 +43,13 @@ const Index = () => {
   };
 
   const handleRejectQuotation = (id: string) => {
-    setQuotations(prev => prev.map(q => 
-      q.id === id ? { ...q, status: 'lost' as const } : q
-    ));
+    setQuotations(prev =>
+      prev.map(q =>
+        q.id === id
+          ? { ...q, status: 'lost' as const }
+          : q
+      )
+    );
     toast({
       title: "Quotation Rejected",
       description: "The quotation has been rejected.",
@@ -128,10 +135,10 @@ const Index = () => {
 
   return (
     <div className="flex min-h-screen bg-slate-100">
-      <Sidebar 
-        userRole={user.role} 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab} 
+      <Sidebar
+        userRole={user.role}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
       <div className="flex-1 p-8">
         <div className="mb-6">
@@ -139,17 +146,17 @@ const Index = () => {
             Welcome back, {user.name}
           </h1>
           <p className="text-slate-600">
-            {new Date().toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
+            {new Date().toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
             })}
           </p>
         </div>
         {renderContent()}
       </div>
-      
+
       {printPreview && (
         <InvoicePrintPreview
           invoice={printPreview}

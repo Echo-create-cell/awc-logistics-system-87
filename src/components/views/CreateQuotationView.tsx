@@ -15,17 +15,23 @@ interface CreateQuotationViewProps {
   onQuotationCreated: (quotation: Quotation) => void;
 }
 
+// Expand with fields seen in the screenshot
+const initialQuotationState = {
+  clientName: '',
+  volume: '',
+  currency: 'USD',
+  buyRate: '',
+  clientQuote: '',
+  followUpDate: '',
+  remarks: '',
+  // Extra fields from screenshot
+  destination: '',
+  doorDelivery: '',
+};
+
 const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewProps) => {
   const { toast } = useToast();
-  const [newQuotation, setNewQuotation] = useState({
-    clientName: '',
-    volume: '',
-    currency: 'USD',
-    buyRate: '',
-    clientQuote: '',
-    followUpDate: '',
-    remarks: '',
-  });
+  const [newQuotation, setNewQuotation] = useState(initialQuotationState);
 
   const [calculatedProfit, setCalculatedProfit] = useState({
     profit: 0,
@@ -74,26 +80,21 @@ const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewPr
       clientQuote: parseFloat(newQuotation.clientQuote),
       profit: calculatedProfit.profit,
       profitPercentage: calculatedProfit.profitPercentage,
-      quoteSentBy: user!.name,
+      quoteSentBy: user.name,
       status: 'pending',
       followUpDate: newQuotation.followUpDate,
       remarks: newQuotation.remarks,
       createdAt: new Date().toISOString(),
+      // Screenshot fields, stored in remarks or separate if your type/DB supports:
+      destination: newQuotation.destination,
+      doorDelivery: newQuotation.doorDelivery,
     };
     
     onQuotationCreated(newQuotationData);
 
-    setNewQuotation({
-      clientName: '',
-      volume: '',
-      currency: 'USD',
-      buyRate: '',
-      clientQuote: '',
-      followUpDate: '',
-      remarks: '',
-    });
+    setNewQuotation(initialQuotationState);
   };
-  
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Create New Quotation</h2>
@@ -143,6 +144,14 @@ const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewPr
             <div>
               <Label htmlFor="profitPercentage">Profit (% of Cost)</Label>
               <Input id="profitPercentage" type="text" value={calculatedProfit.profitPercentage} readOnly disabled className="bg-slate-100" />
+            </div>
+            <div>
+              <Label htmlFor="destination">Destination</Label>
+              <Input id="destination" placeholder="Destination" value={newQuotation.destination} onChange={handleNewQuotationChange} />
+            </div>
+            <div>
+              <Label htmlFor="doorDelivery">Door Delivery</Label>
+              <Input id="doorDelivery" placeholder="Door Delivery" value={newQuotation.doorDelivery} onChange={handleNewQuotationChange} />
             </div>
           </div>
           <div>
