@@ -25,16 +25,33 @@ const QuotationForm = ({ form, user, handleChange }: QuotationFormProps) => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="destination">Destination Country</Label>
+          <Label htmlFor="countryOfOrigin">Country of Origin</Label>
           <Input
-            id="destination"
-            value={form.destination || ''}
-            onChange={(e) => handleChange('destination', e.target.value)}
-            placeholder="Enter destination"
+            id="countryOfOrigin"
+            value={form.countryOfOrigin || ''}
+            onChange={(e) => handleChange('countryOfOrigin', e.target.value)}
+            placeholder="Enter country of origin"
           />
         </div>
       </div>
       
+      <div className="space-y-2">
+        <Label>Destination & Door Delivery</Label>
+        <Input
+          id="destination"
+          value={form.destination || ''}
+          onChange={(e) => handleChange('destination', e.target.value)}
+          placeholder="Destination Country"
+        />
+        <Input
+          id="doorDelivery"
+          value={form.doorDelivery || ''}
+          onChange={(e) => handleChange('doorDelivery', e.target.value)}
+          placeholder="Door Delivery details"
+          className="mt-2"
+        />
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="cargoDescription">Cargo Description</Label>
         <Input
@@ -73,27 +90,6 @@ const QuotationForm = ({ form, user, handleChange }: QuotationFormProps) => {
               <SelectItem value="Local">Local</SelectItem>
             </SelectContent>
           </Select>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="countryOfOrigin">Country of Origin</Label>
-          <Input
-            id="countryOfOrigin"
-            value={form.countryOfOrigin || ''}
-            onChange={(e) => handleChange('countryOfOrigin', e.target.value)}
-            placeholder="Enter country of origin"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="doorDelivery">Door Delivery</Label>
-          <Input
-            id="doorDelivery"
-            value={form.doorDelivery || ''}
-            onChange={(e) => handleChange('doorDelivery', e.target.value)}
-            placeholder="Enter door delivery details"
-          />
         </div>
       </div>
       

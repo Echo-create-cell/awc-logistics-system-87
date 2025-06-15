@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -78,13 +77,10 @@ const QuotationFormDetails = ({ quotationData, onQuotationChange, onSelectChange
         <Label htmlFor="countryOfOrigin">Country of Origin</Label>
         <Input id="countryOfOrigin" placeholder="Country of Origin" value={quotationData.countryOfOrigin} onChange={onQuotationChange} />
       </div>
-      <div>
-        <Label htmlFor="destination">Destination Country</Label>
-        <Input id="destination" placeholder="Destination" value={quotationData.destination} onChange={onQuotationChange} />
-      </div>
-      <div>
-        <Label htmlFor="doorDelivery">Door Delivery</Label>
-        <Input id="doorDelivery" placeholder="Door Delivery" value={quotationData.doorDelivery} onChange={onQuotationChange} />
+      <div className="md:col-span-2">
+        <Label>Destination & Door Delivery</Label>
+        <Input id="destination" placeholder="Destination Country" value={quotationData.destination} onChange={onQuotationChange} />
+        <Input id="doorDelivery" placeholder="Door Delivery Address" value={quotationData.doorDelivery} onChange={onQuotationChange} className="mt-2" />
       </div>
        <div className="md:col-span-2">
         <Label htmlFor="quoteSentBy">Quote Sent By</Label>

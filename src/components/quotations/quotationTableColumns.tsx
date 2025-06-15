@@ -68,15 +68,24 @@ export const getQuotationColumns = ({
   },
   { 
     key: 'destination', 
-    label: 'Destination Country',
-    render: (value: string) => (
-      <div className="text-gray-700">{value || 'N/A'}</div>
+    label: 'Destination / Delivery',
+    render: (_: any, row: Quotation) => (
+      <div>
+        <div className="text-gray-700">{row.destination || 'N/A'}</div>
+        {row.doorDelivery && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <p className="truncate cursor-pointer max-w-[150px] text-gray-600 text-xs">{row.doorDelivery}</p>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-[300px] whitespace-pre-wrap p-2">{row.doorDelivery}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
     )
-  },
-  {
-    key: 'doorDelivery',
-    label: 'Door Delivery',
-    render: (value: string) => <div className="text-gray-700">{value || 'N/A'}</div>
   },
   { 
     key: 'volume', 

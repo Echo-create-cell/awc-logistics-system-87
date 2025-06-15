@@ -71,7 +71,7 @@ const QuotationsView = ({
         title={`${filteredQuotations.length} Quotations`}
         data={filteredQuotations}
         columns={quotationColumns}
-        searchFields={['clientName', 'destination', 'doorDelivery', 'quoteSentBy', 'status', 'approvedBy']}
+        searchFields={['clientName', 'destination', 'quoteSentBy', 'status', 'approvedBy']}
         filterOptions={[
           {
             key: 'status',
