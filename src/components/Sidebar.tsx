@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Users, FileText, DollarSign, BarChart3, Home, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -57,11 +58,11 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
   const menuItems = getMenuItems();
 
   return (
-    <div className="bg-slate-900 text-white w-64 min-h-screen p-4 flex flex-col">
+    <div className="bg-sidebar text-sidebar-foreground w-64 min-h-screen p-4 flex flex-col shadow-lg">
       <div className="mb-8">
-        <h1 className="text-xl font-bold text-blue-400">AWC Logistics</h1>
-        <p className="text-sm text-slate-400 capitalize">{userRole.replace('_', ' ')}</p>
-        <p className="text-xs text-slate-500">{user?.name}</p>
+        <h1 className="text-xl font-bold fancy-gradient-text">AWC Logistics</h1>
+        <p className="text-sm text-sidebar-foreground/70 capitalize">{userRole.replace('_', ' ')}</p>
+        <p className="text-xs text-sidebar-foreground/50">{user?.name}</p>
       </div>
       
       <nav className="space-y-2 flex-1">
@@ -72,10 +73,10 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
               key={item.id}
               onClick={() => item.id === 'logout' ? handleLogout() : onTabChange(item.id)}
               className={cn(
-                "w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors",
+                "w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors font-medium",
                 activeTab === item.id
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
             >
               <Icon size={20} />

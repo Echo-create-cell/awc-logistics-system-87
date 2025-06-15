@@ -5,6 +5,7 @@ import DashboardStats from '@/components/DashboardStats';
 import QuotationTable from '@/components/QuotationTable';
 import { Quotation } from '@/types';
 import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 interface DashboardViewProps {
   userRole: string;
@@ -16,14 +17,19 @@ interface DashboardViewProps {
 
 const DashboardView = ({ userRole, quotations, onApprove, onReject, setActiveTab }: DashboardViewProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <DashboardStats userRole={userRole} />
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle>Recent Quotations</CardTitle>
-            <Button variant="outline" onClick={() => setActiveTab('invoices')}>
-              View All Invoices
+            <div>
+              <CardTitle>Recent Quotations</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                A quick look at the latest quotation activities.
+              </p>
+            </div>
+            <Button variant="ghost" onClick={() => setActiveTab('invoices')}>
+              View All Invoices <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
         </CardHeader>

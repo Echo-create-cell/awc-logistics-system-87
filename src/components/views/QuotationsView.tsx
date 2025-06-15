@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
@@ -49,10 +50,10 @@ const QuotationsView = ({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-foreground">
             {user.role === 'admin' ? 'Quotation Approvals' : 'My Quotations'}
           </h2>
-          <p className="text-gray-600 mt-1">
+          <p className="text-muted-foreground mt-1">
             {user.role === 'admin' 
               ? 'Review and approve pending quotations' 
               : 'Manage your quotations and generate invoices'
@@ -68,7 +69,7 @@ const QuotationsView = ({
       </div>
       
       <SearchableTable
-        title={`${filteredQuotations.length} Quotations`}
+        title={`${filteredQuotations.length} Quotation${filteredQuotations.length === 1 ? '' : 's'}`}
         data={filteredQuotations}
         columns={quotationColumns}
         searchFields={['clientName', 'destination', 'quoteSentBy', 'status', 'approvedBy']}

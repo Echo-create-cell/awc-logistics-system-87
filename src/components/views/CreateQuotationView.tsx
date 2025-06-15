@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,7 +19,7 @@ const mockClients: Client[] = [
 
 interface CreateQuotationViewProps {
   onQuotationCreated: (quotation: Quotation) => void;
-  setActiveTab: (tab: string) => void; // This was already correct, the error is in MainContent which I cannot edit. I will make it optional to avoid build error. I should have done this before.
+  setActiveTab?: (tab: string) => void;
   user: User;
 }
 
@@ -157,10 +156,13 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Create New Quotation</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Create New Quotation</h2>
+          <p className="text-muted-foreground mt-1">Fill in the details to generate a new quotation for a client.</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader><CardTitle>Details</CardTitle></CardHeader>
@@ -213,7 +215,7 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
           </Card>
         </div>
 
-        <div className="lg:col-span-1 space-y-6">
+        <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-10">
           <Card>
             <CardHeader><CardTitle>Pricing Summary</CardTitle></CardHeader>
             <CardContent className="space-y-4">
@@ -242,8 +244,8 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
         </div>
       </div>
       
-      <div className="flex justify-end gap-2 pt-4 border-t">
-        <Button variant="outline" onClick={() => setActiveTab("quotations")}>Cancel</Button>
+      <div className="flex justify-end gap-2 pt-4 mt-6 border-t">
+        <Button variant="outline" onClick={() => setActiveTab && setActiveTab("quotations")}>Cancel</Button>
         <Button onClick={handleSaveQuotation}>Save Quotation</Button>
       </div>
     </div>

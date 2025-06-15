@@ -5,6 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Search, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui/table';
 
 interface TableColumn {
   key: string;
@@ -58,27 +66,29 @@ const SearchableTable = ({
   };
 
   return (
-    <Card className="shadow-sm">
+    <Card>
       <CardHeader className="pb-4">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
-          <div className="flex space-x-2">
-            <Button variant="outline" size="sm" className="text-gray-600 hover:text-gray-700">
-              <Download size={16} className="mr-2" />
-              Export
-            </Button>
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+          <div>
+            <CardTitle>{title}</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Browse and filter through the records.
+            </p>
           </div>
+          <Button variant="outline" size="sm">
+            <Download size={16} className="mr-2" />
+            Export
+          </Button>
         </div>
         
-        {/* Search and Filters */}
-        <div className="flex flex-wrap gap-4 items-center pt-4 border-t">
+        <div className="flex flex-wrap gap-4 items-center pt-4 mt-4 border-t">
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
             <Input
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              className="pl-9"
             />
           </div>
           
@@ -88,7 +98,7 @@ const SearchableTable = ({
               value={filters[filter.key] || '__all__'}
               onValueChange={(value) => handleFilterChange(filter.key, value)}
             >
-              <SelectTrigger className="w-[180px] border-gray-300">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder={filter.label} />
               </SelectTrigger>
               <SelectContent>
@@ -106,36 +116,36 @@ const SearchableTable = ({
       
       <CardContent className="pt-0">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
+          <Table>
+            <TableHeader>
+              <TableRow>
                 {columns.map((column) => (
-                  <th key={column.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <TableHead key={column.key} className="font-medium">
                     {column.label}
-                  </th>
+                  </TableHead>
                 ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredData.map((item, index) => (
-                <tr key={item.id || index} className="hover:bg-gray-50 transition-colors">
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredData.length > 0 && filteredData.map((item, index) => (
+                <TableRow key={item.id || index} className="hover:bg-muted/50">
                   {columns.map((column) => (
-                    <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm">
+                    <TableCell key={column.key} className="text-sm text-foreground/90">
                       {column.render ? column.render(item[column.key], item) : item[column.key]}
-                    </td>
+                    </TableCell>
                   ))}
-                </tr>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
           
           {filteredData.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-gray-400 mb-2">
+            <div className="text-center py-12 border-t">
+              <div className="text-muted-foreground mb-2">
                 <Search size={48} className="mx-auto" />
               </div>
-              <p className="text-gray-500 text-lg">No results found</p>
-              <p className="text-gray-400 text-sm">Try adjusting your search or filter criteria</p>
+              <p className="text-foreground/80 text-lg font-medium">No results found</p>
+              <p className="text-muted-foreground text-sm">Try adjusting your search or filter criteria.</p>
             </div>
           )}
         </div>

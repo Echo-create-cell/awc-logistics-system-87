@@ -155,13 +155,13 @@ const InvoicesView = ({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Invoices</h2>
-          <p className="text-gray-600 mt-1">Manage and track all generated invoices</p>
+          <h2 className="text-2xl font-bold text-foreground">Invoices</h2>
+          <p className="text-muted-foreground mt-1">Manage and track all generated invoices</p>
         </div>
       </div>
       
       <SearchableTable
-        title={`${displayedInvoices.length} Generated Invoices`}
+        title={`${displayedInvoices.length} Generated Invoice${displayedInvoices.length === 1 ? '' : 's'}`}
         data={displayedInvoices}
         columns={invoiceColumns}
         searchFields={['invoiceNumber', 'clientName', 'status']}

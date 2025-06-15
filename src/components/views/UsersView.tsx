@@ -118,17 +118,17 @@ const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
-          <p className="text-gray-600 mt-1">Manage system users and their permissions</p>
+          <h2 className="text-2xl font-bold text-foreground">User Management</h2>
+          <p className="text-muted-foreground mt-1">Manage system users and their permissions</p>
         </div>
-        <Button onClick={handleAddNewUser} className="bg-primary hover:bg-primary/90">
+        <Button onClick={handleAddNewUser}>
           <Plus size={16} className="mr-2" />
           Add User
         </Button>
       </div>
       
       <SearchableTable
-        title="System Users"
+        title={`${users.length} System User${users.length === 1 ? '' : 's'}`}
         data={users}
         columns={userColumns}
         searchFields={['name', 'email', 'role', 'status']}

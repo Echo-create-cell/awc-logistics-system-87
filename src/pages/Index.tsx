@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginForm from '@/components/LoginForm';
@@ -40,24 +39,19 @@ const Index = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen bg-background">
       <Sidebar
         userRole={user.role}
         activeTab={activeTab}
         onTabChange={handleTabChange}
       />
-      <div className="flex-1 p-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-900">
-            Welcome back, {user.name}
+      <div className="flex-1 p-6 lg:p-10">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground">
+            Welcome back, <span className="fancy-gradient-text">{user.name}</span>
           </h1>
-          <p className="text-slate-600">
-            {new Date().toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
+          <p className="text-muted-foreground mt-1">
+            Here's what's happening with your business today.
           </p>
         </div>
         <MainContent

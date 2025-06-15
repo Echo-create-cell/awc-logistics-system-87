@@ -95,6 +95,7 @@ const MainContent = (props: MainContentProps) => {
         <CreateQuotationView
           user={user}
           onQuotationCreated={handleQuotationCreated}
+          setActiveTab={setActiveTab}
         />
       );
     case 'invoices':
