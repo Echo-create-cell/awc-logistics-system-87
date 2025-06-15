@@ -22,6 +22,10 @@ const VolumeCell = ({ row }: { row: Quotation }) => {
             const parsed = JSON.parse(volume);
             if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].name) {
                 isStructured = true;
+                
+                totalQuantity = parsed.reduce((sum: number, c: any) => sum + (Number(c.quantityKg) || 0), 0);
+                const avgClientRate = totalQuantity > 0 && clientQuote ? clientQuote / totalQuantity : 0;
+
                 commodities = parsed.map((c: any) => {
                     const rate = c.rate !== undefined 
                         ? Number(c.rate) 
@@ -30,14 +34,13 @@ const VolumeCell = ({ row }: { row: Quotation }) => {
                             : 0);
                     
                     const quantity = Number(c.quantityKg) || 0;
-                    
-                    totalQuantity += quantity;
 
                     return {
                         id: c.id || `gen-${Math.random()}`,
                         name: c.name || 'Unnamed',
                         quantityKg: quantity,
                         rate: rate,
+                        clientRate: c.clientRate !== undefined ? Number(c.clientRate) : avgClientRate,
                     };
                 });
             }
