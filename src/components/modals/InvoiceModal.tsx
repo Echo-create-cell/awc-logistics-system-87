@@ -1,12 +1,12 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { InvoiceData } from "@/types/invoice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface InvoiceModalProps {
   open: boolean;
@@ -18,9 +18,11 @@ interface InvoiceModalProps {
 
 const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalProps) => {
   const [form, setForm] = useState<InvoiceData | null>(invoice);
+  const [isMarkedAsPaid, setIsMarkedAsPaid] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setForm(invoice);
+    setIsMarkedAsPaid(false);
   }, [invoice]);
 
   if (!form) return null;
@@ -34,13 +36,19 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
 
   const handleSave = () => {
     if (form && !isPaid) {
-      onSave(form);
+      const updatedInvoiceData = {
+        ...form,
+        status: isMarkedAsPaid ? 'paid' : form.status,
+      } as InvoiceData;
+      onSave(updatedInvoiceData);
     }
     onClose();
   };
 
   const handlePrint = () => {
-    onPrint(form);
+    if (form) {
+      onPrint(form);
+    }
     onClose();
   };
 
@@ -50,7 +58,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">{isPaid ? "View Invoice" : "Edit Invoice"}</DialogTitle>
           <DialogDescription>
-            {isPaid ? "This invoice is paid and cannot be edited." : "Update invoice details and manage invoice actions."}
+            {isPaid ? "This invoice is paid and cannot be edited." : "Update invoice details. You can mark it as paid to finalize it."}
           </DialogDescription>
         </DialogHeader>
         
@@ -129,19 +137,19 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
             </div>
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <Select value={form.status} onValueChange={(value) => handleChange('status', value)} disabled={isPaid}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="paid">Paid</SelectItem>
-                <SelectItem value="overdue">Overdue</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {!isPaid && (
+            <div className="flex items-center space-x-3 pt-4 border-t mt-4">
+              <Switch
+                id="mark-as-paid"
+                checked={isMarkedAsPaid}
+                onCheckedChange={setIsMarkedAsPaid}
+                aria-label="Mark as paid"
+              />
+              <Label htmlFor="mark-as-paid" className="text-sm font-medium text-gray-800 cursor-pointer">
+                Mark Invoice as Paid to Finalize
+              </Label>
+            </div>
+          )}
         </div>
         
         <DialogFooter className="flex justify-end gap-2">
