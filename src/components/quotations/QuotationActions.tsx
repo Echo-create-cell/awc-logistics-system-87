@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -58,7 +59,7 @@ const QuotationActions = ({
           <Badge variant="secondary">Invoice Generated</Badge>
         )
       )}
-      { user.role !== 'sales_agent' && row.status === 'pending' &&
+      { ((user.role !== 'sales_agent' && row.status === 'pending') || (user.role === 'sales_director' && row.status === 'lost')) &&
         <>
           <Button 
             size="sm" 

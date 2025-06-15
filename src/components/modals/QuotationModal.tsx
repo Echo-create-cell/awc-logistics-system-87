@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Quotation } from "@/types";
@@ -28,11 +29,23 @@ const QuotationModal = ({ open, quotation, onClose, onSave }: QuotationModalProp
 
   const handleSave = () => {
     if (form) {
-      // Recalculate profit when saving
-      const updatedForm = {
+      // Recalculate profit and profit percentage when saving
+      const profit = form.clientQuote - form.buyRate;
+      const profitPercentage = form.buyRate > 0 ? `${((profit / form.buyRate) * 100).toFixed(2)}%` : form.profitPercentage;
+
+      const updatedForm: Quotation = {
         ...form,
-        profit: form.clientQuote - form.buyRate
+        profit,
+        profitPercentage,
       };
+
+      // If a rejected (lost) quotation is edited, resubmit it by setting its status to 'pending'.
+      if (quotation?.status === 'lost') {
+        updatedForm.status = 'pending';
+        updatedForm.approvedBy = undefined;
+        updatedForm.approvedAt = undefined;
+      }
+      
       onSave(updatedForm);
     }
     onClose();
@@ -54,7 +67,7 @@ const QuotationModal = ({ open, quotation, onClose, onSave }: QuotationModalProp
               <Label htmlFor="clientName">Client Name</Label>
               <Input
                 id="clientName"
-                value={form.clientName}
+                value={form.clientName || ''}
                 onChange={(e) => handleChange('clientName', e.target.value)}
                 placeholder="Enter client name"
               />
@@ -63,7 +76,7 @@ const QuotationModal = ({ open, quotation, onClose, onSave }: QuotationModalProp
               <Label htmlFor="destination">Destination</Label>
               <Input
                 id="destination"
-                value={form.destination}
+                value={form.destination || ''}
                 onChange={(e) => handleChange('destination', e.target.value)}
                 placeholder="Enter destination"
               />
@@ -84,7 +97,7 @@ const QuotationModal = ({ open, quotation, onClose, onSave }: QuotationModalProp
               <Label htmlFor="doorDelivery">Door Delivery</Label>
               <Input
                 id="doorDelivery"
-                value={form.doorDelivery}
+                value={form.doorDelivery || ''}
                 onChange={(e) => handleChange('doorDelivery', e.target.value)}
                 placeholder="Enter door delivery details"
               />
