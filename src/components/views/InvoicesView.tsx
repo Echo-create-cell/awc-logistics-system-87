@@ -36,11 +36,6 @@ const InvoicesView = ({
     setModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    onDelete(id);
-    setModalOpen(false);
-  };
-
   const displayedInvoices = (user.role === 'sales_agent' || user.role === 'sales_director')
     ? invoices.filter(invoice => invoice.salesperson === user.name)
     : invoices;
