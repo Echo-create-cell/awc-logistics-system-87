@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
@@ -67,6 +66,7 @@ const MainContent = (props: MainContentProps) => {
           quotations={quotations}
           onApprove={handleApproveQuotation}
           onReject={handleRejectQuotation}
+          setActiveTab={setActiveTab}
         />
       );
     case 'users':

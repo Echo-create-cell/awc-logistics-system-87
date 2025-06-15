@@ -4,21 +4,28 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import DashboardStats from '@/components/DashboardStats';
 import QuotationTable from '@/components/QuotationTable';
 import { Quotation } from '@/types';
+import { Button } from '@/components/ui/button';
 
 interface DashboardViewProps {
   userRole: string;
   quotations: Quotation[];
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
+  setActiveTab: (tab: string) => void;
 }
 
-const DashboardView = ({ userRole, quotations, onApprove, onReject }: DashboardViewProps) => {
+const DashboardView = ({ userRole, quotations, onApprove, onReject, setActiveTab }: DashboardViewProps) => {
   return (
     <div className="space-y-6">
       <DashboardStats userRole={userRole} />
       <Card>
         <CardHeader>
-          <CardTitle>Recent Quotations</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle>Recent Quotations</CardTitle>
+            <Button variant="outline" onClick={() => setActiveTab('invoices')}>
+              View All Invoices
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <QuotationTable
