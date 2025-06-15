@@ -1,7 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+
+import { useState } from 'react';
 import { Quotation, Client, User } from '@/types';
-import { QuotationCommodity } from '@/types/invoice';
 import { v4 as uuidv4 } from 'uuid';
+import { useCommodityManager } from './useCommodityManager';
+import { useQuotationCalculations } from './useQuotationCalculations';
 
 const mockClients: Client[] = [
   { id: '1', companyName: 'Michel-TLC', contactPerson: 'Michel', tinNumber: '', address: 'Goma', city: 'Goma', country: 'DRC', phone: '', email: 'michel@tlc.com' },
@@ -12,11 +14,10 @@ const mockClients: Client[] = [
 export const useQuotationForm = (initialQuotation: Quotation | null = null, user: User) => {
   const [clients] = useState<Client[]>(mockClients);
   const [clientName, setClientName] = useState(initialQuotation?.clientName || '');
-  const [commodities, setCommodities] = useState<QuotationCommodity[]>([]);
-  const [buyRate, setBuyRate] = useState(0);
-  const [clientQuote, setClientQuote] = useState(initialQuotation?.clientQuote || 0);
-  const [profit, setProfit] = useState(0);
-  const [profitPercentage, setProfitPercentage] = useState(0);
+  
+  const { commodities, setCommodities, addCommodity, removeCommodity, updateCommodity } = useCommodityManager(initialQuotation);
+  const { buyRate, clientQuote, profit, profitPercentage } = useQuotationCalculations(commodities);
+  
   const [remarks, setRemarks] = useState(initialQuotation?.remarks || '');
   const [destination, setDestination] = useState(initialQuotation?.destination || '');
   const [doorDelivery, setDoorDelivery] = useState(initialQuotation?.doorDelivery || '');
@@ -27,72 +28,6 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
   const [countryOfOrigin, setCountryOfOrigin] = useState(initialQuotation?.countryOfOrigin || '');
   const [quoteSentBy, setQuoteSentBy] = useState(initialQuotation?.quoteSentBy || user.name);
   const [followUpDate, setFollowUpDate] = useState(initialQuotation?.followUpDate ? new Date(initialQuotation.followUpDate).toISOString().split('T')[0] : '');
-
-  useEffect(() => {
-    if (initialQuotation) {
-      try {
-        const parsed = JSON.parse(initialQuotation.volume);
-        if (Array.isArray(parsed)) {
-          const totalQuantity = parsed.reduce((sum: number, c: any) => sum + (Number(c.quantityKg) || 0), 0);
-          const avgClientRate = totalQuantity > 0 && initialQuotation.clientQuote ? initialQuotation.clientQuote / totalQuantity : 0;
-
-          const commoditiesWithRate = parsed.map((c: any) => ({
-            id: c.id || uuidv4(),
-            name: c.name || '',
-            quantityKg: c.quantityKg || 0,
-            // Handle both old format (with charges) and new format (with rate)
-            rate: c.rate !== undefined ? c.rate : (c.charges ? c.charges.reduce((sum: number, charge: any) => sum + (Number(charge.rate) || 0), 0) : 0),
-            clientRate: c.clientRate !== undefined ? c.clientRate : avgClientRate,
-          }));
-          setCommodities(commoditiesWithRate);
-        }
-      } catch (e) {
-        console.error("Failed to parse commodities from quotation volume", e);
-        setCommodities([]);
-      }
-    } else {
-        addCommodity();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialQuotation]);
-
-  const calculateTotals = useCallback(() => {
-    const totalBuyRate = commodities.reduce((sum, commodity) => {
-      const commodityRate = Number(commodity.rate) || 0;
-      const quantity = Number(commodity.quantityKg) || 0;
-      return sum + (commodityRate * quantity);
-    }, 0);
-    setBuyRate(totalBuyRate);
-    
-    const totalClientQuote = commodities.reduce((sum, commodity) => {
-        const commodityClientRate = Number(commodity.clientRate) || 0;
-        const quantity = Number(commodity.quantityKg) || 0;
-        return sum + (commodityClientRate * quantity);
-    }, 0);
-    setClientQuote(totalClientQuote);
-
-    const p = totalClientQuote - totalBuyRate;
-    const pp = totalBuyRate > 0 ? (p / totalBuyRate) * 100 : 0;
-    setProfit(p);
-    setProfitPercentage(pp);
-  }, [commodities]);
-
-  useEffect(() => {
-    calculateTotals();
-  }, [commodities, calculateTotals]);
-  
-  const addCommodity = () => {
-    const newCommodity: QuotationCommodity = { id: uuidv4(), name: '', quantityKg: 0, rate: 0, clientRate: 0 };
-    setCommodities(prev => [...prev, newCommodity]);
-  };
-
-  const removeCommodity = (id: string) => {
-    if (commodities.length > 1) setCommodities(prev => prev.filter(c => c.id !== id));
-  };
-
-  const updateCommodity = (id: string, field: 'name' | 'quantityKg' | 'rate' | 'clientRate', value: string | number) => {
-    setCommodities(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
-  };
 
   const handleDetailsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -144,7 +79,6 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
   const resetForm = () => {
     setClientName('');
     setCommodities([]);
-    setClientQuote(0);
     setRemarks('');
     setDestination('');
     setDoorDelivery('');
@@ -159,7 +93,6 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
   };
 
   return {
-    // State
     clientName,
     commodities,
     buyRate,
@@ -186,9 +119,7 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
       countryOfOrigin,
       cargoDescription,
     },
-    // Handlers
     setClientName,
-    setClientQuote,
     setRemarks,
     setFollowUpDate,
     addCommodity,
