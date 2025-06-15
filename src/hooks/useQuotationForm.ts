@@ -1,7 +1,6 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { Quotation, Client, User } from '@/types';
-import { QuotationCommodity, InvoiceCharge } from '@/types/invoice';
+import { QuotationCommodity } from '@/types/invoice';
 import { v4 as uuidv4 } from 'uuid';
 
 const mockClients: Client[] = [
@@ -12,7 +11,7 @@ const mockClients: Client[] = [
 
 export const useQuotationForm = (initialQuotation: Quotation | null = null, user: User) => {
   const [clients] = useState<Client[]>(mockClients);
-  const [selectedClientId, setSelectedClientId] = useState<string | undefined>(initialQuotation?.clientId);
+  const [clientName, setClientName] = useState(initialQuotation?.clientName || '');
   const [commodities, setCommodities] = useState<QuotationCommodity[]>([]);
   const [buyRate, setBuyRate] = useState(0);
   const [clientQuote, setClientQuote] = useState(initialQuotation?.clientQuote || 0);
@@ -104,12 +103,12 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
   };
 
   const getQuotationPayload = (): Quotation => {
-    const clientName = clients.find(c => c.id === selectedClientId)?.companyName;
+    const client = clients.find(c => c.companyName.toLowerCase().trim() === clientName.toLowerCase().trim());
     const baseQuotation = {
         ...initialQuotation,
         id: initialQuotation?.id || uuidv4(),
-        clientId: selectedClientId,
-        clientName: clientName || initialQuotation?.clientName || '',
+        clientId: client?.id,
+        clientName: clientName,
         volume: JSON.stringify(commodities),
         currency,
         buyRate,
@@ -132,7 +131,7 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
   };
 
   const resetForm = () => {
-    setSelectedClientId(undefined);
+    setClientName('');
     setCommodities([]);
     setClientQuote(0);
     setRemarks('');
@@ -149,8 +148,7 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
 
   return {
     // State
-    clients,
-    selectedClientId,
+    clientName,
     commodities,
     buyRate,
     clientQuote,
@@ -177,7 +175,7 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
       cargoDescription,
     },
     // Handlers
-    setSelectedClientId,
+    setClientName,
     setClientQuote,
     setRemarks,
     setFollowUpDate,

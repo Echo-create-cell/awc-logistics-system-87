@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Quotation, User } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -14,9 +15,8 @@ interface QuotationFormProps {
 
 const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps) => {
   const {
-    clients,
-    selectedClientId,
-    setSelectedClientId,
+    clientName,
+    setClientName,
     commodities,
     currency,
     buyRate,
@@ -46,9 +46,8 @@ const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps)
     <div className="space-y-6 pt-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <QuotationFormMain
-          clients={clients}
-          selectedClientId={selectedClientId}
-          onValueChange={setSelectedClientId}
+          clientName={clientName}
+          onClientNameChange={(e) => setClientName(e.target.value)}
           quotationData={quotationData}
           onQuotationChange={handleDetailsChange}
           onSelectChange={handleSelectChange}

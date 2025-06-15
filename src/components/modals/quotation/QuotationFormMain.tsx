@@ -1,16 +1,17 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import ClientSelector from '@/components/quotations/ClientSelector';
 import QuotationFormDetails from '@/components/quotations/QuotationFormDetails';
 import CommodityList from '@/components/quotations/CommodityList';
-import { Client, Quotation } from '@/types';
+import { Quotation } from '@/types';
 import { QuotationCommodity } from '@/types/invoice';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 interface QuotationFormMainProps {
-  clients: Client[];
-  selectedClientId: string | undefined;
-  onValueChange: (clientId: string) => void;
+  clientName: string;
+  onClientNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   quotationData: {
     currency: string;
     destination: string;
@@ -31,9 +32,8 @@ interface QuotationFormMainProps {
 }
 
 const QuotationFormMain = ({
-  clients,
-  selectedClientId,
-  onValueChange,
+  clientName,
+  onClientNameChange,
   quotationData,
   onQuotationChange,
   onSelectChange,
@@ -49,11 +49,15 @@ const QuotationFormMain = ({
         <CardHeader><CardTitle>Quotation Details</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <ClientSelector
-              clients={clients}
-              selectedClientId={selectedClientId}
-              onValueChange={onValueChange}
-            />
+            <div>
+              <Label htmlFor="clientName">Client</Label>
+              <Input
+                id="clientName"
+                placeholder="Enter client name"
+                value={clientName}
+                onChange={onClientNameChange}
+              />
+            </div>
           </div>
           <QuotationFormDetails
             quotationData={quotationData}

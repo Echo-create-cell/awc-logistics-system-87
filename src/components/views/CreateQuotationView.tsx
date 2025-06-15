@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -15,9 +16,8 @@ interface CreateQuotationViewProps {
 const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQuotationViewProps) => {
   const { toast } = useToast();
   const {
-    clients,
-    selectedClientId,
-    setSelectedClientId,
+    clientName,
+    setClientName,
     commodities,
     currency,
     buyRate,
@@ -38,10 +38,10 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
   } = useQuotationForm(null, user);
 
   const handleSaveQuotation = () => {
-    if (!selectedClientId || clientQuote <= 0 || !buyRate || !currency) {
+    if (!clientName || clientQuote <= 0 || !buyRate || !currency) {
       toast({
         title: "Missing Fields",
-        description: "Please select a client, and fill in commodities and pricing details.",
+        description: "Please enter a client name, and fill in commodities and pricing details.",
         variant: "destructive",
       });
       return;
@@ -63,9 +63,8 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <QuotationFormMain
-          clients={clients}
-          selectedClientId={selectedClientId}
-          onValueChange={setSelectedClientId}
+          clientName={clientName}
+          onClientNameChange={(e) => setClientName(e.target.value)}
           quotationData={quotationData}
           onQuotationChange={handleDetailsChange}
           onSelectChange={handleSelectChange}
