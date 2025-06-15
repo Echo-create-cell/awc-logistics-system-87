@@ -150,13 +150,17 @@ const QuotationsView = ({
             </>
           )}
           {(user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won' && (
-            <Button
-              size="sm"
-              className="px-2 py-1 text-white bg-fuchsia-700 rounded hover:bg-fuchsia-900 text-xs"
-              onClick={() => onInvoiceFromQuotation?.(row)}
-            >
-              Generate Invoice
-            </Button>
+            (!row.linkedInvoiceIds || row.linkedInvoiceIds.length === 0) ? (
+              <Button
+                size="sm"
+                className="px-2 py-1 text-white bg-fuchsia-700 rounded hover:bg-fuchsia-900 text-xs"
+                onClick={() => onInvoiceFromQuotation?.(row)}
+              >
+                Generate Invoice
+              </Button>
+            ) : (
+              <Badge variant="secondary">Invoice Generated</Badge>
+            )
           )}
           { user.role !== 'sales_agent' &&
             <>
