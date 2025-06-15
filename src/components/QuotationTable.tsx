@@ -1,7 +1,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, Clock, Eye, Edit, Trash2 } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Edit, Trash2 } from 'lucide-react';
 import { Quotation } from '@/types';
 
 interface QuotationTableProps {
@@ -9,7 +9,6 @@ interface QuotationTableProps {
   userRole: string;
   onApprove?: (id: string) => void;
   onReject?: (id: string) => void;
-  onView?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
   onDelete?: (id: string) => void;
 }
@@ -19,7 +18,6 @@ const QuotationTable = ({
   userRole, 
   onApprove, 
   onReject, 
-  onView, 
   onEdit, 
   onDelete 
 }: QuotationTableProps) => {
@@ -122,13 +120,6 @@ const QuotationTable = ({
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onView?.(quotation)}
-                  >
-                    <Eye size={16} />
-                  </Button>
                   {userRole === 'admin' && quotation.status === 'pending' && (
                     <>
                       <Button

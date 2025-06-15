@@ -180,7 +180,6 @@ const Index = () => {
             quotations={quotations}
             onApprove={handleApproveQuotation}
             onReject={handleRejectQuotation}
-            onView={() => {}} // No longer needed
           />
         );
       case 'users':
