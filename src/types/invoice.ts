@@ -1,4 +1,11 @@
 
+export interface QuotationCommodity {
+  id: string;
+  name: string;
+  quantityKg: number;
+  rate: number;
+}
+
 export interface InvoiceCharge {
   id: string;
   description: string;

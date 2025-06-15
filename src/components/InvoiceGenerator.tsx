@@ -2,12 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Printer, Save } from 'lucide-react';
-import { InvoiceItem, InvoiceData, Client, InvoiceCharge } from '@/types/invoice';
+import { InvoiceItem, InvoiceData, Client, InvoiceCharge, QuotationCommodity } from '@/types/invoice';
 import { Quotation } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import ClientInformation from './invoice/ClientInformation';
 import InvoiceDetails from './invoice/InvoiceDetails';
 import InvoiceItems from './invoice/InvoiceItems';
+import { v4 as uuidv4 } from 'uuid';
 
 // Mock clients data
 const mockClients: Client[] = [
@@ -57,15 +58,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
     currency: 'USD'
   });
   
-  const [items, setItems] = useState<InvoiceItem[]>([
-    {
-      id: '1',
-      quantityKg: 0,
-      commodity: '',
-      charges: [{ id: '1.1', description: '', rate: 0 }],
-      total: 0
-    }
-  ]);
+  const [items, setItems] = useState<InvoiceItem[]>([]);
 
   const calculateItemsWithTotals = useCallback((currentItems: InvoiceItem[]) => {
     return currentItems.map(item => {
@@ -202,24 +195,59 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       doorDelivery: quotation.doorDelivery || '',
       currency: quotation.currency || 'USD'
     }));
-    const quantity = !isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1;
-    const rate = quotation.clientQuote || 0;
-    
-    setItems([
-      {
-        id: '1',
-        quantityKg: quantity,
-        commodity: `Services as per Quotation ${quotation.id}`,
-        charges: [
-          {
-            id: '1.1',
-            description: '',
-            rate: rate,
-          }
-        ],
-        total: quantity * rate,
+
+    let parsedCommodities: QuotationCommodity[] | null = null;
+    if (quotation.volume) {
+      try {
+        const parsed = JSON.parse(quotation.volume);
+        if (Array.isArray(parsed) && parsed.length > 0 && 'name' in parsed[0]) {
+          parsedCommodities = parsed;
+        }
+      } catch (e) {
+        // Not a JSON string with commodities, will use fallback.
       }
-    ]);
+    }
+
+    if (parsedCommodities) {
+      // New logic: create items from quotation commodities
+      const newItems: InvoiceItem[] = parsedCommodities.map((commodity) => {
+        const total = (commodity.quantityKg || 0) * (commodity.rate || 0);
+        return {
+          id: uuidv4(),
+          quantityKg: commodity.quantityKg || 0,
+          commodity: commodity.name || 'N/A',
+          charges: [
+            {
+              id: uuidv4(),
+              description: `Charge for ${commodity.name}`,
+              rate: commodity.rate || 0,
+            }
+          ],
+          total,
+        }
+      });
+      setItems(newItems);
+    } else {
+      // Fallback to old logic for old quotations
+      const quantity = !isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1;
+      const rate = quotation.clientQuote || 0;
+      
+      setItems([
+        {
+          id: '1',
+          quantityKg: quantity,
+          commodity: `Services as per Quotation ${quotation.id}`,
+          charges: [
+            {
+              id: '1.1',
+              description: '',
+              rate: rate,
+            }
+          ],
+          total: quantity * rate,
+        }
+      ]);
+    }
   }, [quotation]);
 
   const handleSave = () => {
