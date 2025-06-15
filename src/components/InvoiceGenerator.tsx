@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -222,7 +221,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
     if (quotation.volume) {
       try {
         const parsed = JSON.parse(quotation.volume);
-        if (Array.isArray(parsed) && parsed.length > 0 && 'name' in parsed[0]) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           parsedCommodities = parsed;
         }
       } catch (e) {
@@ -231,42 +230,31 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
     }
 
     if (parsedCommodities) {
-      // New logic: create items from quotation commodities
-      if (parsedCommodities[0].charges) {
-        // New format with multiple charges per commodity
-        const newItems: InvoiceItem[] = parsedCommodities.map((commodity: QuotationCommodity) => {
-          const total = (commodity.quantityKg || 0) * (commodity.charges || []).reduce((sum, c) => sum + (c.rate || 0), 0);
-          return {
+      const newItems: InvoiceItem[] = parsedCommodities.map((commodity: any) => {
+        let charges: InvoiceCharge[];
+        let itemTotal: number;
+
+        if (commodity.charges && Array.isArray(commodity.charges)) { // Handle old quotations with charges
+          charges = commodity.charges.map((c: any) => ({ ...c, id: uuidv4() }));
+          itemTotal = (commodity.quantityKg || 0) * charges.reduce((sum, c) => sum + (c.rate || 0), 0);
+        } else { // Handle new quotations with a single rate
+          charges = [{
             id: uuidv4(),
-            quantityKg: commodity.quantityKg || 0,
-            commodity: commodity.name || 'N/A',
-            charges: (commodity.charges || []).map(c => ({ ...c, id: uuidv4() })),
-            total,
-          };
-        });
-        setItems(newItems);
-      } else if (parsedCommodities[0].rate !== undefined) {
-        // Old format with a single rate per commodity
-        const newItems: InvoiceItem[] = parsedCommodities.map((commodity: any) => {
-          const total = (commodity.quantityKg || 0) * (commodity.rate || 0);
-          return {
-            id: uuidv4(),
-            quantityKg: commodity.quantityKg || 0,
-            commodity: commodity.name || 'N/A',
-            charges: [
-              {
-                id: uuidv4(),
-                description: `Charge for ${commodity.name}`,
-                rate: commodity.rate || 0,
-              },
-            ],
-            total,
-          };
-        });
-        setItems(newItems);
-      } else {
-        setItemsFromQuotationFallback();
-      }
+            description: `Charge for ${commodity.name || 'N/A'}`,
+            rate: commodity.rate || 0,
+          }];
+          itemTotal = (commodity.quantityKg || 0) * (commodity.rate || 0);
+        }
+
+        return {
+          id: uuidv4(),
+          quantityKg: commodity.quantityKg || 0,
+          commodity: commodity.name || 'N/A',
+          charges: charges,
+          total: itemTotal,
+        };
+      });
+      setItems(newItems);
     } else {
       // Fallback for when volume is not a JSON of commodities
       setItemsFromQuotationFallback();

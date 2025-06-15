@@ -5,7 +5,7 @@ import ClientSelector from '@/components/quotations/ClientSelector';
 import QuotationFormDetails from '@/components/quotations/QuotationFormDetails';
 import CommodityList from '@/components/quotations/CommodityList';
 import { Client, Quotation } from '@/types';
-import { QuotationCommodity, InvoiceCharge } from '@/types/invoice';
+import { QuotationCommodity } from '@/types/invoice';
 
 interface QuotationFormMainProps {
   clients: Client[];
@@ -25,11 +25,8 @@ interface QuotationFormMainProps {
   onSelectChange: (field: string, value: string) => void;
   commodities: QuotationCommodity[];
   currency: string;
-  updateCommodity: (id: string, field: 'name' | 'quantityKg', value: string | number) => void;
+  updateCommodity: (id: string, field: 'name' | 'quantityKg' | 'rate', value: string | number) => void;
   removeCommodity: (id: string) => void;
-  addCharge: (commodityId: string) => void;
-  removeCharge: (commodityId: string, chargeId: string) => void;
-  updateCharge: (commodityId: string, chargeId: string, field: keyof Omit<InvoiceCharge, 'id'>, value: string | number) => void;
   addCommodity: () => void;
 }
 
@@ -44,9 +41,6 @@ const QuotationFormMain = ({
   currency,
   updateCommodity,
   removeCommodity,
-  addCharge,
-  removeCharge,
-  updateCharge,
   addCommodity,
 }: QuotationFormMainProps) => {
   return (
@@ -76,9 +70,6 @@ const QuotationFormMain = ({
             commodities={commodities}
             onUpdateCommodity={updateCommodity}
             onRemoveCommodity={removeCommodity}
-            onAddCharge={addCharge}
-            onRemoveCharge={removeCharge}
-            onUpdateCharge={updateCharge}
             currency={currency}
           />
           <Button onClick={addCommodity} variant="outline" className="mt-4">

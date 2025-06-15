@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { Quotation, Client, User } from '@/types';
 import { QuotationCommodity, InvoiceCharge } from '@/types/invoice';
@@ -33,12 +32,14 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
       try {
         const parsed = JSON.parse(initialQuotation.volume);
         if (Array.isArray(parsed)) {
-          const commoditiesWithCharges = parsed.map((c: any) => ({
-            ...c,
+          const commoditiesWithRate = parsed.map((c: any) => ({
             id: c.id || uuidv4(),
-            charges: c.charges && c.charges.length > 0 ? c.charges.map((ch: any) => ({...ch, id: ch.id || uuidv4()})) : [{ id: uuidv4(), description: '', rate: 0 }],
+            name: c.name || '',
+            quantityKg: c.quantityKg || 0,
+            // Handle both old format (with charges) and new format (with rate)
+            rate: c.rate !== undefined ? c.rate : (c.charges ? c.charges.reduce((sum: number, charge: any) => sum + (Number(charge.rate) || 0), 0) : 0),
           }));
-          setCommodities(commoditiesWithCharges);
+          setCommodities(commoditiesWithRate);
         }
       } catch (e) {
         console.error("Failed to parse commodities from quotation volume", e);
@@ -47,11 +48,12 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
     } else {
         addCommodity();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuotation]);
 
   const calculateTotals = useCallback(() => {
     const totalBuyRate = commodities.reduce((sum, commodity) => {
-      const commodityRate = commodity.charges.reduce((chargeSum, charge) => chargeSum + (Number(charge.rate) || 0), 0);
+      const commodityRate = Number(commodity.rate) || 0;
       const quantity = Number(commodity.quantityKg) || 0;
       return sum + (commodityRate * quantity);
     }, 0);
@@ -68,7 +70,7 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
   }, [commodities, clientQuote, calculateTotals]);
   
   const addCommodity = () => {
-    const newCommodity: QuotationCommodity = { id: uuidv4(), name: '', quantityKg: 0, charges: [{ id: uuidv4(), description: '', rate: 0 }] };
+    const newCommodity: QuotationCommodity = { id: uuidv4(), name: '', quantityKg: 0, rate: 0 };
     setCommodities(prev => [...prev, newCommodity]);
   };
 
@@ -76,20 +78,8 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
     if (commodities.length > 1) setCommodities(prev => prev.filter(c => c.id !== id));
   };
 
-  const updateCommodity = (id: string, field: 'name' | 'quantityKg', value: string | number) => {
+  const updateCommodity = (id: string, field: 'name' | 'quantityKg' | 'rate', value: string | number) => {
     setCommodities(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
-  };
-  
-  const addCharge = (commodityId: string) => {
-    setCommodities(prev => prev.map(c => c.id === commodityId ? { ...c, charges: [...c.charges, { id: uuidv4(), description: '', rate: 0 }] } : c));
-  };
-
-  const removeCharge = (commodityId: string, chargeId: string) => {
-    setCommodities(prev => prev.map(c => (c.id === commodityId && c.charges.length > 1) ? { ...c, charges: c.charges.filter(ch => ch.id !== chargeId) } : c));
-  };
-  
-  const updateCharge = (commodityId: string, chargeId: string, field: keyof Omit<InvoiceCharge, 'id'>, value: string | number) => {
-    setCommodities(prev => prev.map(c => c.id === commodityId ? { ...c, charges: c.charges.map(ch => ch.id === chargeId ? { ...ch, [field]: value } : ch) } : c));
   };
 
   const handleDetailsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -192,13 +182,9 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
     addCommodity,
     removeCommodity,
     updateCommodity,
-    addCharge,
-    removeCharge,
-    updateCharge,
     handleDetailsChange,
     handleSelectChange,
     getQuotationPayload,
     resetForm,
   };
 };
-

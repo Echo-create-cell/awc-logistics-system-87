@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Quotation, User } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -33,9 +32,6 @@ const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps)
     addCommodity,
     removeCommodity,
     updateCommodity,
-    addCharge,
-    removeCharge,
-    updateCharge,
     handleDetailsChange,
     handleSelectChange,
     getQuotationPayload,
@@ -60,9 +56,6 @@ const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps)
           currency={currency}
           updateCommodity={updateCommodity}
           removeCommodity={removeCommodity}
-          addCharge={addCharge}
-          removeCharge={removeCharge}
-          updateCharge={updateCharge}
           addCommodity={addCommodity}
         />
         <QuotationFormSidebar

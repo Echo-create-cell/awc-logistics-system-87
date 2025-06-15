@@ -1,19 +1,16 @@
 
 import React from 'react';
-import { QuotationCommodity, InvoiceCharge } from "@/types/invoice";
+import { QuotationCommodity } from "@/types/invoice";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Trash2, PlusCircle } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from '../ui/label';
 
 interface CommodityListProps {
   commodities: QuotationCommodity[];
-  onUpdateCommodity: (id: string, field: 'name' | 'quantityKg', value: string | number) => void;
+  onUpdateCommodity: (id: string, field: 'name' | 'quantityKg' | 'rate', value: string | number) => void;
   onRemoveCommodity: (id: string) => void;
-  onAddCharge: (commodityId: string) => void;
-  onRemoveCharge: (commodityId: string, chargeId: string) => void;
-  onUpdateCharge: (commodityId: string, chargeId: string, field: keyof Omit<InvoiceCharge, 'id'>, value: string | number) => void;
   currency: string;
 }
 
@@ -21,9 +18,6 @@ const CommodityList = ({
   commodities,
   onUpdateCommodity,
   onRemoveCommodity,
-  onAddCharge,
-  onRemoveCharge,
-  onUpdateCharge,
   currency,
 }: CommodityListProps) => {
   return (
@@ -42,8 +36,8 @@ const CommodityList = ({
                 <Trash2 size={16} />
               </Button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-1">
                 <Label>Commodity Name</Label>
                 <Input
                   value={commodity.name}
@@ -51,7 +45,7 @@ const CommodityList = ({
                   placeholder="e.g. Electronics"
                 />
               </div>
-              <div>
+              <div className="md:col-span-1">
                 <Label>Quantity (kg)</Label>
                 <Input
                   type="number"
@@ -60,42 +54,15 @@ const CommodityList = ({
                   placeholder="e.g. 100"
                 />
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label className="font-medium">Charges</Label>
-              {commodity.charges.map((charge) => (
-                <div key={charge.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                  <Input
-                    value={charge.description}
-                    onChange={(e) => onUpdateCharge(commodity.id, charge.id, 'description', e.target.value)}
-                    placeholder="Charge description (e.g., Freight)"
-                    className="flex-grow"
-                  />
-                  <div className="relative w-32">
-                    <Input
-                      type="number"
-                      value={charge.rate}
-                      onChange={(e) => onUpdateCharge(commodity.id, charge.id, 'rate', parseFloat(e.target.value) || 0)}
-                      placeholder="Rate"
-                      className="pr-12"
-                    />
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-gray-500">{currency}/kg</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-red-500 hover:text-red-600 shrink-0"
-                    onClick={() => onRemoveCharge(commodity.id, charge.id)}
-                    disabled={commodity.charges.length <= 1}
-                  >
-                    <Trash2 size={14} />
-                  </Button>
-                </div>
-              ))}
-              <Button variant="outline" size="sm" onClick={() => onAddCharge(commodity.id)} className="mt-2">
-                <PlusCircle size={14} className="mr-2" /> Add Charge
-              </Button>
+              <div className="md:col-span-1">
+                <Label>Rate ({currency}/kg)</Label>
+                <Input
+                  type="number"
+                  value={commodity.rate}
+                  onChange={(e) => onUpdateCommodity(commodity.id, 'rate', parseFloat(e.target.value) || 0)}
+                  placeholder="e.g. 12.50"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
