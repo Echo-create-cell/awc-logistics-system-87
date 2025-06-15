@@ -49,6 +49,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
   const { user } = useAuth();
   const { toast } = useToast();
   
+  const [clientsForSelection, setClientsForSelection] = useState<Client[]>(mockClients);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [invoiceData, setInvoiceData] = useState({
     destination: '',
@@ -123,11 +124,14 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
 
       if (clientFromList) {
         setSelectedClient(clientFromList);
+        if (clientsForSelection.length > mockClients.length) {
+            setClientsForSelection(mockClients);
+        }
       } else {
         // Fallback for when client is not in the list
-        setSelectedClient({
-          id: 'custom',
-          companyName: quotation.clientName || '',
+        const newClient: Client = {
+          id: `custom-${quotation.id}`,
+          companyName: quotation.clientName || 'N/A',
           contactPerson: '',
           tinNumber: '',
           address: quotation.doorDelivery || '',
@@ -135,7 +139,9 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
           country: '',
           phone: '',
           email: ''
-        });
+        };
+        setClientsForSelection([newClient, ...mockClients]);
+        setSelectedClient(newClient);
       }
 
       setInvoiceData(prev => ({
@@ -275,16 +281,16 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
               <Select 
                 value={selectedClient?.id}
                 onValueChange={(value) => {
-                const client = mockClients.find(c => c.id === value);
+                const client = clientsForSelection.find(c => c.id === value);
                 setSelectedClient(client || null);
               }}>
                 <SelectTrigger>
                   <SelectValue placeholder="Choose a client" />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockClients.map((client) => (
+                  {clientsForSelection.map((client) => (
                     <SelectItem key={client.id} value={client.id}>
-                      {client.companyName} - {client.contactPerson}
+                      {client.companyName}{client.contactPerson ? ` - ${client.contactPerson}` : ''}
                     </SelectItem>
                   ))}
                 </SelectContent>
