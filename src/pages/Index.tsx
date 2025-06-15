@@ -107,15 +107,6 @@ const Index = () => {
     });
   };
 
-  const handleDeleteInvoice = (id: string) => {
-    setInvoices(prev => prev.filter(inv => inv.id !== id));
-    toast({
-      title: "Invoice Deleted",
-      description: "Invoice has been successfully deleted.",
-      variant: "destructive",
-    });
-  };
-
   const handlePrintInvoice = (invoice: InvoiceData) => {
     setPrintPreview(invoice);
   };
@@ -219,7 +210,6 @@ const Index = () => {
             quotations={quotations}
             onSave={handleSaveInvoice}
             onEdit={handleEditInvoice}
-            onDelete={handleDeleteInvoice}
             onPrint={handlePrintInvoice}
             setActiveTab={setActiveTab}
             invoiceQuotation={invoiceQuotation}

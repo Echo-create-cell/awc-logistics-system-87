@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
@@ -172,14 +173,16 @@ const QuotationsView = ({
               >
                 <Edit size={16} />
               </Button>
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                onClick={() => handleDelete(row.id)} 
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
-                <Trash2 size={16} />
-              </Button>
+              {(!row.linkedInvoiceIds || row.linkedInvoiceIds.length === 0) &&
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  onClick={() => handleDelete(row.id)} 
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 size={16} />
+                </Button>
+              }
             </>
           }
         </div>

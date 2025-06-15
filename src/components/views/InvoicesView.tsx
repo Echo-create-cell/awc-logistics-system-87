@@ -13,7 +13,6 @@ interface InvoicesViewProps {
   invoices: InvoiceData[];
   onSave: (invoice: InvoiceData) => void;
   onEdit: (invoice: InvoiceData) => void;
-  onDelete: (id: string) => void;
   onPrint: (invoice: InvoiceData) => void;
   setActiveTab: (tab: string) => void;
   quotations: Quotation[];
@@ -22,7 +21,7 @@ interface InvoicesViewProps {
 }
 
 const InvoicesView = ({
-  user, invoices, onSave, onEdit, onDelete, onPrint, setActiveTab, quotations, invoiceQuotation, onInvoiceQuotationClear
+  user, invoices, onSave, onEdit, onPrint, setActiveTab, quotations, invoiceQuotation, onInvoiceQuotationClear
 }: InvoicesViewProps) => {
   const [modalInvoice, setModalInvoice] = useState<InvoiceData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -151,14 +150,6 @@ const InvoicesView = ({
               <Edit size={16} />
             </Button>
           )}
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => handleDelete(row.id)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-          </Button>
         </div>
       ),
     }
@@ -196,7 +187,6 @@ const InvoicesView = ({
         invoice={modalInvoice}
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
-        onDelete={handleDelete}
         onPrint={onPrint}
       />
     </div>

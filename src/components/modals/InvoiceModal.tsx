@@ -12,11 +12,10 @@ interface InvoiceModalProps {
   invoice: InvoiceData | null;
   onClose: () => void;
   onSave: (invoice: InvoiceData) => void;
-  onDelete: (id: string) => void;
   onPrint: (invoice: InvoiceData) => void;
 }
 
-const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: InvoiceModalProps) => {
+const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalProps) => {
   const [form, setForm] = useState<InvoiceData | null>(invoice);
 
   React.useEffect(() => {
@@ -36,11 +35,6 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: Inv
     if (form && !isPaid) {
       onSave(form);
     }
-    onClose();
-  };
-
-  const handleDelete = () => {
-    onDelete(form.id);
     onClose();
   };
 
@@ -149,39 +143,16 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: Inv
           </div>
         </div>
         
-        <DialogFooter className="flex justify-between">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" className="mr-auto">Delete Invoice</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete invoice
-                  "{form.invoiceNumber}" and remove all associated data.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          
-          <div className="flex gap-2">
-            <Button onClick={handlePrint} variant="outline" className="bg-blue-50 hover:bg-blue-100">
-              Print Invoice
-            </Button>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button onClick={handleSave} className="bg-primary text-white" disabled={isPaid}>
-              Save Changes
-            </Button>
-          </div>
+        <DialogFooter className="flex justify-end gap-2">
+          <Button onClick={handlePrint} variant="outline" className="bg-blue-50 hover:bg-blue-100">
+            Print Invoice
+          </Button>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <Button onClick={handleSave} className="bg-primary text-white" disabled={isPaid}>
+            Save Changes
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
