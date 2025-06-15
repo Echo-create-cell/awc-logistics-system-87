@@ -27,6 +27,7 @@ const initialQuotationState = {
   // Extra fields from screenshot
   destination: '',
   doorDelivery: '',
+  quoteSentBy: '',
 };
 
 const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewProps) => {
@@ -62,7 +63,7 @@ const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewPr
   };
 
   const handleCreateQuotation = () => {
-    if (!newQuotation.clientName || !newQuotation.volume || !newQuotation.buyRate || !newQuotation.clientQuote) {
+    if (!newQuotation.clientName || !newQuotation.volume || !newQuotation.buyRate || !newQuotation.clientQuote || !newQuotation.quoteSentBy) {
       toast({
         title: "Missing Fields",
         description: "Please fill in all required quotation details.",
@@ -80,7 +81,7 @@ const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewPr
       clientQuote: parseFloat(newQuotation.clientQuote),
       profit: calculatedProfit.profit,
       profitPercentage: calculatedProfit.profitPercentage,
-      quoteSentBy: user.name,
+      quoteSentBy: newQuotation.quoteSentBy,
       status: 'pending',
       followUpDate: newQuotation.followUpDate,
       remarks: newQuotation.remarks,
@@ -152,6 +153,10 @@ const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewPr
             <div>
               <Label htmlFor="doorDelivery">Door Delivery</Label>
               <Input id="doorDelivery" placeholder="Door Delivery" value={newQuotation.doorDelivery} onChange={handleNewQuotationChange} />
+            </div>
+            <div className="md:col-span-2">
+              <Label htmlFor="quoteSentBy">Quote Sent By</Label>
+              <Input id="quoteSentBy" placeholder="Enter sender name" value={newQuotation.quoteSentBy} onChange={handleNewQuotationChange} />
             </div>
           </div>
           <div>

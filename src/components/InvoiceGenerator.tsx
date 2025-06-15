@@ -213,7 +213,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
         charges: [
           {
             id: '1.1',
-            description: quotation.remarks || 'Client quoted rate',
+            description: '',
             rate: rate,
           }
         ],
@@ -243,7 +243,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       clientTin: selectedClient.tinNumber,
       destination: invoiceData.destination,
       doorDelivery: invoiceData.doorDelivery,
-      salesperson: user?.name || '',
+      salesperson: quotation.quoteSentBy || '',
       deliverDate: invoiceData.deliverDate,
       paymentConditions: invoiceData.paymentConditions,
       validityDate: invoiceData.validityDate,
@@ -289,7 +289,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       clientTin: selectedClient.tinNumber,
       destination: invoiceData.destination,
       doorDelivery: invoiceData.doorDelivery,
-      salesperson: user?.name || '',
+      salesperson: quotation.quoteSentBy || '',
       deliverDate: invoiceData.deliverDate,
       paymentConditions: invoiceData.paymentConditions,
       validityDate: invoiceData.validityDate,
