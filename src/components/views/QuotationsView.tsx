@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { Quotation, User } from '@/types';
 import QuotationModal from '../modals/QuotationModal';
 
@@ -14,10 +13,12 @@ interface QuotationsViewProps {
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
   onDelete?: (id: string) => void;
+  onApprove?: (id: string) => void;
+  onReject?: (id: string) => void;
 }
 
 const QuotationsView = ({
-  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onDelete
+  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onDelete, onApprove, onReject
 }: QuotationsViewProps) => {
   const [modalQuotation, setModalQuotation] = useState<Quotation|null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -96,7 +97,12 @@ const QuotationsView = ({
           pending: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
           lost: 'bg-red-100 text-red-800 hover:bg-red-200'
         };
-        return <Badge className={`${colors[value]} font-medium`}>{value}</Badge>;
+        const statusText = {
+          won: 'Approved',
+          pending: 'Pending',
+          lost: 'Rejected'
+        };
+        return <Badge className={`${colors[value]} font-medium`}>{statusText[value] || value}</Badge>;
       }
     },
     {
@@ -120,7 +126,29 @@ const QuotationsView = ({
       key: 'actions', 
       label: 'Actions',
       render: (_: any, row: Quotation) => (
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {user.role === 'admin' && row.status === 'pending' && (
+            <>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => onApprove?.(row.id)}
+                className="text-green-600 hover:text-green-700 hover:bg-green-50 p-1"
+                title="Approve"
+              >
+                <CheckCircle size={16} />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => onReject?.(row.id)}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1"
+                title="Reject"
+              >
+                <XCircle size={16} />
+              </Button>
+            </>
+          )}
           {(user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won' && (
             <Button
               size="sm"

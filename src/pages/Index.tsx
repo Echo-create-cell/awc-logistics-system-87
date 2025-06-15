@@ -201,6 +201,8 @@ const Index = () => {
             onInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
             onEdit={handleEditQuotation}
             onDelete={handleDeleteQuotation}
+            onApprove={handleApproveQuotation}
+            onReject={handleRejectQuotation}
           />
         );
       case 'create':
