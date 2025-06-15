@@ -1,15 +1,15 @@
+
 import React, { useState } from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Eye, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import { Quotation, User } from '@/types';
 import QuotationModal from '../modals/QuotationModal';
 
 interface QuotationsViewProps {
   user: User;
   quotations: Quotation[];
-  onView: (quotation: Quotation) => void;
   setActiveTab: (tab: string) => void;
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
@@ -17,71 +17,110 @@ interface QuotationsViewProps {
 }
 
 const QuotationsView = ({
-  user, quotations, onView, setActiveTab, onInvoiceFromQuotation, onEdit, onDelete
+  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onDelete
 }: QuotationsViewProps) => {
   const [modalQuotation, setModalQuotation] = useState<Quotation|null>(null);
-  const [modalMode, setModalMode] = useState<"view"|"edit">("view");
   const [modalOpen, setModalOpen] = useState(false);
 
-  const handleView = (quotation: Quotation) => {
-    setModalQuotation(quotation);
-    setModalMode("view");
-    setModalOpen(true);
-    onView?.(quotation);
-  };
   const handleEdit = (quotation: Quotation) => {
     setModalQuotation(quotation);
-    setModalMode("edit");
     setModalOpen(true);
-    onEdit?.(quotation);
   };
+
+  const handleSave = (updatedQuotation: Quotation) => {
+    onEdit?.(updatedQuotation);
+    setModalOpen(false);
+  };
+
   const handleDelete = (id: string) => {
     onDelete?.(id);
     setModalOpen(false);
   };
 
   const quotationColumns = [
-    { key: 'clientName', label: 'Client', render: (value: string) => value || 'N/A' },
-    { key: 'volume', label: 'Volume' },
-    { key: 'destination', label: 'Destination', render: (value: string) => value || 'N/A' },
-    { key: 'doorDelivery', label: 'Door Delivery', render: (value: string) => value || 'N/A' },
-    {
-      key: 'buyRate', label: 'Buy Rate',
-      render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
+    { 
+      key: 'clientName', 
+      label: 'Client',
+      render: (value: string) => (
+        <div className="font-medium text-gray-900">{value || 'N/A'}</div>
+      )
+    },
+    { 
+      key: 'volume', 
+      label: 'Volume',
+      render: (value: string) => (
+        <div className="text-gray-700">{value}</div>
+      )
+    },
+    { 
+      key: 'destination', 
+      label: 'Destination',
+      render: (value: string) => (
+        <div className="text-gray-700">{value || 'N/A'}</div>
+      )
     },
     {
-      key: 'clientQuote', label: 'Client Quote',
-      render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
+      key: 'buyRate', 
+      label: 'Buy Rate',
+      render: (value: number, row: Quotation) => (
+        <div className="font-medium">{row.currency} {value.toLocaleString()}</div>
+      )
     },
     {
-      key: 'profit', label: 'Profit',
-      render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
+      key: 'clientQuote', 
+      label: 'Client Quote',
+      render: (value: number, row: Quotation) => (
+        <div className="font-medium text-blue-600">{row.currency} {value.toLocaleString()}</div>
+      )
     },
-    { key: 'quoteSentBy', label: 'Quote Sent By' },
     {
-      key: 'status', label: 'Status',
+      key: 'profit', 
+      label: 'Profit',
+      render: (value: number, row: Quotation) => (
+        <div className="font-medium text-green-600">{row.currency} {value.toLocaleString()}</div>
+      )
+    },
+    { 
+      key: 'quoteSentBy', 
+      label: 'Quote Sent By',
+      render: (value: string) => (
+        <div className="text-gray-600">{value}</div>
+      )
+    },
+    {
+      key: 'status', 
+      label: 'Status',
       render: (value: string) => {
         const colors = {
-          won: 'bg-green-100 text-green-800',
-          pending: 'bg-yellow-100 text-yellow-800',
-          lost: 'bg-red-100 text-red-800'
+          won: 'bg-green-100 text-green-800 hover:bg-green-200',
+          pending: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+          lost: 'bg-red-100 text-red-800 hover:bg-red-200'
         };
-        return <Badge className={colors[value]}>{value}</Badge>;
+        return <Badge className={`${colors[value]} font-medium`}>{value}</Badge>;
       }
     },
     {
-      key: 'approvedBy', label: 'Approved By',
-      render: (value: string, row: Quotation) => value && row.approvedAt
-        ? `${value} on ${new Date(row.approvedAt).toLocaleDateString()}`
-        : 'N/A'
+      key: 'approvedBy', 
+      label: 'Approved By',
+      render: (value: string, row: Quotation) => (
+        <div className="text-sm">
+          {value && row.approvedAt
+            ? (
+              <div>
+                <div className="font-medium text-gray-900">{value}</div>
+                <div className="text-gray-500">{new Date(row.approvedAt).toLocaleDateString()}</div>
+              </div>
+            )
+            : <span className="text-gray-400">N/A</span>
+          }
+        </div>
+      )
     },
     {
-      key: 'actions', label: 'Actions',
+      key: 'actions', 
+      label: 'Actions',
       render: (_: any, row: Quotation) => (
-        <div className="flex gap-1">
-          <Button size="sm" variant="ghost" onClick={() => handleView(row)}>
-            <Eye size={16} />
-          </Button>
+        <div className="flex gap-2">
           {(user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won' && (
             <Button
               size="sm"
@@ -91,10 +130,20 @@ const QuotationsView = ({
               Generate Invoice
             </Button>
           )}
-          <Button size="sm" variant="ghost" onClick={() => handleEdit(row)}>
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            onClick={() => handleEdit(row)}
+            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+          >
             <Edit size={16} />
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => handleDelete(row.id)} className="text-red-600 hover:text-red-700">
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            onClick={() => handleDelete(row.id)} 
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
             <Trash2 size={16} />
           </Button>
         </div>
@@ -110,17 +159,27 @@ const QuotationsView = ({
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">
-          {user.role === 'admin' ? 'Quotation Approvals' : 'My Quotations'}
-        </h2>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {user.role === 'admin' ? 'Quotation Approvals' : 'My Quotations'}
+          </h2>
+          <p className="text-gray-600 mt-1">
+            {user.role === 'admin' 
+              ? 'Review and approve pending quotations' 
+              : 'Manage your quotations and generate invoices'
+            }
+          </p>
+        </div>
         {(user.role === 'sales_director' || user.role === 'sales_agent') && (
           <Button className="bg-fuchsia-700 px-4 py-2 rounded text-white hover:bg-fuchsia-900" onClick={() => setActiveTab('create')}>
-            + Create Quotation
+            <Plus size={16} className="mr-2" />
+            Create Quotation
           </Button>
         )}
       </div>
+      
       <SearchableTable
-        title="Quotations"
+        title={`${filteredQuotations.length} Quotations`}
         data={filteredQuotations}
         columns={quotationColumns}
         searchFields={['clientName', 'destination', 'quoteSentBy', 'status', 'approvedBy']}
@@ -136,13 +195,13 @@ const QuotationsView = ({
           }
         ]}
       />
+      
       <QuotationModal
         open={modalOpen}
         quotation={modalQuotation}
         onClose={() => setModalOpen(false)}
-        onSave={onEdit ?? (()=>{})}
-        onDelete={onDelete ?? (()=>{})}
-        mode={modalMode}
+        onSave={handleSave}
+        onDelete={handleDelete}
       />
     </div>
   );

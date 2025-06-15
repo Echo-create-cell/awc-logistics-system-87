@@ -27,10 +27,6 @@ const Index = () => {
   const [invoices, setInvoices] = useState<InvoiceData[]>([]);
   const [printPreview, setPrintPreview] = useState<InvoiceData | null>(null);
   const [invoiceQuotation, setInvoiceQuotation] = useState<Quotation | null>(null);
-  const [editQuotation, setEditQuotation] = useState<Quotation | null>(null);
-  const [deleteQuotationId, setDeleteQuotationId] = useState<string | null>(null);
-  const [editUser, setEditUser] = useState<User | null>(null);
-  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const { toast } = useToast();
 
   if (!user) {
@@ -75,17 +71,14 @@ const Index = () => {
     setActiveTab('quotations');
   };
 
-  // Invoice from scratch or from quotation
   const handleGenerateInvoiceFromQuotation = (quotation: Quotation) => {
     setInvoiceQuotation(quotation);
     setActiveTab('invoices');
   };
 
-  // Save new invoice, link to quotation if necessary
   const handleSaveInvoice = (invoice: InvoiceData) => {
     setInvoices(prev => [...prev, invoice]);
 
-    // Link invoice and quotation
     if (invoice.quotationId) {
       setQuotations((prev) => prev.map(q =>
         q.id === invoice.quotationId
@@ -104,49 +97,65 @@ const Index = () => {
     });
   };
 
+  const handleEditInvoice = (updatedInvoice: InvoiceData) => {
+    setInvoices(prev => prev.map(inv => 
+      inv.id === updatedInvoice.id ? updatedInvoice : inv
+    ));
+    toast({
+      title: "Invoice Updated",
+      description: `Invoice ${updatedInvoice.invoiceNumber} has been updated successfully.`,
+    });
+  };
+
+  const handleDeleteInvoice = (id: string) => {
+    setInvoices(prev => prev.filter(inv => inv.id !== id));
+    toast({
+      title: "Invoice Deleted",
+      description: "Invoice has been successfully deleted.",
+      variant: "destructive",
+    });
+  };
+
   const handlePrintInvoice = (invoice: InvoiceData) => {
     setPrintPreview(invoice);
   };
 
-  const handleViewQuotation = (quotation: Quotation) => {
-    setEditQuotation(quotation);
-    // simply open modal, don't do alert or toast here
+  const handleEditQuotation = (updatedQuotation: Quotation) => {
+    setQuotations(prev => prev.map(q => 
+      q.id === updatedQuotation.id ? updatedQuotation : q
+    ));
+    toast({
+      title: "Quotation Updated",
+      description: `Quotation for ${updatedQuotation.clientName} has been updated successfully.`,
+    });
   };
 
-  const handleViewInvoice = (invoice: InvoiceData) => {
-    setPrintPreview(invoice);
-  };
-
-  const handleEditQuotation = (quotation: Quotation) => {
-    setEditQuotation(quotation);
-    // The edit modal is opened via QuotationsView, not here
-  };
   const handleDeleteQuotation = (id: string) => {
-    setDeleteQuotationId(id);
-    if (window.confirm('Are you sure you want to delete this quotation?')) {
-      setQuotations(prev => prev.filter(q => q.id !== id));
-      toast({
-        title: "Quotation Deleted",
-        description: "Quotation was successfully deleted.",
-      });
-      setDeleteQuotationId(null);
-    }
+    setQuotations(prev => prev.filter(q => q.id !== id));
+    toast({
+      title: "Quotation Deleted",
+      description: "Quotation has been successfully deleted.",
+      variant: "destructive",
+    });
   };
 
-  const handleEditUser = (userObj: User) => {
-    setEditUser(userObj);
-    // Edit handled in UsersView modal
+  const handleEditUser = (updatedUser: User) => {
+    setUsers(prev => prev.map(u => 
+      u.id === updatedUser.id ? updatedUser : u
+    ));
+    toast({
+      title: "User Updated",
+      description: `User ${updatedUser.name} has been updated successfully.`,
+    });
   };
+
   const handleDeleteUser = (userId: string) => {
-    setDeleteUserId(userId);
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      setUsers(prev => prev.filter(u => u.id !== userId));
-      toast({
-        title: "User Deleted",
-        description: "User was successfully deleted.",
-      });
-      setDeleteUserId(null);
-    }
+    setUsers(prev => prev.filter(u => u.id !== userId));
+    toast({
+      title: "User Deleted",
+      description: "User has been successfully deleted.",
+      variant: "destructive",
+    });
   };
 
   const renderContent = () => {
@@ -158,14 +167,13 @@ const Index = () => {
             quotations={quotations}
             onApprove={handleApproveQuotation}
             onReject={handleRejectQuotation}
-            onView={handleViewQuotation}
+            onView={() => {}} // No longer needed
           />
         );
       case 'users':
         return (
           <UsersView
             users={users}
-            onView={(userObj) => alert(`View User: ${userObj.name}`)}
             onEdit={handleEditUser}
             onDelete={handleDeleteUser}
           />
@@ -175,7 +183,6 @@ const Index = () => {
           <QuotationsView
             user={user}
             quotations={quotations}
-            onView={handleViewQuotation}
             setActiveTab={setActiveTab}
             onInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
             onEdit={handleEditQuotation}
@@ -196,8 +203,9 @@ const Index = () => {
             invoices={invoices}
             quotations={quotations}
             onSave={handleSaveInvoice}
+            onEdit={handleEditInvoice}
+            onDelete={handleDeleteInvoice}
             onPrint={handlePrintInvoice}
-            onView={handleViewInvoice}
             setActiveTab={setActiveTab}
             invoiceQuotation={invoiceQuotation}
             onInvoiceQuotationClear={() => setInvoiceQuotation(null)}
