@@ -33,6 +33,7 @@ const QuotationModal = ({ open, quotation, onClose, onSave, user }: QuotationMod
             quotation={quotation}
             onSave={handleSaveForm}
             onClose={onClose}
+            user={user}
           />
         )}
       </DialogContent>
