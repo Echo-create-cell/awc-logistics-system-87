@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -75,7 +74,7 @@ const QuotationFormMain = ({
         <CardContent>
           <CommodityList
             commodities={commodities}
-            onUpdateCommodity={updateCommodody}
+            onUpdateCommodity={updateCommodity}
             onRemoveCommodity={removeCommodity}
             onAddCharge={addCharge}
             onRemoveCharge={removeCharge}
