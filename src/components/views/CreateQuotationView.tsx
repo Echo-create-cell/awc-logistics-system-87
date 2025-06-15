@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -5,25 +6,28 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
-import { Quotation, Client } from '@/types';
+import { Quotation, Client, User } from '@/types';
 import { QuotationCommodity, InvoiceCharge } from '@/types/invoice';
-import { useAuth } from '@/contexts/AuthContext';
 import CommodityList from '../quotations/CommodityList';
-import { mockClients } from '@/data/mockData';
-import QuotationSummary from '../quotations/QuotationSummary';
-import QuotationActions from '../quotations/QuotationActions';
-import QuotationFormDetails from '../quotations/QuotationFormDetails';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+
+// Defining mock clients locally to resolve import issue
+const mockClients: Client[] = [
+  { id: '1', companyName: 'Michel-TLC', contactPerson: 'Michel', tinNumber: '', address: 'Goma', city: 'Goma', country: 'DRC', phone: '', email: 'michel@tlc.com' },
+  { id: '2', companyName: 'ABC Corporation', contactPerson: 'John Doe', tinNumber: 'TIN123456', address: '123 Business St', city: 'Kigali', country: 'Rwanda', phone: '+250788123456', email: 'john@abc.com' }
+];
 
 interface CreateQuotationViewProps {
-  onSave: (quotation: Omit<Quotation, 'id' | 'status' | 'created_at' | 'quote_sent_by' | 'approved_by' | 'approved_at'>, isDraft: boolean) => void;
+  onQuotationCreated: (quotation: Quotation) => void;
   setActiveTab: (tab: string) => void;
+  user: User;
 }
 
-const CreateQuotationView = ({ onSave, setActiveTab }: CreateQuotationViewProps) => {
-  const { user } = useAuth();
+const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQuotationViewProps) => {
   const { toast } = useToast();
   const [clients, setClients] = useState<Client[]>(mockClients);
-  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [selectedClientName, setSelectedClientName] = useState<string>('');
   const [commodities, setCommodities] = useState<QuotationCommodity[]>([]);
   const [buyRate, setBuyRate] = useState(0);
   const [clientQuote, setClientQuote] = useState(0);
@@ -113,36 +117,40 @@ const CreateQuotationView = ({ onSave, setActiveTab }: CreateQuotationViewProps)
     setProfitPercentage(pp);
   };
   
-  const handleSaveQuotation = (isDraft: boolean) => {
-    if (!selectedClientId || clientQuote <= 0 || !buyRate || !currency) {
+  const handleSaveQuotation = () => {
+    if (!selectedClientName || clientQuote <= 0 || !buyRate || !currency) {
       toast({
         title: "Missing Fields",
-        description: "Please select a client, fill in commodities, buy rate, and currency.",
+        description: "Please select a client, and fill in commodities and pricing details.",
         variant: "destructive",
       });
       return;
     }
 
-    const newQuotationData: Omit<Quotation, 'id' | 'status' | 'created_at' | 'quote_sent_by' | 'approved_by' | 'approved_at'> = {
-      clientName: selectedClientId,
-      volume: JSON.stringify(commodities), // Serialize commodities
+    const newQuotation: Quotation = {
+      id: uuidv4(),
+      clientName: selectedClientName,
+      volume: JSON.stringify(commodities),
       currency,
       buyRate,
       clientQuote,
       profit,
-      profitPercentage,
+      profitPercentage: `${profitPercentage.toFixed(2)}%`,
       remarks,
       destination,
       doorDelivery,
-      // New fields from Excel
-      freightMode: 'Air Freight' as Quotation['freightMode'],
-      requestType: 'Import' as Quotation['requestType'],
+      status: 'pending',
+      quoteSentBy: user.name,
+      createdAt: new Date().toISOString(),
+      followUpDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      freightMode: 'Air Freight',
+      requestType: 'Import',
       countryOfOrigin: '',
       cargoDescription: '',
     };
     
-    onSave(newQuotationData, isDraft);
-    setCommodities([{ id: uuidv4(), name: '', quantityKg: 0, rate: 0 }]);
+    onQuotationCreated(newQuotation);
+    setCommodities([{ id: uuidv4(), name: '', quantityKg: 0, charges: [{id: uuidv4(), description: '', rate: 0}] }]);
   };
 
   return (
@@ -153,53 +161,90 @@ const CreateQuotationView = ({ onSave, setActiveTab }: CreateQuotationViewProps)
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <QuotationFormDetails
-            clients={clients}
-            selectedClientId={selectedClientId}
-            onClientChange={setSelectedClientId}
-            destination={destination}
-            onDestinationChange={setDestination}
-            doorDelivery={doorDelivery}
-            onDoorDeliveryChange={setDoorDelivery}
-            currency={currency}
-            onCurrencyChange={setCurrency}
-          />
-
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Commodities</h3>
-            <CommodityList
-              commodities={commodities}
-              onUpdateCommodity={updateCommodity}
-              onRemoveCommodity={removeCommodity}
-              onAddCharge={addCharge}
-              onRemoveCharge={removeCharge}
-              onUpdateCharge={updateCharge}
-              currency={currency}
-            />
-            <Button onClick={addCommodity} variant="outline" className="mt-4">
-              Add Another Commodity
-            </Button>
-          </div>
+          <Card>
+            <CardHeader><CardTitle>Details</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Client</Label>
+                  <Select onValueChange={setSelectedClientName} value={selectedClientName}>
+                    <SelectTrigger><SelectValue placeholder="Select a client" /></SelectTrigger>
+                    <SelectContent>
+                      {clients.map(client => <SelectItem key={client.id} value={client.companyName}>{client.companyName}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Currency</Label>
+                  <Select onValueChange={setCurrency} defaultValue={currency}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">USD</SelectItem>
+                      <SelectItem value="EUR">EUR</SelectItem>
+                      <SelectItem value="RWF">RWF</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><Label>Destination</Label><Input value={destination} onChange={e => setDestination(e.target.value)} placeholder="e.g. Kigali"/></div>
+                <div><Label>Door Delivery</Label><Input value={doorDelivery} onChange={e => setDoorDelivery(e.target.value)} placeholder="e.g. Client's warehouse"/></div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader><CardTitle>Commodities</CardTitle></CardHeader>
+            <CardContent>
+              <CommodityList
+                commodities={commodities}
+                onUpdateCommodity={updateCommodity}
+                onRemoveCommodity={removeCommodity}
+                onAddCharge={addCharge}
+                onRemoveCharge={removeCharge}
+                onUpdateCharge={updateCharge}
+                currency={currency}
+              />
+              <Button onClick={addCommodity} variant="outline" className="mt-4">
+                Add Another Commodity
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="lg:col-span-1 space-y-6">
-          <QuotationSummary
-            buyRate={buyRate}
-            clientQuote={clientQuote}
-            onClientQuoteChange={setClientQuote}
-            profit={profit}
-            profitPercentage={profitPercentage}
-            currency={currency}
-            remarks={remarks}
-            onRemarksChange={setRemarks}
-          />
+          <Card>
+            <CardHeader><CardTitle>Pricing Summary</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Total Buy Rate ({currency})</Label>
+                <Input value={buyRate.toFixed(2)} disabled />
+              </div>
+              <div>
+                <Label>Client Quote ({currency})</Label>
+                <Input type="number" value={clientQuote} onChange={e => setClientQuote(parseFloat(e.target.value) || 0)} />
+              </div>
+              <div>
+                <Label>Profit ({currency})</Label>
+                <Input value={profit.toFixed(2)} disabled />
+              </div>
+              <div>
+                <Label>Profit Margin (%)</Label>
+                <Input value={profitPercentage.toFixed(2)} disabled />
+              </div>
+              <div>
+                <Label>Remarks</Label>
+                <Textarea value={remarks} onChange={e => setRemarks(e.target.value)} />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
       
-      <QuotationActions
-        onSave={handleSaveQuotation}
-        onCancel={() => setActiveTab("allQuotations")}
-      />
+      <div className="flex justify-end gap-2 pt-4 border-t">
+        <Button variant="outline" onClick={() => setActiveTab("allQuotations")}>Cancel</Button>
+        <Button onClick={handleSaveQuotation}>Save Quotation</Button>
+      </div>
     </div>
   );
 };

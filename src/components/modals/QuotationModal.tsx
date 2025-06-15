@@ -54,7 +54,6 @@ const QuotationModal = ({ open, quotation, onClose, onSave, user }: QuotationMod
         
         <QuotationForm
           quotation={form}
-          user={user}
           handleChange={handleChange}
         />
         
