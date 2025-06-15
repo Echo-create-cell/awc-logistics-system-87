@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { InvoiceData } from '@/types/invoice';
 import { Button } from '@/components/ui/button';
@@ -197,6 +198,7 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 <div className="flex justify-between items-start">
                     <div className="w-2/3 pt-20">
                          <p>Signature and Stump ..............................</p>
+                         <p className="mt-4 text-sm">Prepared by: {invoice.salesperson}</p>
                     </div>
                     <div className="w-1/3">
                         <div className="w-full text-sm">

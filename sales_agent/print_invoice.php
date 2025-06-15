@@ -1,3 +1,4 @@
+
 <?php
 require_once '../includes/functions.php';
 require_once '../config/database.php';
@@ -183,6 +184,7 @@ $company = $stmt->fetch(PDO::FETCH_ASSOC);
                 <div class="signature-area">
                     <p>Signature and Stump ..............................</p>
                 </div>
+                 <p style="margin-top: 16px;">Prepared by: <?php echo htmlspecialchars($invoice['salesperson']); ?></p>
             </div>
             <div style="width: 33%;">
                 <div class="totals-section" style="justify-content: flex-end;">
