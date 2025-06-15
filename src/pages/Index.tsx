@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginForm from '@/components/LoginForm';
@@ -22,6 +23,7 @@ const Index = () => {
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [invoices, setInvoices] = useState<InvoiceData[]>([]);
   const [printPreview, setPrintPreview] = useState<InvoiceData | null>(null);
+  const [invoiceQuotation, setInvoiceQuotation] = useState<Quotation | null>(null);
   const { toast } = useToast();
 
   if (!user) {
@@ -66,8 +68,33 @@ const Index = () => {
     setActiveTab('quotations');
   };
 
+  // Invoice from scratch or from quotation
+  const handleGenerateInvoiceFromQuotation = (quotation: Quotation) => {
+    setInvoiceQuotation(quotation);
+    setActiveTab('invoices');
+  };
+
+  // Save new invoice, link to quotation if necessary
   const handleSaveInvoice = (invoice: InvoiceData) => {
     setInvoices(prev => [...prev, invoice]);
+
+    // Link invoice and quotation
+    if (invoice.quotationId) {
+      setQuotations((prev) => prev.map(q =>
+        q.id === invoice.quotationId
+          ? {
+              ...q,
+              linkedInvoiceIds: q.linkedInvoiceIds
+                ? [...q.linkedInvoiceIds, invoice.id]
+                : [invoice.id],
+            }
+          : q
+      ));
+    }
+    toast({
+      title: "Invoice Saved",
+      description: `Invoice ${invoice.invoiceNumber} has been created successfully.`,
+    });
   };
 
   const handlePrintInvoice = (invoice: InvoiceData) => {
@@ -95,6 +122,7 @@ const Index = () => {
             onApprove={handleApproveQuotation}
             onReject={handleRejectQuotation}
             onView={handleViewQuotation}
+            onInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
           />
         );
       case 'users':
@@ -106,6 +134,7 @@ const Index = () => {
             quotations={quotations}
             onView={handleViewQuotation}
             setActiveTab={setActiveTab}
+            onInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
           />
         );
       case 'create':
@@ -120,10 +149,13 @@ const Index = () => {
           <InvoicesView
             user={user}
             invoices={invoices}
+            quotations={quotations}
             onSave={handleSaveInvoice}
             onPrint={handlePrintInvoice}
             onView={handleViewInvoice}
             setActiveTab={setActiveTab}
+            invoiceQuotation={invoiceQuotation}
+            onInvoiceQuotationClear={() => setInvoiceQuotation(null)}
           />
         );
       case 'reports':
@@ -138,7 +170,10 @@ const Index = () => {
       <Sidebar
         userRole={user.role}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={(tab: string) => {
+          setActiveTab(tab);
+          if (tab !== 'invoices') setInvoiceQuotation(null);
+        }}
       />
       <div className="flex-1 p-8">
         <div className="mb-6">

@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   name: string;
@@ -27,6 +26,8 @@ export interface Quotation {
   // Added for full screenshot coverage
   destination?: string;
   doorDelivery?: string;
+  // Optionally add extra for linking invoices
+  linkedInvoiceIds?: string[];
 }
 
 export interface Invoice {

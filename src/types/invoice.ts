@@ -1,4 +1,3 @@
-
 export interface InvoiceItem {
   id: string;
   quantityKg: number;
@@ -12,6 +11,7 @@ export interface InvoiceData {
   id: string;
   invoiceNumber: string;
   quotationId: string;
+  quotationData?: import('@/types').Quotation; // For prefilling from quotation
   clientName: string;
   clientAddress: string;
   clientTin: string;

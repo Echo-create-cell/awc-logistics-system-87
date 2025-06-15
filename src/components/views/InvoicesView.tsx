@@ -1,4 +1,3 @@
-
 import React from 'react';
 import InvoiceGenerator from '@/components/InvoiceGenerator';
 import SearchableTable from '@/components/SearchableTable';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText } from 'lucide-react';
 import { InvoiceData } from '@/types/invoice';
-import { User } from '@/types';
+import { User, Quotation } from '@/types';
 
 interface InvoicesViewProps {
   user: User;
@@ -15,33 +14,50 @@ interface InvoicesViewProps {
   onPrint: (invoice: InvoiceData) => void;
   onView: (invoice: InvoiceData) => void;
   setActiveTab: (tab: string) => void;
+  quotations: Quotation[];
+  invoiceQuotation: Quotation | null;
+  onInvoiceQuotationClear: () => void;
 }
 
-const InvoicesView = ({ user, invoices, onSave, onPrint, onView, setActiveTab }: InvoicesViewProps) => {
-  if (user.role === 'sales_director' || user.role === 'sales_agent') {
+const InvoicesView = ({
+  user, invoices, onSave, onPrint, onView, setActiveTab, quotations, invoiceQuotation, onInvoiceQuotationClear
+}: InvoicesViewProps) => {
+  // If user is creating invoice from a quotation, show InvoiceGenerator pre-filled
+  if ((user.role === 'sales_director' || user.role === 'sales_agent') && invoiceQuotation) {
     return (
-      <InvoiceGenerator 
-        onSave={onSave}
-        onPrint={onPrint}
-      />
+      <div>
+        <div className="flex items-center space-x-3 mb-2">
+          <button 
+            className="rounded px-3 py-1 bg-gray-200 hover:bg-gray-300"
+            onClick={onInvoiceQuotationClear}
+          >← Back to Invoices</button>
+          <span>Generating Invoice for Quotation <strong>{invoiceQuotation.id}</strong></span>
+        </div>
+        <InvoiceGenerator
+          quotation={invoiceQuotation}
+          onSave={onSave}
+          onPrint={onPrint}
+        />
+      </div>
     );
   }
 
+  // If user is not sales agent/director, show invoice table
   const invoiceColumns = [
     { key: 'invoiceNumber', label: 'Invoice #' },
     { key: 'clientName', label: 'Client' },
-    { 
-      key: 'totalAmount', 
+    {
+      key: 'totalAmount',
       label: 'Amount',
       render: (value: number, row: InvoiceData) => `${row.currency} ${value.toLocaleString()}`
     },
-    { 
-      key: 'issueDate', 
+    {
+      key: 'issueDate',
       label: 'Issue Date',
       render: (value: string) => new Date(value).toLocaleDateString()
     },
-    { 
-      key: 'status', 
+    {
+      key: 'status',
       label: 'Status',
       render: (value: string) => {
         const colors: {[key: string]: string} = {
@@ -49,8 +65,26 @@ const InvoicesView = ({ user, invoices, onSave, onPrint, onView, setActiveTab }:
           pending: 'bg-yellow-100 text-yellow-800',
           overdue: 'bg-red-100 text-red-800'
         };
-        return <Badge className={colors[value]}>{value}</Badge>;
+        return <Badge className={`px-2 py-1 rounded ${colors[value]}`}>{value}</Badge>;
       }
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (_: any, row: InvoiceData) => (
+        <div className="flex space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onView(row)}
+          >View</Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onPrint(row)}
+          >Print</Button>
+        </div>
+      )
     }
   ];
 

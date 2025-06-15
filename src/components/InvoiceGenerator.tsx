@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Minus, FileText, Printer, Save } from 'lucide-react';
-import { InvoiceItem, InvoiceData, Client } from '@/types/invoice';
+import { InvoiceItem, InvoiceData, Client, Quotation } from '@/types/invoice';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Mock clients data
@@ -39,11 +38,12 @@ const mockClients: Client[] = [
 ];
 
 interface InvoiceGeneratorProps {
+  quotation?: Quotation;
   onSave?: (invoice: InvoiceData) => void;
   onPrint?: (invoice: InvoiceData) => void;
 }
 
-const InvoiceGenerator = ({ onSave, onPrint }: InvoiceGeneratorProps) => {
+const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   
@@ -115,6 +115,39 @@ const InvoiceGenerator = ({ onSave, onPrint }: InvoiceGeneratorProps) => {
     return `AWC-${year}${month}-${random}`;
   };
 
+  useEffect(() => {
+    if (quotation) {
+      setSelectedClient({
+        id: 'custom',
+        companyName: quotation.clientName || '',
+        contactPerson: '', // Fill from client DB if available
+        tinNumber: '',
+        address: quotation.doorDelivery || '',
+        city: '', // Fill from client DB
+        country: '', // Fill from client DB
+        phone: '',
+        email: ''
+      });
+      setInvoiceData(prev => ({
+        ...prev,
+        destination: quotation.destination || '',
+        doorDelivery: quotation.doorDelivery || '',
+        currency: quotation.currency || 'USD'
+      }));
+      setItems([
+        {
+          id: '1',
+          quantityKg: parseFloat(quotation.volume) || 0,
+          commodity: "Quoted Commodity",
+          description: quotation.remarks || "As per Quotation",
+          price: quotation.clientQuote,
+          total: quotation.clientQuote * (parseFloat(quotation.volume) || 1)
+        }
+      ]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quotation]);
+
   const handleSave = () => {
     if (!selectedClient) {
       toast({
@@ -130,7 +163,7 @@ const InvoiceGenerator = ({ onSave, onPrint }: InvoiceGeneratorProps) => {
     const invoice: InvoiceData = {
       id: Date.now().toString(),
       invoiceNumber: generateInvoiceNumber(),
-      quotationId: '',
+      quotationId: quotation?.id || '',
       clientName: selectedClient.companyName,
       clientAddress: `${selectedClient.address}, ${selectedClient.city}, ${selectedClient.country}`,
       clientTin: selectedClient.tinNumber,
@@ -176,7 +209,7 @@ const InvoiceGenerator = ({ onSave, onPrint }: InvoiceGeneratorProps) => {
     const invoice: InvoiceData = {
       id: Date.now().toString(),
       invoiceNumber: generateInvoiceNumber(),
-      quotationId: '',
+      quotationId: quotation?.id || '',
       clientName: selectedClient.companyName,
       clientAddress: `${selectedClient.address}, ${selectedClient.city}, ${selectedClient.country}`,
       clientTin: selectedClient.tinNumber,
