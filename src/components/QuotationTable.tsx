@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -64,6 +65,9 @@ const QuotationTable = ({
                 Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Approved By
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -91,6 +95,20 @@ const QuotationTable = ({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {getStatusBadge(quotation.status)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  {quotation.approvedBy ? (
+                    <div>
+                      <div>{quotation.approvedBy}</div>
+                      {quotation.approvedAt && (
+                        <div className="text-xs text-slate-400">
+                          {new Date(quotation.approvedAt).toLocaleDateString()}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    'N/A'
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                   <Button

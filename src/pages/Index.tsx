@@ -271,7 +271,12 @@ const Index = () => {
               };
               return <Badge className={colors[value as keyof typeof colors]}>{value}</Badge>;
             }
-          }
+          },
+          { 
+            key: 'approvedBy', 
+            label: 'Approved By',
+            render: (value: string | undefined, row: Quotation) => value && row.approvedAt ? `${value} on ${new Date(row.approvedAt).toLocaleDateString()}` : 'N/A'
+          },
         ];
 
         const filteredQuotations = user.role === 'admin' 
@@ -312,7 +317,7 @@ const Index = () => {
                   options: [
                     { value: 'USD', label: 'USD' },
                     { value: 'EUR', label: 'EUR' },
-                    { value: 'RWF' }
+                    { value: 'RWF', label: 'RWF' }
                   ]
                 }
               ]}
