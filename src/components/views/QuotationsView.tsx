@@ -158,7 +158,7 @@ const QuotationsView = ({
               Generate Invoice
             </Button>
           )}
-          { !(user.role === 'sales_agent' && row.status === 'won') &&
+          { user.role !== 'sales_agent' &&
             <>
               <Button 
                 size="sm" 
