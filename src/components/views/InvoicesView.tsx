@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import InvoiceGenerator from '@/components/InvoiceGenerator';
 import SearchableTable from '@/components/SearchableTable';
@@ -138,14 +137,16 @@ const InvoicesView = ({
           >
             <Printer size={16} />
           </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => handleEdit(row)}
-            className="text-green-600 hover:text-green-700 hover:bg-green-50"
-          >
-            <Edit size={16} />
-          </Button>
+          {row.status !== 'paid' && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => handleEdit(row)}
+              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+            >
+              <Edit size={16} />
+            </Button>
+          )}
           <Button
             size="sm"
             variant="ghost"

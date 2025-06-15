@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { InvoiceData } from "@/types/invoice";
@@ -26,12 +25,17 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: Inv
 
   if (!form) return null;
 
+  const isPaid = form.status === 'paid';
+
   const handleChange = (field: string, value: string | number) => {
+    if (isPaid) return;
     setForm(f => ({ ...f!, [field]: value }));
   };
 
   const handleSave = () => {
-    if (form) onSave(form);
+    if (form && !isPaid) {
+      onSave(form);
+    }
     onClose();
   };
 
@@ -49,9 +53,9 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: Inv
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Edit Invoice</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">{isPaid ? "View Invoice" : "Edit Invoice"}</DialogTitle>
           <DialogDescription>
-            Update invoice details and manage invoice actions.
+            {isPaid ? "This invoice is paid and cannot be edited." : "Update invoice details and manage invoice actions."}
           </DialogDescription>
         </DialogHeader>
         
@@ -64,6 +68,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: Inv
                 value={form.invoiceNumber}
                 onChange={(e) => handleChange('invoiceNumber', e.target.value)}
                 placeholder="Enter invoice number"
+                disabled={isPaid}
               />
             </div>
             <div className="space-y-2">
@@ -73,6 +78,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: Inv
                 value={form.clientName}
                 onChange={(e) => handleChange('clientName', e.target.value)}
                 placeholder="Enter client name"
+                disabled={isPaid}
               />
             </div>
           </div>
@@ -80,7 +86,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: Inv
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="currency">Currency</Label>
-              <Select value={form.currency} onValueChange={(value) => handleChange('currency', value)}>
+              <Select value={form.currency} onValueChange={(value) => handleChange('currency', value)} disabled={isPaid}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
@@ -100,6 +106,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: Inv
                 value={form.totalAmount}
                 onChange={(e) => handleChange('totalAmount', parseFloat(e.target.value) || 0)}
                 placeholder="0.00"
+                disabled={isPaid}
               />
             </div>
           </div>
@@ -112,6 +119,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: Inv
                 type="date"
                 value={form.issueDate.split('T')[0]}
                 onChange={(e) => handleChange('issueDate', e.target.value)}
+                disabled={isPaid}
               />
             </div>
             <div className="space-y-2">
@@ -121,13 +129,14 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: Inv
                 type="date"
                 value={form.dueDate?.split('T')[0] || ''}
                 onChange={(e) => handleChange('dueDate', e.target.value)}
+                disabled={isPaid}
               />
             </div>
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
-            <Select value={form.status} onValueChange={(value) => handleChange('status', value)}>
+            <Select value={form.status} onValueChange={(value) => handleChange('status', value)} disabled={isPaid}>
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
@@ -169,7 +178,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onDelete, onPrint }: Inv
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button onClick={handleSave} className="bg-primary text-white">
+            <Button onClick={handleSave} className="bg-primary text-white" disabled={isPaid}>
               Save Changes
             </Button>
           </div>
