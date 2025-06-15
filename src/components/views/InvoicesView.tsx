@@ -42,6 +42,10 @@ const InvoicesView = ({
     setModalOpen(false);
   };
 
+  const displayedInvoices = (user.role === 'sales_agent' || user.role === 'sales_director')
+    ? invoices.filter(invoice => invoice.salesperson === user.name)
+    : invoices;
+
   // If user is creating invoice from a quotation, show InvoiceGenerator pre-filled
   if ((user.role === 'sales_director' || user.role === 'sales_agent') && invoiceQuotation) {
     return (
@@ -170,8 +174,8 @@ const InvoicesView = ({
       </div>
       
       <SearchableTable
-        title={`${invoices.length} Generated Invoices`}
-        data={invoices}
+        title={`${displayedInvoices.length} Generated Invoices`}
+        data={displayedInvoices}
         columns={invoiceColumns}
         searchFields={['invoiceNumber', 'clientName', 'status']}
         filterOptions={[

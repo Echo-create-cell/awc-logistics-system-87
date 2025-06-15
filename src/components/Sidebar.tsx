@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Users, FileText, DollarSign, BarChart3, Home, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -33,14 +32,14 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'dashboard', label: 'Dashboard', icon: Home },
           { id: 'quotations', label: 'My Quotations', icon: FileText },
           { id: 'create', label: 'Create Quotation', icon: FileText },
-          { id: 'invoices', label: 'Generate Invoices', icon: DollarSign },
+          { id: 'invoices', label: 'Invoices', icon: DollarSign },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
       case 'sales_agent':
         return [
           { id: 'dashboard', label: 'Dashboard', icon: Home },
           { id: 'quotations', label: 'Approved Quotations', icon: FileText },
-          { id: 'invoices', label: 'Generate Invoices', icon: DollarSign },
+          { id: 'invoices', label: 'Invoices', icon: DollarSign },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
       case 'finance_officer':
