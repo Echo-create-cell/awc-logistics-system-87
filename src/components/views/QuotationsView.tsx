@@ -1,10 +1,12 @@
+
 import React, { useState } from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, CheckCircle, XCircle, Eye } from 'lucide-react';
 import { Quotation, User } from '@/types';
 import QuotationModal from '../modals/QuotationModal';
+import QuotationDetailModal from '../modals/QuotationDetailModal';
 
 interface QuotationsViewProps {
   user: User;
@@ -22,10 +24,17 @@ const QuotationsView = ({
 }: QuotationsViewProps) => {
   const [modalQuotation, setModalQuotation] = useState<Quotation|null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [viewQuotation, setViewQuotation] = useState<Quotation|null>(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
 
   const handleEdit = (quotation: Quotation) => {
     setModalQuotation(quotation);
     setModalOpen(true);
+  };
+
+  const handleView = (quotation: Quotation) => {
+    setViewQuotation(quotation);
+    setViewModalOpen(true);
   };
 
   const handleSave = (updatedQuotation: Quotation) => {
@@ -127,6 +136,15 @@ const QuotationsView = ({
       label: 'Actions',
       render: (_: any, row: Quotation) => (
         <div className="flex gap-2 items-center">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => handleView(row)}
+            className="text-gray-600 hover:text-gray-700 hover:bg-gray-50 p-1"
+            title="View"
+          >
+            <Eye size={16} />
+          </Button>
           {user.role === 'admin' && row.status === 'pending' && (
             <>
               <Button
@@ -234,6 +252,11 @@ const QuotationsView = ({
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
         onDelete={handleDelete}
+      />
+      <QuotationDetailModal
+        open={viewModalOpen}
+        quotation={viewQuotation}
+        onClose={() => setViewModalOpen(false)}
       />
     </div>
   );
