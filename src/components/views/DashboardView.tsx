@@ -14,8 +14,18 @@ interface DashboardViewProps {
 
 const DashboardView = ({ user, users, quotations, setActiveTab }: DashboardViewProps) => {
   const recentPendingQuotations = quotations
-    .filter(q => q.status === 'pending')
+    .filter(q => {
+      if (user.role === 'admin') {
+        return q.status === 'pending';
+      }
+      if (user.role === 'sales_director' || user.role === 'sales_agent') {
+        return q.status === 'pending' && q.quoteSentBy === user.name;
+      }
+      return false;
+    })
     .slice(0, 5);
+
+  const cardTitle = user.role === 'admin' ? 'Pending Quotation Approvals' : 'Your Recent Pending Quotations';
 
   return (
     <div className="space-y-6">
@@ -28,11 +38,11 @@ const DashboardView = ({ user, users, quotations, setActiveTab }: DashboardViewP
 
       <DashboardStats user={user} users={users} quotations={quotations} />
 
-      <div className="grid grid-cols-1">
-        {user.role === 'admin' && (
+      {(user.role === 'admin' || user.role === 'sales_director' || user.role === 'sales_agent') && recentPendingQuotations.length > 0 && (
+        <div className="grid grid-cols-1">
           <Card>
             <CardHeader>
-              <CardTitle>Pending Quotation Approvals</CardTitle>
+              <CardTitle>{cardTitle}</CardTitle>
             </CardHeader>
             <CardContent>
               <RecentQuotations 
@@ -42,8 +52,8 @@ const DashboardView = ({ user, users, quotations, setActiveTab }: DashboardViewP
               />
             </CardContent>
           </Card>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

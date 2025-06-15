@@ -1,3 +1,4 @@
+
 -- Enhanced AWC Logistics Database with Invoice Structure
 CREATE DATABASE IF NOT EXISTS awc_logistics_db;
 USE awc_logistics_db;
@@ -32,7 +33,7 @@ CREATE TABLE clients (
 CREATE TABLE quotations (
     id INT PRIMARY KEY AUTO_INCREMENT,
     client_id INT,
-    volume VARCHAR(50) NOT NULL,
+    volume TEXT NOT NULL,
     buy_rate DECIMAL(10,2) NOT NULL,
     currency VARCHAR(10) NOT NULL,
     client_quote DECIMAL(10,2) NOT NULL,
@@ -46,6 +47,10 @@ CREATE TABLE quotations (
     approved_at TIMESTAMP NULL,
     destination VARCHAR(100),
     door_delivery VARCHAR(100),
+    freight_mode ENUM('Air Freight', 'Sea Freight', 'Road Freight'),
+    cargo_description TEXT,
+    request_type ENUM('Import', 'Export', 'Re-Import', 'Project', 'Local'),
+    country_of_origin VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES clients(id),
