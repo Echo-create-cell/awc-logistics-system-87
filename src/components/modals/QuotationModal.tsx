@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Quotation, User } from "@/types";
@@ -54,7 +53,7 @@ const QuotationModal = ({ open, quotation, onClose, onSave, user }: QuotationMod
         </DialogHeader>
         
         <QuotationForm
-          form={form}
+          quotation={form}
           user={user}
           handleChange={handleChange}
         />

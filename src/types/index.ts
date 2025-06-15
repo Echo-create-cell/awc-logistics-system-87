@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   name: string;
@@ -46,4 +45,16 @@ export interface Invoice {
   issueDate: string;
   dueDate: string;
   status: 'paid' | 'pending' | 'overdue';
+}
+
+export interface Client {
+  id: string;
+  companyName: string;
+  contactPerson: string;
+  tinNumber: string;
+  address: string;
+  city: string;
+  country: string;
+  phone: string;
+  email: string;
 }

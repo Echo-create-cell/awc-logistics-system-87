@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/hover-card";
 
 const VolumeCell = ({ row }: { row: Quotation }) => {
-    const { volume, currency, client_quote } = row;
+    const { volume, currency, clientQuote } = row;
     
     let commodities: QuotationCommodity[] = [];
     let totalQuantity = 0;
@@ -39,7 +39,7 @@ const VolumeCell = ({ row }: { row: Quotation }) => {
     if (!isStructured) {
         totalQuantity = !isNaN(Number(volume)) ? Number(volume) : 0;
         if(totalQuantity > 0) {
-            fallbackRate = client_quote / totalQuantity;
+            fallbackRate = clientQuote / totalQuantity;
         }
     }
 
