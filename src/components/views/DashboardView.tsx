@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import DashboardStats from '@/components/DashboardStats';
@@ -9,10 +10,9 @@ interface DashboardViewProps {
   quotations: Quotation[];
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
-  onView: (quotation: Quotation) => void;
 }
 
-const DashboardView = ({ userRole, quotations, onApprove, onReject, onView }: DashboardViewProps) => {
+const DashboardView = ({ userRole, quotations, onApprove, onReject }: DashboardViewProps) => {
   return (
     <div className="space-y-6">
       <DashboardStats userRole={userRole} />
@@ -26,7 +26,6 @@ const DashboardView = ({ userRole, quotations, onApprove, onReject, onView }: Da
             userRole={userRole}
             onApprove={onApprove}
             onReject={onReject}
-            onView={onView}
           />
         </CardContent>
       </Card>
