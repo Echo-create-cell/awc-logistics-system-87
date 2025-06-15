@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -59,13 +58,14 @@ const QuotationActions = ({
           <Badge variant="secondary">Invoice Generated</Badge>
         )
       )}
-      { user.role !== 'sales_agent' &&
+      { user.role !== 'sales_agent' && row.status === 'pending' &&
         <>
           <Button 
             size="sm" 
             variant="ghost" 
             onClick={() => onEdit?.(row)}
             className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            title="Edit"
           >
             <Edit size={16} />
           </Button>

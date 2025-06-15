@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -140,7 +141,7 @@ const QuotationTable = ({
                       </Button>
                     </>
                   )}
-                  {userRole === 'sales_director' && (
+                  {userRole === 'sales_director' && quotation.status === 'pending' && (
                     <>
                       <Button
                         variant="ghost"
