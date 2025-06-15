@@ -23,12 +23,22 @@ const VolumeCell = ({ row }: { row: Quotation }) => {
             if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].name) {
                 isStructured = true;
                 commodities = parsed.map((c: any) => {
-                    const commodityWithDefaults = {
-                        ...c,
-                        charges: c.charges || (c.rate !== undefined ? [{ id: c.id + '-charge', description: `Charge`, rate: c.rate }] : []),
+                    const rate = c.rate !== undefined 
+                        ? Number(c.rate) 
+                        : (c.charges && Array.isArray(c.charges) 
+                            ? c.charges.reduce((sum: number, charge: any) => sum + (Number(charge.rate) || 0), 0) 
+                            : 0);
+                    
+                    const quantity = Number(c.quantityKg) || 0;
+                    
+                    totalQuantity += quantity;
+
+                    return {
+                        id: c.id || `gen-${Math.random()}`,
+                        name: c.name || 'Unnamed',
+                        quantityKg: quantity,
+                        rate: rate,
                     };
-                    totalQuantity += Number(commodityWithDefaults.quantityKg) || 0;
-                    return commodityWithDefaults;
                 });
             }
         } catch(e) {
@@ -43,10 +53,8 @@ const VolumeCell = ({ row }: { row: Quotation }) => {
         }
     }
 
-    const totalRate = commodities.reduce((acc, commodity) => {
-        const commodityTotalRate = commodity.charges.reduce((chargeAcc, charge) => chargeAcc + (charge.rate || 0), 0);
-        return acc + commodityTotalRate;
-    }, 0);
+    const totalValue = commodities.reduce((acc, commodity) => acc + (commodity.rate * commodity.quantityKg), 0);
+    const avgRate = totalQuantity > 0 ? totalValue / totalQuantity : 0;
 
     return (
         <HoverCard>
@@ -66,18 +74,15 @@ const VolumeCell = ({ row }: { row: Quotation }) => {
                     <CardContent className="space-y-2 text-sm">
                         {isStructured && commodities.length > 0 ? (
                             <ul className="space-y-1">
-                                {commodities.map((commodity) => {
-                                    const commodityTotalRate = commodity.charges.reduce((acc, charge) => acc + (charge.rate || 0), 0);
-                                    return (
-                                        <li key={commodity.id} className="flex justify-between items-center text-xs">
-                                            <span>{commodity.quantityKg}kg - {commodity.name}</span>
-                                            <Badge variant="outline">{commodityTotalRate.toFixed(2)} {currency}/kg</Badge>
-                                        </li>
-                                    )
-                                })}
+                                {commodities.map((commodity) => (
+                                    <li key={commodity.id} className="flex justify-between items-center text-xs">
+                                        <span>{commodity.quantityKg}kg - {commodity.name}</span>
+                                        <Badge variant="outline">{commodity.rate.toFixed(2)} {currency}/kg</Badge>
+                                    </li>
+                                ))}
                                 <li className="flex justify-between items-center font-bold border-t pt-1 mt-1">
                                     <span>Total: {totalQuantity.toLocaleString()} kg</span>
-                                    <span>Avg Rate: {totalRate.toFixed(2)} {currency}/kg</span>
+                                    <span>Avg Rate: {avgRate.toFixed(2)} {currency}/kg</span>
                                 </li>
                             </ul>
                         ) : (
