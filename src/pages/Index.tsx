@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginForm from '@/components/LoginForm';
 import Sidebar from '@/components/Sidebar';
-import DashboardStats from '@/components/DashboardStats';
-import QuotationTable from '@/components/QuotationTable';
-import InvoiceGenerator from '@/components/InvoiceGenerator';
-import SearchableTable from '@/components/SearchableTable';
 import InvoicePrintPreview from '@/components/InvoicePrintPreview';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { mockQuotations, mockUsers, mockInvoices } from '@/data/mockData';
+import { mockQuotations, mockUsers } from '@/data/mockData';
 import { Quotation, User } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Download, FileText, Users, BarChart3, Eye, Printer } from 'lucide-react';
+
+import DashboardView from '@/components/views/DashboardView';
+import UsersView from '@/components/views/UsersView';
+import QuotationsView from '@/components/views/QuotationsView';
+import CreateQuotationView from '@/components/views/CreateQuotationView';
+import InvoicesView from '@/components/views/InvoicesView';
+import ReportsView from '@/components/views/ReportsView';
 
 const Index = () => {
   const { user } = useAuth();
@@ -29,88 +25,6 @@ const Index = () => {
   const [printPreview, setPrintPreview] = useState<InvoiceData | null>(null);
   const { toast } = useToast();
 
-  const [newQuotation, setNewQuotation] = useState({
-    clientName: '',
-    volume: '',
-    currency: 'USD',
-    buyRate: '',
-    clientQuote: '',
-    followUpDate: '',
-    remarks: '',
-  });
-
-  const [calculatedProfit, setCalculatedProfit] = useState({
-    profit: 0,
-    profitPercentage: '0.00%',
-  });
-
-  useEffect(() => {
-    const buyRate = parseFloat(newQuotation.buyRate);
-    const clientQuote = parseFloat(newQuotation.clientQuote);
-
-    if (!isNaN(buyRate) && !isNaN(clientQuote) && buyRate > 0) {
-      const profit = clientQuote - buyRate;
-      const profitPercentage = `${((profit / buyRate) * 100).toFixed(2)}%`;
-      setCalculatedProfit({ profit, profitPercentage });
-    } else {
-      const profit = !isNaN(clientQuote) && !isNaN(buyRate) ? clientQuote - buyRate : 0;
-      setCalculatedProfit({ profit: profit, profitPercentage: 'N/A' });
-    }
-  }, [newQuotation.buyRate, newQuotation.clientQuote]);
-  
-  const handleNewQuotationChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target;
-    setNewQuotation(prev => ({ ...prev, [id]: value }));
-  };
-
-  const handleCurrencyChange = (value: string) => {
-    setNewQuotation(prev => ({ ...prev, currency: value }));
-  };
-
-  const handleCreateQuotation = () => {
-    if (!newQuotation.clientName || !newQuotation.volume || !newQuotation.buyRate || !newQuotation.clientQuote) {
-      toast({
-        title: "Missing Fields",
-        description: "Please fill in all required quotation details.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const newQuotationData: Quotation = {
-      id: `q${Date.now()}`,
-      clientName: newQuotation.clientName,
-      volume: newQuotation.volume,
-      currency: newQuotation.currency,
-      buyRate: parseFloat(newQuotation.buyRate),
-      clientQuote: parseFloat(newQuotation.clientQuote),
-      profit: calculatedProfit.profit,
-      profitPercentage: calculatedProfit.profitPercentage,
-      quoteSentBy: user!.name,
-      status: 'pending',
-      followUpDate: newQuotation.followUpDate,
-      remarks: newQuotation.remarks,
-      createdAt: new Date().toISOString(),
-    };
-
-    setQuotations(prev => [newQuotationData, ...prev]);
-    toast({
-      title: "Quotation Created",
-      description: `Quotation for ${newQuotation.clientName} has been saved.`,
-    });
-    setNewQuotation({
-      clientName: '',
-      volume: '',
-      currency: 'USD',
-      buyRate: '',
-      clientQuote: '',
-      followUpDate: '',
-      remarks: '',
-    });
-    setActiveTab('quotations');
-  };
-
-  // Show login form if not authenticated
   if (!user) {
     return <LoginForm />;
   }
@@ -136,6 +50,15 @@ const Index = () => {
     });
   };
 
+  const handleQuotationCreated = (newQuotationData: Quotation) => {
+    setQuotations(prev => [newQuotationData, ...prev]);
+    toast({
+      title: "Quotation Created",
+      description: `Quotation for ${newQuotationData.clientName} has been saved.`,
+    });
+    setActiveTab('quotations');
+  };
+
   const handleSaveInvoice = (invoice: InvoiceData) => {
     setInvoices(prev => [...prev, invoice]);
   };
@@ -159,358 +82,45 @@ const Index = () => {
     switch (activeTab) {
       case 'dashboard':
         return (
-          <div className="space-y-6">
-            <DashboardStats userRole={user.role} />
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Quotations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <QuotationTable 
-                  quotations={quotations.slice(0, 5)} 
-                  userRole={user.role}
-                  onApprove={handleApproveQuotation}
-                  onReject={handleRejectQuotation}
-                  onView={handleViewQuotation}
-                />
-              </CardContent>
-            </Card>
-          </div>
+          <DashboardView
+            userRole={user.role}
+            quotations={quotations}
+            onApprove={handleApproveQuotation}
+            onReject={handleRejectQuotation}
+            onView={handleViewQuotation}
+          />
         );
-
       case 'users':
-        const userColumns = [
-          { key: 'name', label: 'Name' },
-          { key: 'email', label: 'Email' },
-          { 
-            key: 'role', 
-            label: 'Role',
-            render: (value: string) => (
-              <Badge variant="outline" className="capitalize">
-                {value.replace('_', ' ')}
-              </Badge>
-            )
-          },
-          { 
-            key: 'status', 
-            label: 'Status',
-            render: (value: string) => (
-              <Badge className={value === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                {value}
-              </Badge>
-            )
-          }
-        ];
-
-        return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">User Management</h2>
-              <Button>
-                <Plus size={16} className="mr-2" />
-                Add User
-              </Button>
-            </div>
-            <SearchableTable
-              title="Users"
-              data={users}
-              columns={userColumns}
-              searchFields={['name', 'email', 'role']}
-              filterOptions={[
-                {
-                  key: 'role',
-                  label: 'Role',
-                  options: [
-                    { value: 'admin', label: 'Admin' },
-                    { value: 'sales_director', label: 'Sales Director' },
-                    { value: 'sales_agent', label: 'Sales Agent' },
-                    { value: 'finance_officer', label: 'Finance Officer' }
-                  ]
-                },
-                {
-                  key: 'status',
-                  label: 'Status',
-                  options: [
-                    { value: 'active', label: 'Active' },
-                    { value: 'inactive', label: 'Inactive' }
-                  ]
-                }
-              ]}
-            />
-          </div>
-        );
-
+        return <UsersView users={users} />;
       case 'quotations':
-        const quotationColumns = [
-          { key: 'clientName', label: 'Client', render: (value: string) => value || 'N/A' },
-          { key: 'volume', label: 'Volume' },
-          { 
-            key: 'buyRate', 
-            label: 'Buy Rate',
-            render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
-          },
-          { 
-            key: 'clientQuote', 
-            label: 'Client Quote',
-            render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
-          },
-          { 
-            key: 'profit', 
-            label: 'Profit',
-            render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
-          },
-          { key: 'quoteSentBy', label: 'Quote Sent By' },
-          { 
-            key: 'status', 
-            label: 'Status',
-            render: (value: string) => {
-              const colors = {
-                won: 'bg-green-100 text-green-800',
-                pending: 'bg-yellow-100 text-yellow-800',
-                lost: 'bg-red-100 text-red-800'
-              };
-              return <Badge className={colors[value as keyof typeof colors]}>{value}</Badge>;
-            }
-          },
-          { 
-            key: 'approvedBy', 
-            label: 'Approved By',
-            render: (value: string | undefined, row: Quotation) => value && row.approvedAt ? `${value} on ${new Date(row.approvedAt).toLocaleDateString()}` : 'N/A'
-          },
-        ];
-
-        const filteredQuotations = user.role === 'admin' 
-          ? quotations.filter(q => q.status === 'pending')
-          : quotations;
-
         return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">
-                {user.role === 'admin' ? 'Quotation Approvals' : 'My Quotations'}
-              </h2>
-              {(user.role === 'sales_director' || user.role === 'sales_agent') && (
-                <Button onClick={() => setActiveTab('create')}>
-                  <Plus size={16} className="mr-2" />
-                  Create Quotation
-                </Button>
-              )}
-            </div>
-            <SearchableTable
-              title="Quotations"
-              data={filteredQuotations}
-              columns={quotationColumns}
-              searchFields={['volume', 'quoteSentBy', 'currency', 'clientName']}
-              filterOptions={[
-                {
-                  key: 'status',
-                  label: 'Status',
-                  options: [
-                    { value: 'pending', label: 'Pending' },
-                    { value: 'won', label: 'Won' },
-                    { value: 'lost', label: 'Lost' }
-                  ]
-                },
-                {
-                  key: 'currency',
-                  label: 'Currency',
-                  options: [
-                    { value: 'USD', label: 'USD' },
-                    { value: 'EUR', label: 'EUR' },
-                    { value: 'RWF', label: 'RWF' }
-                  ]
-                }
-              ]}
-              onView={handleViewQuotation}
-              onPrint={(quotation) => window.print()}
-            />
-          </div>
+          <QuotationsView
+            user={user}
+            quotations={quotations}
+            onView={handleViewQuotation}
+            setActiveTab={setActiveTab}
+          />
         );
-
       case 'create':
         return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Create New Quotation</h2>
-            <Card>
-              <CardHeader>
-                <CardTitle>Quotation Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="clientName">Client Name</Label>
-                    <Input id="clientName" placeholder="Client name" value={newQuotation.clientName} onChange={handleNewQuotationChange} />
-                  </div>
-                  <div>
-                    <Label htmlFor="volume">Volume</Label>
-                    <Input id="volume" placeholder="e.g., 2.4KGS, 20FT" value={newQuotation.volume} onChange={handleNewQuotationChange} />
-                  </div>
-                  <div>
-                    <Label htmlFor="currency">Currency</Label>
-                    <Select value={newQuotation.currency} onValueChange={handleCurrencyChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select currency" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="USD">USD ($)</SelectItem>
-                        <SelectItem value="RWF">RWF</SelectItem>
-                        <SelectItem value="EUR">EUR (€)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="followUpDate">Follow Up Date</Label>
-                    <Input id="followUpDate" type="date" value={newQuotation.followUpDate} onChange={handleNewQuotationChange} />
-                  </div>
-                  <div>
-                    <Label htmlFor="buyRate">Total Buy Rate</Label>
-                    <Input id="buyRate" type="number" placeholder="0.00" value={newQuotation.buyRate} onChange={handleNewQuotationChange} />
-                  </div>
-                  <div>
-                    <Label htmlFor="clientQuote">Client Quote (Sell Rate)</Label>
-                    <Input id="clientQuote" type="number" placeholder="0.00" value={newQuotation.clientQuote} onChange={handleNewQuotationChange} />
-                  </div>
-                  <div>
-                    <Label htmlFor="profit">Profit (Absolute)</Label>
-                    <Input id="profit" type="text" value={`${newQuotation.currency} ${calculatedProfit.profit.toLocaleString()}`} readOnly disabled className="bg-slate-100" />
-                  </div>
-                  <div>
-                    <Label htmlFor="profitPercentage">Profit (% of Cost)</Label>
-                    <Input id="profitPercentage" type="text" value={calculatedProfit.profitPercentage} readOnly disabled className="bg-slate-100" />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="remarks">Remarks (inc. reasons for lost business)</Label>
-                  <Textarea id="remarks" placeholder="Additional notes or remarks" value={newQuotation.remarks} onChange={handleNewQuotationChange} />
-                </div>
-                <Button className="w-full" onClick={handleCreateQuotation}>
-                  <Plus size={16} className="mr-2" />
-                  Create Quotation
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+          <CreateQuotationView
+            user={user}
+            onQuotationCreated={handleQuotationCreated}
+          />
         );
-
       case 'invoices':
-        if (user.role === 'sales_director' || user.role === 'sales_agent') {
-          return (
-            <InvoiceGenerator 
-              onSave={handleSaveInvoice}
-              onPrint={handlePrintInvoice}
-            />
-          );
-        }
-
-        const invoiceColumns = [
-          { key: 'invoiceNumber', label: 'Invoice #' },
-          { key: 'clientName', label: 'Client' },
-          { 
-            key: 'totalAmount', 
-            label: 'Amount',
-            render: (value: number, row: InvoiceData) => `${row.currency} ${value.toLocaleString()}`
-          },
-          { 
-            key: 'issueDate', 
-            label: 'Issue Date',
-            render: (value: string) => new Date(value).toLocaleDateString()
-          },
-          { 
-            key: 'status', 
-            label: 'Status',
-            render: (value: string) => {
-              const colors = {
-                paid: 'bg-green-100 text-green-800',
-                pending: 'bg-yellow-100 text-yellow-800',
-                overdue: 'bg-red-100 text-red-800'
-              };
-              return <Badge className={colors[value as keyof typeof colors]}>{value}</Badge>;
-            }
-          }
-        ];
-
         return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Invoices</h2>
-              <Button onClick={() => setActiveTab('invoices')}>
-                <FileText size={16} className="mr-2" />
-                New Invoice
-              </Button>
-            </div>
-            <SearchableTable
-              title="Generated Invoices"
-              data={invoices}
-              columns={invoiceColumns}
-              searchFields={['invoiceNumber', 'clientName']}
-              filterOptions={[
-                {
-                  key: 'status',
-                  label: 'Status',
-                  options: [
-                    { value: 'pending', label: 'Pending' },
-                    { value: 'paid', label: 'Paid' },
-                    { value: 'overdue', label: 'Overdue' }
-                  ]
-                }
-              ]}
-              onView={handleViewInvoice}
-              onPrint={handlePrintInvoice}
-            />
-          </div>
+          <InvoicesView
+            user={user}
+            invoices={invoices}
+            onSave={handleSaveInvoice}
+            onPrint={handlePrintInvoice}
+            onView={handleViewInvoice}
+            setActiveTab={setActiveTab}
+          />
         );
-
       case 'reports':
-        return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Financial Reports</h2>
-              <Button>
-                <Download size={16} className="mr-2" />
-                Export Report
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <BarChart3 className="mr-2 h-5 w-5" />
-                    Total Revenue
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-green-600">$2,456,789</div>
-                  <p className="text-sm text-slate-500">This month</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <FileText className="mr-2 h-5 w-5" />
-                    Total Quotations
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-blue-600">156</div>
-                  <p className="text-sm text-slate-500">This month</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Users className="mr-2 h-5 w-5" />
-                    Win Rate
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-purple-600">74%</div>
-                  <p className="text-sm text-slate-500">This month</p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        );
-
+        return <ReportsView />;
       default:
         return <div>Content not found</div>;
     }
