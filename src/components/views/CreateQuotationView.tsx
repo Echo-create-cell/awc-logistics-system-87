@@ -137,7 +137,7 @@ const CreateQuotationView = ({ user, onQuotationCreated }: CreateQuotationViewPr
               <Select value={newQuotation.currency} onValueChange={handleCurrencyChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select currency" />
-                </Trigger>
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="USD">USD ($)</SelectItem>
                   <SelectItem value="RWF">RWF</SelectItem>
