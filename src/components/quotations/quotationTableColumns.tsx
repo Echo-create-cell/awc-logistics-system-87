@@ -2,6 +2,8 @@
 import { Badge } from '@/components/ui/badge';
 import { Quotation, User } from '@/types';
 import QuotationActions from './QuotationActions';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { QuotationCommodity } from '@/types/invoice';
 
 interface GetQuotationColumnsProps {
   user: User;
@@ -23,16 +25,58 @@ export const getQuotationColumns = ({
   },
   { 
     key: 'volume', 
-    label: 'Volume',
-    render: (value: string) => (
-      <div className="text-gray-700">{value}</div>
-    )
+    label: 'Commodities',
+    render: (value: string, row: Quotation) => {
+      let commodities: QuotationCommodity[] = [];
+      try {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) {
+          commodities = parsed;
+        }
+      } catch (e) {
+        return <div className="text-gray-700 max-w-[150px] truncate">{value}</div>;
+      }
+
+      if (commodities.length === 0) {
+        return <div className="text-gray-700 max-w-[150px] truncate">{value}</div>;
+      }
+      
+      const totalWeight = commodities.reduce((acc, comm) => acc + (Number(comm.quantityKg) || 0), 0);
+
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="text-gray-700 cursor-pointer text-left">
+                <div>{commodities.length} item(s)</div>
+                <div className="text-xs text-gray-500">{totalWeight.toFixed(2)} KG</div>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="p-2 space-y-1">
+                <h4 className="font-semibold">Commodities</h4>
+                <ul className="list-disc list-inside">
+                  {commodities.map(comm => (
+                    <li key={comm.id} className="text-xs">
+                      {comm.name} ({comm.quantityKg} KG @ {row.currency} {comm.rate}/KG)
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
   },
   { 
     key: 'destination', 
     label: 'Destination',
-    render: (value: string) => (
-      <div className="text-gray-700">{value || 'N/A'}</div>
+    render: (value: string, row: Quotation) => (
+      <div>
+        <div className="text-gray-700">{value || 'N/A'}</div>
+        {row.doorDelivery && <div className="text-xs text-gray-500">Door: {row.doorDelivery}</div>}
+      </div>
     )
   },
   {
@@ -53,7 +97,10 @@ export const getQuotationColumns = ({
     key: 'profit', 
     label: 'Profit',
     render: (value: number, row: Quotation) => (
-      <div className="font-medium text-green-600">{row.currency} {value.toLocaleString()}</div>
+      <div className="font-medium text-green-600">
+        {row.currency} {value.toLocaleString()}
+        {row.profitPercentage && <span className="text-xs ml-1">({row.profitPercentage})</span>}
+      </div>
     )
   },
   { 
@@ -64,9 +111,19 @@ export const getQuotationColumns = ({
     )
   },
   {
+    key: 'createdAt',
+    label: 'Dates',
+    render: (_: any, row: Quotation) => (
+       <div className="text-sm">
+        <div>{new Date(row.createdAt).toLocaleDateString()}</div>
+        {row.followUpDate && <div className="text-xs text-orange-600 mt-1">Follow-up: {new Date(row.followUpDate).toLocaleDateString()}</div>}
+       </div>
+    )
+  },
+  {
     key: 'status', 
     label: 'Status',
-    render: (value: 'won' | 'pending' | 'lost') => {
+    render: (value: 'won' | 'pending' | 'lost', row: Quotation) => {
       const colors = {
         won: 'bg-green-100 text-green-800 hover:bg-green-200',
         pending: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
@@ -77,25 +134,36 @@ export const getQuotationColumns = ({
         pending: 'Pending',
         lost: 'Rejected'
       };
-      return <Badge className={`${colors[value]} font-medium`}>{statusText[value] || value}</Badge>;
+      return (
+        <div>
+          <Badge className={`${colors[value]} font-medium`}>{statusText[value] || value}</Badge>
+          {row.status === 'won' && row.approvedBy && row.approvedAt && (
+             <div className="text-xs text-gray-500 mt-1">
+               by {row.approvedBy} on {new Date(row.approvedAt).toLocaleDateString()}
+             </div>
+          )}
+        </div>
+      );
     }
   },
   {
-    key: 'approvedBy', 
-    label: 'Approved By',
-    render: (value: string, row: Quotation) => (
-      <div className="text-sm">
-        {value && row.approvedAt
-          ? (
-            <div>
-              <div className="font-medium text-gray-900">{value}</div>
-              <div className="text-gray-500">{new Date(row.approvedAt).toLocaleDateString()}</div>
-            </div>
-          )
-          : <span className="text-gray-400">N/A</span>
-        }
-      </div>
-    )
+    key: 'remarks',
+    label: 'Remarks',
+    render: (value: string) => {
+      if (!value) return <span className="text-gray-400">N/A</span>;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p className="truncate cursor-pointer max-w-[150px]">{value}</p>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="max-w-[300px] whitespace-pre-wrap p-2">{value}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
   },
   {
     key: 'actions', 
