@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,7 +8,6 @@ interface PricingSummaryProps {
   currency: string;
   buyRate: number;
   clientQuote: number;
-  onClientQuoteChange: (value: number) => void;
   profit: number;
   profitPercentage: number;
   remarks: string;
@@ -22,7 +20,6 @@ const PricingSummary = ({
   currency,
   buyRate,
   clientQuote,
-  onClientQuoteChange,
   profit,
   profitPercentage,
   remarks,
@@ -42,8 +39,8 @@ const PricingSummary = ({
           <Label>Client Quote ({currency})</Label>
           <Input 
             type="number" 
-            value={clientQuote} 
-            onChange={e => onClientQuoteChange(parseFloat(e.target.value) || 0)} 
+            value={clientQuote.toFixed(2)} 
+            disabled
             className="mt-1"
           />
         </div>
@@ -82,4 +79,3 @@ const PricingSummary = ({
 };
 
 export default PricingSummary;
-

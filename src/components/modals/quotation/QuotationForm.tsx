@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Quotation, User } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -21,7 +20,6 @@ const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps)
     currency,
     buyRate,
     clientQuote,
-    setClientQuote,
     profit,
     profitPercentage,
     remarks,
@@ -61,7 +59,6 @@ const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps)
           currency={currency}
           buyRate={buyRate}
           clientQuote={clientQuote}
-          onClientQuoteChange={setClientQuote}
           profit={profit}
           profitPercentage={profitPercentage}
           remarks={remarks}

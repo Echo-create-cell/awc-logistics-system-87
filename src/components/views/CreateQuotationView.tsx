@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -22,7 +21,6 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
     currency,
     buyRate,
     clientQuote,
-    setClientQuote,
     profit,
     profitPercentage,
     remarks,
@@ -78,7 +76,6 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
           currency={currency}
           buyRate={buyRate}
           clientQuote={clientQuote}
-          onClientQuoteChange={setClientQuote}
           profit={profit}
           profitPercentage={profitPercentage}
           remarks={remarks}

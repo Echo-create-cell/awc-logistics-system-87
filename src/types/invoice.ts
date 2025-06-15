@@ -3,6 +3,7 @@ export interface QuotationCommodity {
   name: string;
   quantityKg: number;
   rate: number;
+  clientRate: number;
 }
 
 export interface InvoiceCharge {

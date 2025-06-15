@@ -238,12 +238,13 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
           charges = commodity.charges.map((c: any) => ({ ...c, id: uuidv4() }));
           itemTotal = (commodity.quantityKg || 0) * charges.reduce((sum, c) => sum + (c.rate || 0), 0);
         } else { // Handle new quotations with a single rate
+          const clientRate = commodity.clientRate !== undefined ? commodity.clientRate : (commodity.rate || 0);
           charges = [{
             id: uuidv4(),
             description: `Charge for ${commodity.name || 'N/A'}`,
-            rate: commodity.rate || 0,
+            rate: clientRate,
           }];
-          itemTotal = (commodity.quantityKg || 0) * (commodity.rate || 0);
+          itemTotal = (commodity.quantityKg || 0) * clientRate;
         }
 
         return {

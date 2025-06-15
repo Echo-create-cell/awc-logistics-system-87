@@ -9,7 +9,7 @@ import { Label } from '../ui/label';
 
 interface CommodityListProps {
   commodities: QuotationCommodity[];
-  onUpdateCommodity: (id: string, field: 'name' | 'quantityKg' | 'rate', value: string | number) => void;
+  onUpdateCommodity: (id: string, field: 'name' | 'quantityKg' | 'rate' | 'clientRate', value: string | number) => void;
   onRemoveCommodity: (id: string) => void;
   currency: string;
 }
@@ -36,7 +36,7 @@ const CommodityList = ({
                 <Trash2 size={16} />
               </Button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="md:col-span-1">
                 <Label>Commodity Name</Label>
                 <Input
@@ -55,12 +55,21 @@ const CommodityList = ({
                 />
               </div>
               <div className="md:col-span-1">
-                <Label>Rate ({currency}/kg)</Label>
+                <Label>Buy Rate ({currency}/kg)</Label>
                 <Input
                   type="number"
                   value={commodity.rate}
                   onChange={(e) => onUpdateCommodity(commodity.id, 'rate', parseFloat(e.target.value) || 0)}
                   placeholder="e.g. 12.50"
+                />
+              </div>
+              <div className="md:col-span-1">
+                <Label>Client Rate ({currency}/kg)</Label>
+                <Input
+                  type="number"
+                  value={(commodity as any).clientRate || 0}
+                  onChange={(e) => onUpdateCommodity(commodity.id, 'clientRate', parseFloat(e.target.value) || 0)}
+                  placeholder="e.g. 15.00"
                 />
               </div>
             </div>

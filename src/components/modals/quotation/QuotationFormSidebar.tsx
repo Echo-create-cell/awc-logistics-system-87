@@ -6,7 +6,6 @@ interface QuotationFormSidebarProps {
   currency: string;
   buyRate: number;
   clientQuote: number;
-  onClientQuoteChange: (value: number) => void;
   profit: number;
   profitPercentage: number;
   remarks: string;
@@ -19,7 +18,6 @@ const QuotationFormSidebar = ({
   currency,
   buyRate,
   clientQuote,
-  onClientQuoteChange,
   profit,
   profitPercentage,
   remarks,
@@ -33,7 +31,6 @@ const QuotationFormSidebar = ({
         currency={currency}
         buyRate={buyRate}
         clientQuote={clientQuote}
-        onClientQuoteChange={onClientQuoteChange}
         profit={profit}
         profitPercentage={profitPercentage}
         remarks={remarks}

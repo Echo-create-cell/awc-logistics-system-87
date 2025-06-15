@@ -33,12 +33,16 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
       try {
         const parsed = JSON.parse(initialQuotation.volume);
         if (Array.isArray(parsed)) {
+          const totalQuantity = parsed.reduce((sum: number, c: any) => sum + (Number(c.quantityKg) || 0), 0);
+          const avgClientRate = totalQuantity > 0 && initialQuotation.clientQuote ? initialQuotation.clientQuote / totalQuantity : 0;
+
           const commoditiesWithRate = parsed.map((c: any) => ({
             id: c.id || uuidv4(),
             name: c.name || '',
             quantityKg: c.quantityKg || 0,
             // Handle both old format (with charges) and new format (with rate)
             rate: c.rate !== undefined ? c.rate : (c.charges ? c.charges.reduce((sum: number, charge: any) => sum + (Number(charge.rate) || 0), 0) : 0),
+            clientRate: c.clientRate !== undefined ? c.clientRate : avgClientRate,
           }));
           setCommodities(commoditiesWithRate);
         }
@@ -60,18 +64,25 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
     }, 0);
     setBuyRate(totalBuyRate);
     
-    const p = (clientQuote || 0) - totalBuyRate;
+    const totalClientQuote = commodities.reduce((sum, commodity) => {
+        const commodityClientRate = Number(commodity.clientRate) || 0;
+        const quantity = Number(commodity.quantityKg) || 0;
+        return sum + (commodityClientRate * quantity);
+    }, 0);
+    setClientQuote(totalClientQuote);
+
+    const p = totalClientQuote - totalBuyRate;
     const pp = totalBuyRate > 0 ? (p / totalBuyRate) * 100 : 0;
     setProfit(p);
     setProfitPercentage(pp);
-  }, [commodities, clientQuote]);
+  }, [commodities]);
 
   useEffect(() => {
     calculateTotals();
-  }, [commodities, clientQuote, calculateTotals]);
+  }, [commodities, calculateTotals]);
   
   const addCommodity = () => {
-    const newCommodity: QuotationCommodity = { id: uuidv4(), name: '', quantityKg: 0, rate: 0 };
+    const newCommodity: QuotationCommodity = { id: uuidv4(), name: '', quantityKg: 0, rate: 0, clientRate: 0 };
     setCommodities(prev => [...prev, newCommodity]);
   };
 
@@ -79,7 +90,7 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
     if (commodities.length > 1) setCommodities(prev => prev.filter(c => c.id !== id));
   };
 
-  const updateCommodity = (id: string, field: 'name' | 'quantityKg' | 'rate', value: string | number) => {
+  const updateCommodity = (id: string, field: 'name' | 'quantityKg' | 'rate' | 'clientRate', value: string | number) => {
     setCommodities(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
   };
 
