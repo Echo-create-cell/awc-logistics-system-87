@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,7 +8,6 @@ import { Textarea } from '../ui/textarea';
 
 interface QuotationFormDetailsProps {
   quotationData: {
-    clientName: string;
     currency: string;
     destination: string;
     doorDelivery: string;
@@ -24,10 +24,6 @@ interface QuotationFormDetailsProps {
 const QuotationFormDetails = ({ quotationData, onQuotationChange, onSelectChange }: QuotationFormDetailsProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <Label htmlFor="clientName">Client Name</Label>
-        <Input id="clientName" placeholder="Client name" value={quotationData.clientName} onChange={onQuotationChange} />
-      </div>
        <div>
         <Label htmlFor="freightMode">Freight Mode</Label>
         <Select value={quotationData.freightMode} onValueChange={(value) => onSelectChange('freightMode', value)}>

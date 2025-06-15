@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Quotation, Client } from '@/types';
 import { QuotationCommodity, InvoiceCharge } from '@/types/invoice';
@@ -10,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import QuotationFormDetails from '../../quotations/QuotationFormDetails';
 
 const mockClients: Client[] = [
   { id: '1', companyName: 'Michel-TLC', contactPerson: 'Michel', tinNumber: '', address: 'Goma', city: 'Goma', country: 'DRC', phone: '', email: 'michel@tlc.com' },
@@ -35,6 +35,11 @@ const QuotationForm = ({ quotation, onSave, onClose }: QuotationFormProps) => {
   const [doorDelivery, setDoorDelivery] = useState('');
   const [currency, setCurrency] = useState('USD');
   const [followUpDate, setFollowUpDate] = useState('');
+  const [freightMode, setFreightMode] = useState<Quotation['freightMode']>();
+  const [cargoDescription, setCargoDescription] = useState('');
+  const [requestType, setRequestType] = useState<Quotation['requestType']>();
+  const [countryOfOrigin, setCountryOfOrigin] = useState('');
+  const [quoteSentBy, setQuoteSentBy] = useState('');
 
   useEffect(() => {
     if (quotation) {
@@ -45,6 +50,11 @@ const QuotationForm = ({ quotation, onSave, onClose }: QuotationFormProps) => {
       setDoorDelivery(quotation.doorDelivery || '');
       setCurrency(quotation.currency);
       setFollowUpDate(quotation.followUpDate ? new Date(quotation.followUpDate).toISOString().split('T')[0] : '');
+      setFreightMode(quotation.freightMode);
+      setCargoDescription(quotation.cargoDescription || '');
+      setRequestType(quotation.requestType);
+      setCountryOfOrigin(quotation.countryOfOrigin || '');
+      setQuoteSentBy(quotation.quoteSentBy || '');
 
       try {
         const parsed = JSON.parse(quotation.volume);
@@ -117,6 +127,11 @@ const QuotationForm = ({ quotation, onSave, onClose }: QuotationFormProps) => {
       doorDelivery,
       currency,
       followUpDate,
+      freightMode,
+      cargoDescription,
+      requestType,
+      countryOfOrigin,
+      quoteSentBy,
     };
     onSave(updatedQuotation);
   };
@@ -138,22 +153,36 @@ const QuotationForm = ({ quotation, onSave, onClose }: QuotationFormProps) => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label>Currency</Label>
-                  <Select onValueChange={setCurrency} value={currency}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="USD">USD</SelectItem>
-                      <SelectItem value="EUR">EUR</SelectItem>
-                      <SelectItem value="RWF">RWF</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><Label>Destination</Label><Input value={destination} onChange={e => setDestination(e.target.value)} placeholder="e.g. Kigali"/></div>
-                <div><Label>Door Delivery</Label><Input value={doorDelivery} onChange={e => setDoorDelivery(e.target.value)} placeholder="e.g. Client's warehouse"/></div>
-              </div>
+              <QuotationFormDetails
+                quotationData={{
+                  currency,
+                  destination,
+                  doorDelivery,
+                  quoteSentBy,
+                  freightMode,
+                  requestType,
+                  countryOfOrigin,
+                  cargoDescription,
+                }}
+                onQuotationChange={(e) => {
+                  const { id, value } = e.target as HTMLInputElement | HTMLTextAreaElement;
+                   switch (id) {
+                    case 'destination': setDestination(value); break;
+                    case 'doorDelivery': setDoorDelivery(value); break;
+                    case 'quoteSentBy': setQuoteSentBy(value); break;
+                    case 'countryOfOrigin': setCountryOfOrigin(value); break;
+                    case 'cargoDescription': setCargoDescription(value); break;
+                  }
+                }}
+                onSelectChange={(field, value) => {
+                  switch (field) {
+                    case 'currency': setCurrency(value); break;
+                    case 'freightMode': setFreightMode(value as Quotation['freightMode']); break;
+                    case 'requestType': setRequestType(value as Quotation['requestType']); break;
+                  }
+                }}
+              />
             </CardContent>
           </Card>
           

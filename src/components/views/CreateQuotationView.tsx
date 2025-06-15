@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,6 +8,9 @@ import { QuotationCommodity, InvoiceCharge } from '@/types/invoice';
 import CommodityList from '../quotations/CommodityList';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import QuotationFormDetails from '../quotations/QuotationFormDetails';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 
 // Defining mock clients locally to resolve import issue
 const mockClients: Client[] = [
@@ -25,7 +26,7 @@ interface CreateQuotationViewProps {
 
 const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQuotationViewProps) => {
   const { toast } = useToast();
-  const [clients, setClients] = useState<Client[]>(mockClients);
+  const [clients] = useState<Client[]>(mockClients);
   const [selectedClientName, setSelectedClientName] = useState<string>('');
   const [commodities, setCommodities] = useState<QuotationCommodity[]>([]);
   const [buyRate, setBuyRate] = useState(0);
@@ -36,6 +37,11 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
   const [destination, setDestination] = useState('');
   const [doorDelivery, setDoorDelivery] = useState('');
   const [currency, setCurrency] = useState('USD');
+  const [freightMode, setFreightMode] = useState<Quotation['freightMode']>('Air Freight');
+  const [cargoDescription, setCargoDescription] = useState('');
+  const [requestType, setRequestType] = useState<Quotation['requestType']>('Import');
+  const [countryOfOrigin, setCountryOfOrigin] = useState('');
+  const [quoteSentBy, setQuoteSentBy] = useState(user.name);
   
   useEffect(() => {
     addCommodity();
@@ -140,17 +146,31 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
       destination,
       doorDelivery,
       status: 'pending',
-      quoteSentBy: user.name,
+      quoteSentBy: quoteSentBy,
       createdAt: new Date().toISOString(),
       followUpDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      freightMode: 'Air Freight',
-      requestType: 'Import',
-      countryOfOrigin: '',
-      cargoDescription: '',
+      freightMode: freightMode,
+      requestType: requestType,
+      countryOfOrigin: countryOfOrigin,
+      cargoDescription: cargoDescription,
     };
     
     onQuotationCreated(newQuotation);
     setCommodities([{ id: uuidv4(), name: '', quantityKg: 0, charges: [{id: uuidv4(), description: '', rate: 0}] }]);
+    setSelectedClientName('');
+    setClientQuote(0);
+    setBuyRate(0);
+    setProfit(0);
+    setProfitPercentage(0);
+    setRemarks('');
+    setDestination('');
+    setDoorDelivery('');
+    setCurrency('USD');
+    setFreightMode('Air Freight');
+    setCargoDescription('');
+    setRequestType('Import');
+    setCountryOfOrigin('');
+    setQuoteSentBy(user.name);
   };
 
   return (
@@ -177,22 +197,36 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label>Currency</Label>
-                  <Select onValueChange={setCurrency} defaultValue={currency}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="USD">USD</SelectItem>
-                      <SelectItem value="EUR">EUR</SelectItem>
-                      <SelectItem value="RWF">RWF</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><Label>Destination</Label><Input value={destination} onChange={e => setDestination(e.target.value)} placeholder="e.g. Kigali"/></div>
-                <div><Label>Door Delivery</Label><Input value={doorDelivery} onChange={e => setDoorDelivery(e.target.value)} placeholder="e.g. Client's warehouse"/></div>
-              </div>
+              <QuotationFormDetails
+                quotationData={{
+                  currency,
+                  destination,
+                  doorDelivery,
+                  quoteSentBy,
+                  freightMode,
+                  requestType,
+                  countryOfOrigin,
+                  cargoDescription,
+                }}
+                onQuotationChange={(e) => {
+                  const { id, value } = e.target as HTMLInputElement | HTMLTextAreaElement;
+                  switch (id) {
+                    case 'destination': setDestination(value); break;
+                    case 'doorDelivery': setDoorDelivery(value); break;
+                    case 'quoteSentBy': setQuoteSentBy(value); break;
+                    case 'countryOfOrigin': setCountryOfOrigin(value); break;
+                    case 'cargoDescription': setCargoDescription(value); break;
+                  }
+                }}
+                onSelectChange={(field, value) => {
+                  switch (field) {
+                    case 'currency': setCurrency(value); break;
+                    case 'freightMode': setFreightMode(value as Quotation['freightMode']); break;
+                    case 'requestType': setRequestType(value as Quotation['requestType']); break;
+                  }
+                }}
+              />
             </CardContent>
           </Card>
           
