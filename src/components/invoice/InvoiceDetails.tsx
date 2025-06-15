@@ -17,9 +17,10 @@ interface InvoiceDetailsProps {
     paymentConditions: string;
   };
   onInvoiceDataChange: (field: string, value: string) => void;
+  currencyDisabled?: boolean;
 }
 
-const InvoiceDetails = ({ invoiceData, onInvoiceDataChange }: InvoiceDetailsProps) => {
+const InvoiceDetails = ({ invoiceData, onInvoiceDataChange, currencyDisabled }: InvoiceDetailsProps) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     onInvoiceDataChange(e.target.id, e.target.value);
   };
@@ -78,13 +79,19 @@ const InvoiceDetails = ({ invoiceData, onInvoiceDataChange }: InvoiceDetailsProp
           </div>
           <div>
             <Label htmlFor="currency">Currency</Label>
-            <Select value={invoiceData.currency} onValueChange={(value) => onInvoiceDataChange('currency', value)}>
+            <Select 
+              value={invoiceData.currency} 
+              onValueChange={(value) => onInvoiceDataChange('currency', value)}
+              disabled={currencyDisabled}
+            >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="USD">USD ($)</SelectItem>
-                <SelectItem value="EUR">EUR (€)</SelectItem>
+                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="EUR">EUR</SelectItem>
+                <SelectItem value="GBP">GBP</SelectItem>
+                <SelectItem value="NGN">NGN</SelectItem>
                 <SelectItem value="RWF">RWF</SelectItem>
               </SelectContent>
             </Select>

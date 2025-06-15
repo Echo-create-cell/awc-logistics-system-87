@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { InvoiceData } from "@/types/invoice";
@@ -98,6 +97,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
                   <SelectItem value="EUR">EUR</SelectItem>
                   <SelectItem value="GBP">GBP</SelectItem>
                   <SelectItem value="NGN">NGN</SelectItem>
+                  <SelectItem value="RWF">RWF</SelectItem>
                 </SelectContent>
               </Select>
             </div>

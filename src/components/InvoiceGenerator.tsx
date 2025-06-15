@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -131,6 +130,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
         <InvoiceDetails 
           invoiceData={invoiceData}
           onInvoiceDataChange={handleInvoiceDataChange}
+          currencyDisabled={true}
         />
       </div>
 
