@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -196,39 +197,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       currency: quotation.currency || 'USD'
     }));
 
-    let parsedCommodities: QuotationCommodity[] | null = null;
-    if (quotation.volume) {
-      try {
-        const parsed = JSON.parse(quotation.volume);
-        if (Array.isArray(parsed) && parsed.length > 0 && 'name' in parsed[0]) {
-          parsedCommodities = parsed;
-        }
-      } catch (e) {
-        // Not a JSON string with commodities, will use fallback.
-      }
-    }
-
-    if (parsedCommodities) {
-      // New logic: create items from quotation commodities
-      const newItems: InvoiceItem[] = parsedCommodities.map((commodity) => {
-        const total = (commodity.quantityKg || 0) * (commodity.rate || 0);
-        return {
-          id: uuidv4(),
-          quantityKg: commodity.quantityKg || 0,
-          commodity: commodity.name || 'N/A',
-          charges: [
-            {
-              id: uuidv4(),
-              description: `Charge for ${commodity.name}`,
-              rate: commodity.rate || 0,
-            }
-          ],
-          total,
-        }
-      });
-      setItems(newItems);
-    } else {
-      // Fallback to old logic for old quotations
+    const setItemsFromQuotationFallback = () => {
       const quantity = !isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1;
       const rate = quotation.clientQuote || 0;
       
@@ -247,6 +216,60 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
           total: quantity * rate,
         }
       ]);
+    };
+    
+    let parsedCommodities: any[] | null = null;
+    if (quotation.volume) {
+      try {
+        const parsed = JSON.parse(quotation.volume);
+        if (Array.isArray(parsed) && parsed.length > 0 && 'name' in parsed[0]) {
+          parsedCommodities = parsed;
+        }
+      } catch (e) {
+        // Not a JSON string with commodities, will use fallback.
+      }
+    }
+
+    if (parsedCommodities) {
+      // New logic: create items from quotation commodities
+      if (parsedCommodities[0].charges) {
+        // New format with multiple charges per commodity
+        const newItems: InvoiceItem[] = parsedCommodities.map((commodity: QuotationCommodity) => {
+          const total = (commodity.quantityKg || 0) * (commodity.charges || []).reduce((sum, c) => sum + (c.rate || 0), 0);
+          return {
+            id: uuidv4(),
+            quantityKg: commodity.quantityKg || 0,
+            commodity: commodity.name || 'N/A',
+            charges: (commodity.charges || []).map(c => ({ ...c, id: uuidv4() })),
+            total,
+          };
+        });
+        setItems(newItems);
+      } else if (parsedCommodities[0].rate !== undefined) {
+        // Old format with a single rate per commodity
+        const newItems: InvoiceItem[] = parsedCommodities.map((commodity: any) => {
+          const total = (commodity.quantityKg || 0) * (commodity.rate || 0);
+          return {
+            id: uuidv4(),
+            quantityKg: commodity.quantityKg || 0,
+            commodity: commodity.name || 'N/A',
+            charges: [
+              {
+                id: uuidv4(),
+                description: `Charge for ${commodity.name}`,
+                rate: commodity.rate || 0,
+              },
+            ],
+            total,
+          };
+        });
+        setItems(newItems);
+      } else {
+        setItemsFromQuotationFallback();
+      }
+    } else {
+      // Fallback for when volume is not a JSON of commodities
+      setItemsFromQuotationFallback();
     }
   }, [quotation]);
 

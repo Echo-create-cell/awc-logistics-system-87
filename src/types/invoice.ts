@@ -1,9 +1,8 @@
-
 export interface QuotationCommodity {
   id: string;
   name: string;
   quantityKg: number;
-  rate: number;
+  charges: InvoiceCharge[];
 }
 
 export interface InvoiceCharge {
