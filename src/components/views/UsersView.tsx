@@ -1,10 +1,10 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Eye, Edit, Trash2 } from 'lucide-react';
 import { User } from '@/types';
+import UserModal from '../modals/UserModal';
 
 interface UsersViewProps {
   users: User[];
@@ -14,6 +14,28 @@ interface UsersViewProps {
 }
 
 const UsersView = ({ users, onView, onEdit, onDelete }: UsersViewProps) => {
+  const [modalUser, setModalUser] = useState<User|null>(null);
+  const [modalMode, setModalMode] = useState<"view" | "edit">("view");
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleView = (user: User) => {
+    setModalUser(user);
+    setModalMode("view");
+    setModalOpen(true);
+    onView?.(user);
+  };
+
+  const handleEdit = (user: User) => {
+    setModalUser(user);
+    setModalMode("edit");
+    setModalOpen(true);
+    onEdit?.(user);
+  };
+  const handleDelete = (id: string) => {
+    onDelete?.(id);
+    setModalOpen(false);
+  };
+
   const userColumns = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
@@ -40,21 +62,15 @@ const UsersView = ({ users, onView, onEdit, onDelete }: UsersViewProps) => {
       label: 'Actions',
       render: (_: any, row: User) => (
         <div className="flex gap-1">
-          {onView && (
-            <Button size="sm" variant="ghost" onClick={() => onView(row)}>
-              <Eye size={16} />
-            </Button>
-          )}
-          {onEdit && (
-            <Button size="sm" variant="ghost" onClick={() => onEdit(row)}>
-              <Edit size={16} />
-            </Button>
-          )}
-          {onDelete && (
-            <Button size="sm" variant="ghost" onClick={() => onDelete(row.id)} className="text-red-600 hover:text-red-700">
-              <Trash2 size={16} />
-            </Button>
-          )}
+          <Button size="sm" variant="ghost" onClick={() => handleView(row)}>
+            <Eye size={16} />
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => handleEdit(row)}>
+            <Edit size={16} />
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => handleDelete(row.id)} className="text-red-600 hover:text-red-700">
+            <Trash2 size={16} />
+          </Button>
         </div>
       ),
     }
@@ -94,6 +110,14 @@ const UsersView = ({ users, onView, onEdit, onDelete }: UsersViewProps) => {
             ]
           }
         ]}
+      />
+      <UserModal
+        open={modalOpen}
+        user={modalUser}
+        onClose={() => setModalOpen(false)}
+        onSave={onEdit ?? (()=>{})}
+        onDelete={onDelete ?? (()=>{})}
+        mode={modalMode}
       />
     </div>
   );

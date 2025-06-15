@@ -15,6 +15,10 @@ import CreateQuotationView from '@/components/views/CreateQuotationView';
 import InvoicesView from '@/components/views/InvoicesView';
 import ReportsView from '@/components/views/ReportsView';
 
+import UserModal from "@/components/modals/UserModal";
+import QuotationModal from "@/components/modals/QuotationModal";
+import InvoiceModal from "@/components/modals/InvoiceModal";
+
 const Index = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -105,10 +109,8 @@ const Index = () => {
   };
 
   const handleViewQuotation = (quotation: Quotation) => {
-    toast({
-      title: "Quotation Details",
-      description: `Viewing quotation ${quotation.id}`,
-    });
+    setEditQuotation(quotation);
+    // simply open modal, don't do alert or toast here
   };
 
   const handleViewInvoice = (invoice: InvoiceData) => {
@@ -117,7 +119,7 @@ const Index = () => {
 
   const handleEditQuotation = (quotation: Quotation) => {
     setEditQuotation(quotation);
-    alert(`Edit Quotation: ${quotation.id}`); // Or open an edit modal
+    // The edit modal is opened via QuotationsView, not here
   };
   const handleDeleteQuotation = (id: string) => {
     setDeleteQuotationId(id);
@@ -133,7 +135,7 @@ const Index = () => {
 
   const handleEditUser = (userObj: User) => {
     setEditUser(userObj);
-    alert(`Edit User: ${userObj.name}`); // Or open an edit modal
+    // Edit handled in UsersView modal
   };
   const handleDeleteUser = (userId: string) => {
     setDeleteUserId(userId);

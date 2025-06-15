@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import InvoiceGenerator from '@/components/InvoiceGenerator';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { FileText } from 'lucide-react';
 import { InvoiceData } from '@/types/invoice';
 import { User, Quotation } from '@/types';
+import InvoiceModal from '../modals/InvoiceModal';
 
 interface InvoicesViewProps {
   user: User;
@@ -22,6 +23,16 @@ interface InvoicesViewProps {
 const InvoicesView = ({
   user, invoices, onSave, onPrint, onView, setActiveTab, quotations, invoiceQuotation, onInvoiceQuotationClear
 }: any) => {
+
+  const [modalInvoice, setModalInvoice] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleView = (invoice: InvoiceData) => {
+    setModalInvoice(invoice);
+    setModalOpen(true);
+    onView?.(invoice);
+  };
+
   // If user is creating invoice from a quotation, show InvoiceGenerator pre-filled
   if ((user.role === 'sales_director' || user.role === 'sales_agent') && invoiceQuotation) {
     return (
@@ -76,7 +87,7 @@ const InvoicesView = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onView(row)}
+            onClick={() => handleView(row)}
           >View</Button>
           <Button
             variant="ghost"
@@ -113,7 +124,13 @@ const InvoicesView = ({
             ]
           }
         ]}
-        onView={onView}
+        onView={handleView}
+        onPrint={onPrint}
+      />
+      <InvoiceModal
+        open={modalOpen}
+        invoice={modalInvoice}
+        onClose={() => setModalOpen(false)}
         onPrint={onPrint}
       />
     </div>

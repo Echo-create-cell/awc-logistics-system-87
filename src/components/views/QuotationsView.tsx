@@ -1,10 +1,10 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Eye, Edit, Trash2 } from 'lucide-react';
 import { Quotation, User } from '@/types';
+import QuotationModal from '../modals/QuotationModal';
 
 interface QuotationsViewProps {
   user: User;
@@ -19,6 +19,26 @@ interface QuotationsViewProps {
 const QuotationsView = ({
   user, quotations, onView, setActiveTab, onInvoiceFromQuotation, onEdit, onDelete
 }: QuotationsViewProps) => {
+  const [modalQuotation, setModalQuotation] = useState<Quotation|null>(null);
+  const [modalMode, setModalMode] = useState<"view"|"edit">("view");
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleView = (quotation: Quotation) => {
+    setModalQuotation(quotation);
+    setModalMode("view");
+    setModalOpen(true);
+    onView?.(quotation);
+  };
+  const handleEdit = (quotation: Quotation) => {
+    setModalQuotation(quotation);
+    setModalMode("edit");
+    setModalOpen(true);
+    onEdit?.(quotation);
+  };
+  const handleDelete = (id: string) => {
+    onDelete?.(id);
+    setModalOpen(false);
+  };
 
   const quotationColumns = [
     { key: 'clientName', label: 'Client', render: (value: string) => value || 'N/A' },
@@ -59,7 +79,7 @@ const QuotationsView = ({
       key: 'actions', label: 'Actions',
       render: (_: any, row: Quotation) => (
         <div className="flex gap-1">
-          <Button size="sm" variant="ghost" onClick={() => onView(row)}>
+          <Button size="sm" variant="ghost" onClick={() => handleView(row)}>
             <Eye size={16} />
           </Button>
           {(user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won' && (
@@ -71,16 +91,12 @@ const QuotationsView = ({
               Generate Invoice
             </Button>
           )}
-          {onEdit && (
-            <Button size="sm" variant="ghost" onClick={() => onEdit(row)}>
-              <Edit size={16} />
-            </Button>
-          )}
-          {onDelete && (
-            <Button size="sm" variant="ghost" onClick={() => onDelete(row.id)} className="text-red-600 hover:text-red-700">
-              <Trash2 size={16} />
-            </Button>
-          )}
+          <Button size="sm" variant="ghost" onClick={() => handleEdit(row)}>
+            <Edit size={16} />
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => handleDelete(row.id)} className="text-red-600 hover:text-red-700">
+            <Trash2 size={16} />
+          </Button>
         </div>
       ),
     }
@@ -119,6 +135,14 @@ const QuotationsView = ({
             ]
           }
         ]}
+      />
+      <QuotationModal
+        open={modalOpen}
+        quotation={modalQuotation}
+        onClose={() => setModalOpen(false)}
+        onSave={onEdit ?? (()=>{})}
+        onDelete={onDelete ?? (()=>{})}
+        mode={modalMode}
       />
     </div>
   );
