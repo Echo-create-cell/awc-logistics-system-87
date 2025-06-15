@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Minus, FileText, Printer, Save } from 'lucide-react';
-import { InvoiceItem, InvoiceData, Client, Quotation } from '@/types/invoice';
+import { InvoiceItem, InvoiceData, Client } from '@/types/invoice';
+import { Quotation } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Mock clients data
@@ -120,11 +121,11 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       setSelectedClient({
         id: 'custom',
         companyName: quotation.clientName || '',
-        contactPerson: '', // Fill from client DB if available
+        contactPerson: '',
         tinNumber: '',
         address: quotation.doorDelivery || '',
-        city: '', // Fill from client DB
-        country: '', // Fill from client DB
+        city: '',
+        country: '',
         phone: '',
         email: ''
       });
@@ -137,11 +138,11 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       setItems([
         {
           id: '1',
-          quantityKg: parseFloat(quotation.volume) || 0,
+          quantityKg: !isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1,
           commodity: "Quoted Commodity",
           description: quotation.remarks || "As per Quotation",
           price: quotation.clientQuote,
-          total: quotation.clientQuote * (parseFloat(quotation.volume) || 1)
+          total: quotation.clientQuote * (!isNaN(Number(quotation.volume)) ? Number(quotation.volume) : 1)
         }
       ]);
     }

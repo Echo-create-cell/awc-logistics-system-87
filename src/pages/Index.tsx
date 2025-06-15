@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginForm from '@/components/LoginForm';
@@ -122,7 +121,6 @@ const Index = () => {
             onApprove={handleApproveQuotation}
             onReject={handleRejectQuotation}
             onView={handleViewQuotation}
-            onInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
           />
         );
       case 'users':
