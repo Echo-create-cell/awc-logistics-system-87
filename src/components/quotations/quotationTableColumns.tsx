@@ -1,3 +1,4 @@
+
 import { Badge } from '@/components/ui/badge';
 import { Quotation, User } from '@/types';
 import QuotationActions from './QuotationActions';
@@ -68,12 +69,14 @@ export const getQuotationColumns = ({
   { 
     key: 'destination', 
     label: 'Destination Country',
-    render: (value: string, row: Quotation) => (
-      <div>
-        <div className="text-gray-700">{value || 'N/A'}</div>
-        {row.doorDelivery && <div className="text-xs text-gray-500">Door: {row.doorDelivery}</div>}
-      </div>
+    render: (value: string) => (
+      <div className="text-gray-700">{value || 'N/A'}</div>
     )
+  },
+  {
+    key: 'doorDelivery',
+    label: 'Door Delivery',
+    render: (value: string) => <div className="text-gray-700">{value || 'N/A'}</div>
   },
   { 
     key: 'volume', 
