@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { Quotation, Client, User } from '@/types';
 import { QuotationCommodity } from '@/types/invoice';
@@ -157,6 +156,7 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
     setRequestType('Import');
     setCountryOfOrigin('');
     setQuoteSentBy(user.name);
+    setFollowUpDate('');
     addCommodity();
   };
 
@@ -177,6 +177,7 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
     requestType,
     countryOfOrigin,
     quoteSentBy,
+    followUpDate,
     userList,
     quotationData: {
       currency,
@@ -202,4 +203,3 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
     resetForm,
   };
 };
-

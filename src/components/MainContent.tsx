@@ -65,8 +65,6 @@ const MainContent = (props: MainContentProps) => {
           <DashboardView
             userRole={user.role}
             quotations={quotations}
-            onApprove={handleApproveQuotation}
-            onReject={handleRejectQuotation}
             setActiveTab={setActiveTab}
           />
         );
