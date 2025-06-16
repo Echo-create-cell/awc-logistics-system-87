@@ -33,7 +33,7 @@ CREATE TABLE clients (
 CREATE TABLE quotations (
     id INT PRIMARY KEY AUTO_INCREMENT,
     client_id INT,
-    volume VARCHAR(50) NOT NULL,
+    volume TEXT NOT NULL,
     buy_rate DECIMAL(10,2) NOT NULL,
     currency VARCHAR(10) NOT NULL,
     client_quote DECIMAL(10,2) NOT NULL,
@@ -47,6 +47,10 @@ CREATE TABLE quotations (
     approved_at TIMESTAMP NULL,
     destination VARCHAR(100),
     door_delivery VARCHAR(100),
+    freight_mode ENUM('Air Freight', 'Sea Freight', 'Road Freight'),
+    cargo_description TEXT,
+    request_type ENUM('Import', 'Export', 'Re-Import', 'Project', 'Local'),
+    country_of_origin VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES clients(id),
@@ -57,7 +61,7 @@ CREATE TABLE quotations (
 -- Invoices table (enhanced based on screenshot)
 CREATE TABLE invoices (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    quotation_id INT NOT NULL,
+    quotation_id INT,
     invoice_number VARCHAR(50) UNIQUE NOT NULL,
     client_id INT NOT NULL,
     destination VARCHAR(100),
@@ -72,26 +76,32 @@ CREATE TABLE invoices (
     total_amount DECIMAL(10,2) NOT NULL,
     currency VARCHAR(10) NOT NULL,
     issue_date DATE NOT NULL,
-    due_date DATE NOT NULL,
+    due_date DATE,
     status ENUM('pending', 'paid', 'overdue') DEFAULT 'pending',
     created_by INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (quotation_id) REFERENCES quotations(id),
+    FOREIGN KEY (quotation_id) REFERENCES quotations(id) ON DELETE SET NULL,
     FOREIGN KEY (client_id) REFERENCES clients(id),
     FOREIGN KEY (created_by) REFERENCES users(id)
 );
 
--- Invoice items table (for line items in invoice)
-CREATE TABLE invoice_items (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    invoice_id INT NOT NULL,
-    quantity_kg DECIMAL(10,2) DEFAULT 0,
-    commodity VARCHAR(200),
-    description TEXT,
-    price DECIMAL(10,2) DEFAULT 0,
-    total_amount DECIMAL(10,2) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
+-- Invoice items table (restructured for commodities and charges)
+DROP TABLE IF EXISTS `invoice_items`;
+CREATE TABLE `invoice_items` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `invoice_id` int(11) NOT NULL,
+    `parent_id` int(11) DEFAULT NULL,
+    `quantity_kg` decimal(10,2) DEFAULT NULL,
+    `commodity` varchar(255) DEFAULT NULL,
+    `description` text,
+    `price` decimal(10,2) DEFAULT NULL COMMENT 'This is the rate for a charge',
+    `total_amount` decimal(10,2) NOT NULL,
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `invoice_id` (`invoice_id`),
+    KEY `parent_id` (`parent_id`),
+    CONSTRAINT `invoice_items_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `invoice_items_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `invoice_items` (`id`) ON DELETE CASCADE
 );
 
 -- Company settings table

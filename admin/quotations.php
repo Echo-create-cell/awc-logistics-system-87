@@ -1,4 +1,3 @@
-
 <?php
 require_once '../includes/functions.php';
 require_once '../config/database.php';
@@ -95,7 +94,6 @@ require_once '../includes/header.php';
                             <td class="px-6 py-4 text-sm text-gray-500"><?php echo date('d/m/Y', strtotime($q['created_at'])); ?></td>
                             <td class="px-6 py-4 text-sm">
                                 <div class="flex space-x-2">
-                                    <button onclick="viewQuotation(<?php echo $q['id']; ?>)" class="text-blue-600 hover:text-blue-900">View</button>
                                     <a href="print_quotation.php?id=<?php echo $q['id']; ?>" target="_blank" class="text-gray-600 hover:text-gray-900">Print</a>
                                     <?php if ($q['status'] == 'pending'): ?>
                                     <button onclick="approveQuotation(<?php echo $q['id']; ?>)" class="text-green-600 hover:text-green-900">Approve</button>
@@ -111,27 +109,8 @@ require_once '../includes/header.php';
         </div>
     </div>
 
-    <!-- View Quotation Modal -->
-    <div id="view-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto">
-            <div class="p-6" id="modal-content"><!-- Content will be loaded here --></div>
-        </div>
-    </div>
-
     <script src="../js/main.js"></script>
     <script>
-        function viewQuotation(id) {
-            fetch(`../ajax/get_quotation.php?id=${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        openModal(data.html);
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                });
-        }
-
         function approveQuotation(id) {
             if (confirm('Are you sure you want to approve this quotation?')) {
                 fetch('../ajax/approve_quotation.php', {

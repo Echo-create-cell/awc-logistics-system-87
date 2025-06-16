@@ -1,18 +1,19 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 import { Quotation, User } from '@/types';
+import { Button } from '@/components/ui/button';
 import { useQuotationForm } from '@/hooks/useQuotationForm';
-import QuotationFormMain from '../modals/quotation/QuotationFormMain';
-import QuotationFormSidebar from '../modals/quotation/QuotationFormSidebar';
+import QuotationFormMain from './QuotationFormMain';
+import QuotationFormSidebar from './QuotationFormSidebar';
+import { useToast } from '@/hooks/use-toast';
 
-interface CreateQuotationViewProps {
-  onQuotationCreated: (quotation: Quotation) => void;
-  setActiveTab?: (tab: string) => void;
+interface QuotationFormProps {
+  quotation: Quotation;
+  onSave: (quotation: Quotation) => void;
+  onClose: () => void;
   user: User;
 }
 
-const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQuotationViewProps) => {
+const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps) => {
   const { toast } = useToast();
   const {
     clientName,
@@ -34,10 +35,9 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
     handleDetailsChange,
     handleSelectChange,
     getQuotationPayload,
-    resetForm,
-  } = useQuotationForm(null, user);
-
-  const handleSaveQuotation = () => {
+  } = useQuotationForm(quotation, user);
+  
+  const handleSave = () => {
     if (!clientName || clientQuote <= 0 || !buyRate || !currency || !quotationData.quoteSentBy) {
       toast({
         title: "Missing Fields",
@@ -46,21 +46,12 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
       });
       return;
     }
-
-    const newQuotation = getQuotationPayload();
-    onQuotationCreated(newQuotation);
-    resetForm();
+    const updatedQuotation = getQuotationPayload();
+    onSave(updatedQuotation);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Create New Quotation</h2>
-          <p className="text-muted-foreground mt-1">Fill in the details to generate a new quotation for a client.</p>
-        </div>
-      </div>
-
+    <div className="space-y-6 pt-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <QuotationFormMain
           clientName={clientName}
@@ -86,13 +77,12 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
           onFollowUpDateChange={setFollowUpDate}
         />
       </div>
-      
-      <div className="flex justify-end gap-2 pt-4 mt-6 border-t">
-        <Button variant="outline" onClick={() => setActiveTab && setActiveTab("quotations")}>Cancel</Button>
-        <Button onClick={handleSaveQuotation}>Save Quotation</Button>
+      <div className="flex justify-end gap-2 pt-4 border-t">
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button onClick={handleSave}>Save Changes</Button>
       </div>
     </div>
   );
 };
 
-export default CreateQuotationView;
+export default QuotationForm;

@@ -8,7 +8,10 @@ const ReportsView = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Financial Reports</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Financial Reports</h2>
+          <p className="text-muted-foreground mt-1">An overview of your business performance.</p>
+        </div>
         <Button>
           <Download size={16} className="mr-2" />
           Export Report
@@ -16,39 +19,33 @@ const ReportsView = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <BarChart3 className="mr-2 h-5 w-5" />
-              Total Revenue
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-600">$2,456,789</div>
-            <p className="text-sm text-slate-500">This month</p>
+            <div className="text-2xl font-bold text-green-600">$2,456,789</div>
+            <p className="text-xs text-muted-foreground">+20.1% from last month</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <FileText className="mr-2 h-5 w-5" />
-              Total Quotations
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Quotations</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-600">156</div>
-            <p className="text-sm text-slate-500">This month</p>
+            <div className="text-2xl font-bold text-blue-600">156</div>
+            <p className="text-xs text-muted-foreground">+12.5% from last month</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Users className="mr-2 h-5 w-5" />
-              Win Rate
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Win Rate</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-purple-600">74%</div>
-            <p className="text-sm text-slate-500">This month</p>
+            <div className="text-2xl font-bold text-purple-600">74%</div>
+            <p className="text-xs text-muted-foreground">+5% from last month</p>
           </CardContent>
         </Card>
       </div>

@@ -1,57 +1,63 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Plus } from 'lucide-react';
 import { Quotation, User } from '@/types';
+import QuotationModal from '../modals/QuotationModal';
+import { getQuotationColumns } from '../quotations/quotationTableColumns';
+import RejectQuotationModal from '../modals/RejectQuotationModal';
 
 interface QuotationsViewProps {
   user: User;
   quotations: Quotation[];
-  onView: (quotation: Quotation) => void;
   setActiveTab: (tab: string) => void;
+  onInvoiceFromQuotation?: (quotation: Quotation) => void;
+  onEdit?: (quotation: Quotation) => void;
+  onApprove?: (id: string) => void;
+  onReject?: (id: string, reason: string) => void;
 }
 
-const QuotationsView = ({ user, quotations, onView, setActiveTab }: QuotationsViewProps) => {
-  const quotationColumns = [
-    { key: 'clientName', label: 'Client', render: (value: string) => value || 'N/A' },
-    { key: 'volume', label: 'Volume' },
-    {
-      key: 'buyRate',
-      label: 'Buy Rate',
-      render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
-    },
-    {
-      key: 'clientQuote',
-      label: 'Client Quote',
-      render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
-    },
-    {
-      key: 'profit',
-      label: 'Profit',
-      render: (value: number, row: Quotation) => `${row.currency} ${value.toLocaleString()}`
-    },
-    { key: 'quoteSentBy', label: 'Quote Sent By' },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (value: string) => {
-        const colors: { [key: string]: string } = {
-          won: 'bg-green-100 text-green-800',
-          pending: 'bg-yellow-100 text-yellow-800',
-          lost: 'bg-red-100 text-red-800'
-        };
-        return <Badge className={colors[value]}>{value}</Badge>;
-      }
-    },
-    {
-      key: 'approvedBy',
-      label: 'Approved By',
-      render: (value: string | undefined, row: Quotation) => value && row.approvedAt ? `${value} on ${new Date(row.approvedAt).toLocaleDateString()}` : 'N/A'
-    },
-  ];
+const QuotationsView = ({
+  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onApprove, onReject
+}: QuotationsViewProps) => {
+  const [modalQuotation, setModalQuotation] = useState<Quotation|null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
+  const [quotationToReject, setQuotationToReject] = useState<Quotation | null>(null);
 
+  const handleEdit = (quotation: Quotation) => {
+    setModalQuotation(quotation);
+    setModalOpen(true);
+  };
+
+  const handleSave = (updatedQuotation: Quotation) => {
+    onEdit?.(updatedQuotation);
+    setModalOpen(false);
+  };
+
+  const handleRequestReject = (quotation: Quotation) => {
+    setQuotationToReject(quotation);
+    setRejectionModalOpen(true);
+  };
+
+  const handleConfirmReject = (reason: string) => {
+    if (quotationToReject) {
+      onReject?.(quotationToReject.id, reason);
+    }
+    setRejectionModalOpen(false);
+    setQuotationToReject(null);
+  };
+
+  const quotationColumns = getQuotationColumns({
+    user,
+    onApprove,
+    onReject: handleRequestReject,
+    onInvoiceFromQuotation,
+    onEdit: handleEdit,
+  });
+
+  // Admins see only pending, others see all
   const filteredQuotations = user.role === 'admin'
     ? quotations.filter(q => q.status === 'pending')
     : quotations;
@@ -59,21 +65,30 @@ const QuotationsView = ({ user, quotations, onView, setActiveTab }: QuotationsVi
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">
-          {user.role === 'admin' ? 'Quotation Approvals' : 'My Quotations'}
-        </h2>
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">
+            {user.role === 'admin' ? 'Quotation Approvals' : 'My Quotations'}
+          </h2>
+          <p className="text-muted-foreground mt-1">
+            {user.role === 'admin' 
+              ? 'Review and approve pending quotations' 
+              : 'Manage your quotations and generate invoices'
+            }
+          </p>
+        </div>
         {(user.role === 'sales_director' || user.role === 'sales_agent') && (
-          <Button onClick={() => setActiveTab('create')}>
+          <Button className="bg-fuchsia-700 px-4 py-2 rounded text-white hover:bg-fuchsia-900" onClick={() => setActiveTab('create')}>
             <Plus size={16} className="mr-2" />
             Create Quotation
           </Button>
         )}
       </div>
+      
       <SearchableTable
-        title="Quotations"
+        title={`${filteredQuotations.length} Quotation${filteredQuotations.length === 1 ? '' : 's'}`}
         data={filteredQuotations}
         columns={quotationColumns}
-        searchFields={['volume', 'quoteSentBy', 'currency', 'clientName']}
+        searchFields={['clientName', 'destination', 'quoteSentBy', 'status', 'approvedBy']}
         filterOptions={[
           {
             key: 'status',
@@ -83,19 +98,23 @@ const QuotationsView = ({ user, quotations, onView, setActiveTab }: QuotationsVi
               { value: 'won', label: 'Won' },
               { value: 'lost', label: 'Lost' }
             ]
-          },
-          {
-            key: 'currency',
-            label: 'Currency',
-            options: [
-              { value: 'USD', label: 'USD' },
-              { value: 'EUR', label: 'EUR' },
-              { value: 'RWF', label: 'RWF' }
-            ]
           }
         ]}
-        onView={onView}
-        onPrint={(quotation) => window.print()}
+      />
+      
+      <QuotationModal
+        open={modalOpen}
+        quotation={modalQuotation}
+        onClose={() => setModalOpen(false)}
+        onSave={handleSave}
+        user={user}
+      />
+
+      <RejectQuotationModal
+        open={rejectionModalOpen}
+        quotation={quotationToReject}
+        onClose={() => setRejectionModalOpen(false)}
+        onConfirm={handleConfirmReject}
       />
     </div>
   );
