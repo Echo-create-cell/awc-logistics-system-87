@@ -1,5 +1,5 @@
-
 import { Quotation, User } from '@/types';
+import { TableColumn } from '@/types/table';
 import QuotationActions from './QuotationActions';
 import CargoDescriptionCell from './cells/CargoDescriptionCell';
 import DestinationCell from './cells/DestinationCell';
@@ -17,7 +17,7 @@ interface GetQuotationColumnsProps {
 
 export const getQuotationColumns = ({
   user, onApprove, onReject, onInvoiceFromQuotation, onEdit
-}: GetQuotationColumnsProps) => [
+}: GetQuotationColumnsProps): TableColumn[] => [
   {
     key: 'createdAt',
     label: 'Q Ref Date',

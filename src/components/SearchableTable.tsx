@@ -1,45 +1,11 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Search, Download } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from '@/components/ui/table';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
-
-interface TableColumn {
-  key: string;
-  label: string;
-  render?: (value: any, row: any) => React.ReactNode;
-  width?: string;
-  minWidth?: string;
-}
-
-interface SearchableTableProps {
-  title: string;
-  data: any[];
-  columns: TableColumn[];
-  searchFields: string[];
-  onView?: (item: any) => void;
-  onPrint?: (item: any) => void;
-  onDownload?: (item: any) => void;
-  filterOptions?: { key: string; label: string; options: { value: string; label: string }[] }[];
-  itemsPerPage?: number;
-}
+import { Card, CardContent } from '@/components/ui/card';
+import { SearchableTableProps } from '@/types/table';
+import TableHeader from './table/TableHeader';
+import TableFilters from './table/TableFilters';
+import TableContent from './table/TableContent';
+import TablePagination from './table/TablePagination';
 
 const SearchableTable = ({
   title,
@@ -97,142 +63,32 @@ const SearchableTable = ({
 
   return (
     <Card className="w-full">
-      <CardHeader className="pb-4">
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-          <div>
-            <CardTitle>{title}</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              Browse and filter through the records.
-            </p>
-          </div>
-          <Button variant="outline" size="sm">
-            <Download size={16} className="mr-2" />
-            Export
-          </Button>
-        </div>
-        
-        <div className="flex flex-wrap gap-4 items-center pt-4 mt-4 border-t">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
-            <Input
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          
-          {filterOptions.map((filter) => (
-            <Select
-              key={filter.key}
-              value={filters[filter.key] || '__all__'}
-              onValueChange={(value) => handleFilterChange(filter.key, value)}
-            >
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder={filter.label} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__all__">All {filter.label}</SelectItem>
-                {filter.options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ))}
-        </div>
-      </CardHeader>
+      <TableHeader title={title} />
       
       <CardContent className="pt-0">
-        <div className="w-full overflow-x-auto rounded-lg border">
-          <div className="min-w-max">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  {columns.map((column) => (
-                    <TableHead 
-                      key={column.key} 
-                      className="font-semibold text-foreground whitespace-nowrap px-4 py-3"
-                      style={{ 
-                        width: column.width, 
-                        minWidth: column.minWidth || '120px'
-                      }}
-                    >
-                      {column.label}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedData.length > 0 && paginatedData.map((item, index) => (
-                  <TableRow 
-                    key={item.id || index} 
-                    className="hover:bg-muted/30 transition-colors"
-                  >
-                    {columns.map((column) => (
-                      <TableCell 
-                        key={column.key} 
-                        className="px-4 py-3 text-sm whitespace-nowrap"
-                        style={{ 
-                          width: column.width, 
-                          minWidth: column.minWidth || '120px'
-                        }}
-                      >
-                        <div className="max-w-full overflow-hidden">
-                          {column.render ? column.render(item[column.key], item) : (
-                            <span className="truncate block" title={item[column.key]}>
-                              {item[column.key]}
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          
-          {filteredData.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-muted-foreground mb-2">
-                <Search size={48} className="mx-auto" />
-              </div>
-              <p className="text-foreground/80 text-lg font-medium">No results found</p>
-              <p className="text-muted-foreground text-sm">Try adjusting your search or filter criteria.</p>
-            </div>
-          )}
+        <TableFilters
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          filterOptions={filterOptions}
+        />
+        
+        <div className="mt-6">
+          <TableContent
+            columns={columns}
+            data={paginatedData}
+            hasData={filteredData.length > 0}
+          />
         </div>
 
-        {totalPages > 1 && (
-            <div className="flex items-center justify-between pt-4 border-t mt-4">
-                <div className="text-sm text-muted-foreground">
-                    Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredData.length)} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} results
-                </div>
-                <Pagination>
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                href="#"
-                                onClick={(e) => { e.preventDefault(); handlePageChange(currentPage - 1); }}
-                                className={currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                            />
-                        </PaginationItem>
-                        <span className="px-4 py-2 text-sm">
-                            Page {currentPage} of {totalPages}
-                        </span>
-                        <PaginationItem>
-                            <PaginationNext
-                                href="#"
-                                onClick={(e) => { e.preventDefault(); handlePageChange(currentPage + 1); }}
-                                className={currentPage >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            </div>
-        )}
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          totalItems={filteredData.length}
+          onPageChange={handlePageChange}
+        />
       </CardContent>
     </Card>
   );
