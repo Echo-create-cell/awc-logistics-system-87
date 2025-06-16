@@ -25,6 +25,8 @@ interface TableColumn {
   key: string;
   label: string;
   render?: (value: any, row: any) => React.ReactNode;
+  width?: string;
+  minWidth?: string;
 }
 
 interface SearchableTableProps {
@@ -94,7 +96,7 @@ const SearchableTable = ({
   };
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
           <div>
@@ -143,32 +145,57 @@ const SearchableTable = ({
       </CardHeader>
       
       <CardContent className="pt-0">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableHead key={column.key} className="font-medium">
-                    {column.label}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedData.length > 0 && paginatedData.map((item, index) => (
-                <TableRow key={item.id || index} className="hover:bg-muted/50">
+        <div className="w-full overflow-x-auto rounded-lg border">
+          <div className="min-w-max">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
                   {columns.map((column) => (
-                    <TableCell key={column.key} className="text-sm text-foreground/90">
-                      {column.render ? column.render(item[column.key], item) : item[column.key]}
-                    </TableCell>
+                    <TableHead 
+                      key={column.key} 
+                      className="font-semibold text-foreground whitespace-nowrap px-4 py-3"
+                      style={{ 
+                        width: column.width, 
+                        minWidth: column.minWidth || '120px'
+                      }}
+                    >
+                      {column.label}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {paginatedData.length > 0 && paginatedData.map((item, index) => (
+                  <TableRow 
+                    key={item.id || index} 
+                    className="hover:bg-muted/30 transition-colors"
+                  >
+                    {columns.map((column) => (
+                      <TableCell 
+                        key={column.key} 
+                        className="px-4 py-3 text-sm whitespace-nowrap"
+                        style={{ 
+                          width: column.width, 
+                          minWidth: column.minWidth || '120px'
+                        }}
+                      >
+                        <div className="max-w-full overflow-hidden">
+                          {column.render ? column.render(item[column.key], item) : (
+                            <span className="truncate block" title={item[column.key]}>
+                              {item[column.key]}
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
           
           {filteredData.length === 0 && (
-            <div className="text-center py-12 border-t">
+            <div className="text-center py-12">
               <div className="text-muted-foreground mb-2">
                 <Search size={48} className="mx-auto" />
               </div>
@@ -181,7 +208,7 @@ const SearchableTable = ({
         {totalPages > 1 && (
             <div className="flex items-center justify-between pt-4 border-t mt-4">
                 <div className="text-sm text-muted-foreground">
-                    Page {currentPage} of {totalPages}
+                    Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredData.length)} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} results
                 </div>
                 <Pagination>
                     <PaginationContent>
@@ -189,14 +216,17 @@ const SearchableTable = ({
                             <PaginationPrevious
                                 href="#"
                                 onClick={(e) => { e.preventDefault(); handlePageChange(currentPage - 1); }}
-                                className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                                className={currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
                             />
                         </PaginationItem>
+                        <span className="px-4 py-2 text-sm">
+                            Page {currentPage} of {totalPages}
+                        </span>
                         <PaginationItem>
                             <PaginationNext
                                 href="#"
                                 onClick={(e) => { e.preventDefault(); handlePageChange(currentPage + 1); }}
-                                className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                                className={currentPage >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
                             />
                         </PaginationItem>
                     </PaginationContent>
