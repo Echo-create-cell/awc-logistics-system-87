@@ -2,7 +2,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, Clock, Edit, Trash2 } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Eye, Edit, Trash2 } from 'lucide-react';
 import { Quotation } from '@/types';
 
 interface QuotationTableProps {
@@ -10,6 +10,7 @@ interface QuotationTableProps {
   userRole: string;
   onApprove?: (id: string) => void;
   onReject?: (id: string) => void;
+  onView?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
   onDelete?: (id: string) => void;
 }
@@ -19,6 +20,7 @@ const QuotationTable = ({
   userRole, 
   onApprove, 
   onReject, 
+  onView, 
   onEdit, 
   onDelete 
 }: QuotationTableProps) => {
@@ -46,12 +48,6 @@ const QuotationTable = ({
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Volume
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                Destination
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                Door Delivery
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Buy Rate
@@ -86,12 +82,6 @@ const QuotationTable = ({
                   {quotation.volume}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                  {quotation.destination || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                  {quotation.doorDelivery || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {quotation.currency} {quotation.buyRate.toLocaleString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
@@ -121,6 +111,14 @@ const QuotationTable = ({
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onView?.(quotation)}
+                  >
+                    <Eye size={16} />
+                  </Button>
+                  
                   {userRole === 'admin' && quotation.status === 'pending' && (
                     <>
                       <Button
@@ -141,7 +139,8 @@ const QuotationTable = ({
                       </Button>
                     </>
                   )}
-                  {userRole === 'sales_director' && quotation.status === 'pending' && (
+                  
+                  {userRole === 'sales_director' && (
                     <>
                       <Button
                         variant="ghost"

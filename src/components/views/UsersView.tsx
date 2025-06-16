@@ -1,67 +1,24 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { User } from '@/types';
-import UserModal from '../modals/UserModal';
 
 interface UsersViewProps {
   users: User[];
-  onEdit?: (user: User) => void;
-  onDelete?: (id: string) => void;
-  onCreate?: (user: Omit<User, 'id' | 'createdAt'>) => void;
 }
 
-const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
-  const [modalUser, setModalUser] = useState<User|null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const handleEdit = (user: User) => {
-    setModalUser(user);
-    setModalOpen(true);
-  };
-  
-  const handleAddNewUser = () => {
-    setModalUser(null);
-    setModalOpen(true);
-  };
-
-  const handleSave = (userToSave: User | Partial<User>) => {
-    if ('id' in userToSave && userToSave.id) {
-      onEdit?.(userToSave as User);
-    } else {
-      onCreate?.(userToSave as Omit<User, 'id' | 'createdAt'>);
-    }
-    setModalOpen(false);
-  };
-
-  const handleDelete = (id: string) => {
-    onDelete?.(id);
-    setModalOpen(false);
-  };
-
+const UsersView = ({ users }: UsersViewProps) => {
   const userColumns = [
-    { 
-      key: 'name', 
-      label: 'Name',
-      render: (value: string) => (
-        <div className="font-medium text-gray-900">{value}</div>
-      )
-    },
-    { 
-      key: 'email', 
-      label: 'Email',
-      render: (value: string) => (
-        <div className="text-gray-600">{value}</div>
-      )
-    },
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' },
     {
       key: 'role',
       label: 'Role',
       render: (value: string) => (
-        <Badge variant="outline" className="capitalize font-medium">
+        <Badge variant="outline" className="capitalize">
           {value.replace('_', ' ')}
         </Badge>
       )
@@ -70,68 +27,27 @@ const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
       key: 'status',
       label: 'Status',
       render: (value: string) => (
-        <Badge className={`${
-          value === 'active' 
-            ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-            : 'bg-red-100 text-red-800 hover:bg-red-200'
-        } font-medium`}>
+        <Badge className={value === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
           {value}
         </Badge>
       )
-    },
-    {
-      key: 'createdAt',
-      label: 'Created',
-      render: (value: string) => (
-        <div className="text-gray-500 text-sm">
-          {new Date(value).toLocaleDateString()}
-        </div>
-      )
-    },
-    {
-      key: 'actions',
-      label: 'Actions',
-      render: (_: any, row: User) => (
-        <div className="flex gap-2">
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={() => handleEdit(row)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={() => handleDelete(row.id)} 
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-          </Button>
-        </div>
-      ),
     }
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">User Management</h2>
-          <p className="text-muted-foreground mt-1">Manage system users and their permissions</p>
-        </div>
-        <Button onClick={handleAddNewUser}>
+        <h2 className="text-2xl font-bold">User Management</h2>
+        <Button>
           <Plus size={16} className="mr-2" />
           Add User
         </Button>
       </div>
-      
       <SearchableTable
-        title={`${users.length} System User${users.length === 1 ? '' : 's'}`}
+        title="Users"
         data={users}
         columns={userColumns}
-        searchFields={['name', 'email', 'role', 'status']}
+        searchFields={['name', 'email', 'role']}
         filterOptions={[
           {
             key: 'role',
@@ -152,14 +68,6 @@ const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
             ]
           }
         ]}
-      />
-      
-      <UserModal
-        open={modalOpen}
-        user={modalUser}
-        onClose={() => setModalOpen(false)}
-        onSave={handleSave}
-        onDelete={handleDelete}
       />
     </div>
   );

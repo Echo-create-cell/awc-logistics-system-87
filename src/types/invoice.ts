@@ -1,22 +1,10 @@
-export interface QuotationCommodity {
-  id: string;
-  name: string;
-  quantityKg: number;
-  rate: number;
-  clientRate: number;
-}
-
-export interface InvoiceCharge {
-  id: string;
-  description: string;
-  rate: number;
-}
 
 export interface InvoiceItem {
   id: string;
   quantityKg: number;
   commodity: string;
-  charges: InvoiceCharge[];
+  description: string;
+  price: number;
   total: number;
 }
 
@@ -24,7 +12,6 @@ export interface InvoiceData {
   id: string;
   invoiceNumber: string;
   quotationId: string;
-  quotationData?: import('@/types').Quotation; // For prefilling from quotation
   clientName: string;
   clientAddress: string;
   clientTin: string;
