@@ -64,7 +64,7 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           <img 
             src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" 
             alt="AWC Logo" 
-            className="h-10 w-auto"
+            className="h-10 w-auto opacity-80"
           />
           <h1 className="text-lg font-bold fancy-gradient-text">AWC Logistics</h1>
         </div>

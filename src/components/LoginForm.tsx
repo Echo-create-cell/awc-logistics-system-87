@@ -41,7 +41,7 @@ const LoginForm = () => {
             <img 
               src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" 
               alt="AWC Logistics" 
-              className="h-20 w-auto"
+              className="h-20 w-auto opacity-90"
             />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-800">AWC Logistics</CardTitle>
