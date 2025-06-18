@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginForm from '@/components/LoginForm';
@@ -61,19 +62,19 @@ const Index = () => {
           invoices={invoices}
           users={users}
           invoiceQuotation={invoiceQuotation}
-          handleApproveQuotation={handleApproveQuotation}
-          handleRejectQuotation={handleRejectQuotation}
-          handleEditQuotation={handleEditQuotation}
-          handleGenerateInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
-          setActiveTab={setActiveTab}
-          handleQuotationCreated={handleQuotationCreated}
-          handleSaveInvoice={handleSaveInvoice}
-          handleEditInvoice={handleEditInvoice}
-          handlePrintInvoice={handlePrintInvoice}
-          setInvoiceQuotation={setInvoiceQuotation}
-          handleEditUser={handleEditUser}
-          handleDeleteUser={handleDeleteUser}
-          handleCreateUser={handleCreateUser}
+          onApproveQuotation={handleApproveQuotation}
+          onRejectQuotation={handleRejectQuotation}
+          onEditQuotation={handleEditQuotation}
+          onGenerateInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
+          onTabChange={handleTabChange}
+          onQuotationCreated={handleQuotationCreated}
+          onSaveInvoice={handleSaveInvoice}
+          onEditInvoice={handleEditInvoice}
+          onPrintInvoice={handlePrintInvoice}
+          onInvoiceQuotationClear={() => setInvoiceQuotation(null)}
+          onEditUser={handleEditUser}
+          onDeleteUser={handleDeleteUser}
+          onCreateUser={handleCreateUser}
         />
       </div>
 

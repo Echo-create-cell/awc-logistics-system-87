@@ -4,15 +4,17 @@ import DashboardStats from '@/components/DashboardStats';
 import RecentQuotations from '@/components/dashboard/RecentQuotations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { User, Quotation } from '@/types';
+import { InvoiceData } from '@/types/invoice';
 
 interface DashboardViewProps {
   user: User;
   users: User[];
   quotations: Quotation[];
-  setActiveTab: (tab: string) => void;
+  invoices: InvoiceData[];
+  onTabChange: (tab: string) => void;
 }
 
-const DashboardView = ({ user, users, quotations, setActiveTab }: DashboardViewProps) => {
+const DashboardView = ({ user, users, quotations, invoices, onTabChange }: DashboardViewProps) => {
   const recentPendingQuotations = quotations
     .filter(q => {
       if (user.role === 'admin') {
@@ -48,7 +50,7 @@ const DashboardView = ({ user, users, quotations, setActiveTab }: DashboardViewP
               <RecentQuotations 
                 quotations={recentPendingQuotations} 
                 userRole={user.role}
-                setActiveTab={setActiveTab}
+                setActiveTab={onTabChange}
               />
             </CardContent>
           </Card>
