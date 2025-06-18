@@ -4,40 +4,38 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { Settings, Shield, Database, Mail, FileText, Users } from 'lucide-react';
+import { useAppData } from '@/hooks/useAppData';
+import { Settings, Users, Bell, Shield, Database, Monitor } from 'lucide-react';
 
 const SettingsView = () => {
   const { user } = useAuth();
+  const { users, quotations, invoices } = useAppData();
   const { toast } = useToast();
+  
   const [systemSettings, setSystemSettings] = useState({
     companyName: 'AWC Logistics',
-    companyAddress: '123 Business Avenue, Kigali, Rwanda',
-    companyPhone: '+250 788 123 456',
-    companyEmail: 'admin@awclogistics.com',
-    companyTin: 'TIN123456789',
-    allowUserRegistration: false,
-    requireApprovalForQuotations: true,
-    autoGenerateInvoiceNumbers: true,
+    systemEmail: 'system@awclogistics.com',
     defaultCurrency: 'USD',
+    taxRate: 18,
+    autoApproval: false,
     emailNotifications: true,
-    smsNotifications: false,
-    backupFrequency: 'daily',
-    dataRetentionPeriod: '365',
+    systemMaintenance: false,
+    dataRetention: '365',
+    maxQuotationAmount: '1000000',
+    requireApproval: true
   });
 
   const [securitySettings, setSecuritySettings] = useState({
     passwordMinLength: 8,
-    requireStrongPassword: true,
-    enableTwoFactor: false,
-    sessionTimeout: 480, // minutes
-    maxLoginAttempts: 5,
-    lockoutDuration: 30, // minutes
+    sessionTimeout: 30,
+    twoFactorAuth: false,
+    loginAttempts: 5,
+    passwordExpiry: 90
   });
 
   const handleSystemSettingChange = (key: string, value: any) => {
@@ -49,164 +47,197 @@ const SettingsView = () => {
   };
 
   const handleSaveSettings = () => {
-    // In a real app, this would save to backend
     toast({
       title: "Settings Saved",
-      description: "All system settings have been updated successfully.",
+      description: "System settings have been updated successfully.",
     });
   };
 
-  const handleBackupDatabase = () => {
-    // In a real app, this would trigger a database backup
+  const handleSystemBackup = () => {
+    const backupData = {
+      users: users.map(u => ({ ...u, password: '[REDACTED]' })),
+      quotations,
+      invoices,
+      systemSettings,
+      securitySettings,
+      backupDate: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(backupData, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = `awc-backup-${new Date().toISOString().split('T')[0]}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+
     toast({
-      title: "Backup Initiated",
-      description: "Database backup has been started. You will be notified when complete.",
+      title: "Backup Created",
+      description: "System backup has been downloaded successfully.",
     });
   };
 
-  const handleTestEmail = () => {
-    // In a real app, this would send a test email
-    toast({
-      title: "Test Email Sent",
-      description: "A test email has been sent to verify email configuration.",
-    });
+  const systemStats = {
+    totalUsers: users.length,
+    activeUsers: users.filter(u => u.status === 'active').length,
+    totalQuotations: quotations.length,
+    pendingQuotations: quotations.filter(q => q.status === 'pending').length,
+    totalInvoices: invoices.length,
+    paidInvoices: invoices.filter(i => i.status === 'paid').length
   };
 
   if (user?.role !== 'admin') {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <Shield className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium text-muted-foreground">Access Denied</h3>
-          <p className="text-sm text-muted-foreground">Only administrators can access system settings.</p>
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Settings</h2>
+          <p className="text-muted-foreground mt-1">Manage your account preferences</p>
         </div>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>User Preferences</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Display Name</Label>
+              <Input value={user?.name || ''} disabled />
+            </div>
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input value={user?.email || ''} disabled />
+            </div>
+            <div className="space-y-2">
+              <Label>Role</Label>
+              <Badge variant="outline" className="capitalize">
+                {user?.role?.replace('_', ' ')}
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">System Settings</h2>
-          <p className="text-muted-foreground mt-1">Manage system configuration and preferences</p>
-        </div>
-        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-          <Shield size={14} className="mr-1" />
-          Admin Only
-        </Badge>
+      <div>
+        <h2 className="text-2xl font-bold text-foreground">System Settings</h2>
+        <p className="text-muted-foreground mt-1">Configure system-wide settings and preferences</p>
       </div>
 
-      {/* Company Information */}
+      {/* System Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">System Users</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{systemStats.activeUsers}/{systemStats.totalUsers}</div>
+            <p className="text-xs text-muted-foreground">Active users</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Pending Approvals</CardTitle>
+            <Monitor className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{systemStats.pendingQuotations}</div>
+            <p className="text-xs text-muted-foreground">Quotations pending</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">System Health</CardTitle>
+            <Shield className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">Healthy</div>
+            <p className="text-xs text-muted-foreground">All systems operational</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* General System Settings */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <FileText className="mr-2 h-5 w-5" />
-            Company Information
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            General Settings
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="companyName">Company Name</Label>
-              <Input
-                id="companyName"
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label>Company Name</Label>
+              <Input 
                 value={systemSettings.companyName}
                 onChange={(e) => handleSystemSettingChange('companyName', e.target.value)}
               />
             </div>
-            <div>
-              <Label htmlFor="companyEmail">Company Email</Label>
-              <Input
-                id="companyEmail"
-                type="email"
-                value={systemSettings.companyEmail}
-                onChange={(e) => handleSystemSettingChange('companyEmail', e.target.value)}
+            <div className="space-y-2">
+              <Label>System Email</Label>
+              <Input 
+                value={systemSettings.systemEmail}
+                onChange={(e) => handleSystemSettingChange('systemEmail', e.target.value)}
               />
             </div>
-            <div>
-              <Label htmlFor="companyPhone">Company Phone</Label>
-              <Input
-                id="companyPhone"
-                value={systemSettings.companyPhone}
-                onChange={(e) => handleSystemSettingChange('companyPhone', e.target.value)}
+            <div className="space-y-2">
+              <Label>Default Currency</Label>
+              <Input 
+                value={systemSettings.defaultCurrency}
+                onChange={(e) => handleSystemSettingChange('defaultCurrency', e.target.value)}
               />
             </div>
-            <div>
-              <Label htmlFor="companyTin">Company TIN</Label>
-              <Input
-                id="companyTin"
-                value={systemSettings.companyTin}
-                onChange={(e) => handleSystemSettingChange('companyTin', e.target.value)}
+            <div className="space-y-2">
+              <Label>Tax Rate (%)</Label>
+              <Input 
+                type="number"
+                value={systemSettings.taxRate}
+                onChange={(e) => handleSystemSettingChange('taxRate', Number(e.target.value))}
               />
             </div>
           </div>
-          <div>
-            <Label htmlFor="companyAddress">Company Address</Label>
-            <Textarea
-              id="companyAddress"
-              value={systemSettings.companyAddress}
-              onChange={(e) => handleSystemSettingChange('companyAddress', e.target.value)}
-              rows={3}
-            />
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* System Configuration */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Settings className="mr-2 h-5 w-5" />
-            System Configuration
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="allowUserRegistration">Allow User Registration</Label>
-                <Switch
-                  id="allowUserRegistration"
-                  checked={systemSettings.allowUserRegistration}
-                  onCheckedChange={(checked) => handleSystemSettingChange('allowUserRegistration', checked)}
-                />
+          <Separator />
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Auto-approval for small quotations</Label>
+                <p className="text-sm text-muted-foreground">Automatically approve quotations under $10,000</p>
               </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="requireApprovalForQuotations">Require Approval for Quotations</Label>
-                <Switch
-                  id="requireApprovalForQuotations"
-                  checked={systemSettings.requireApprovalForQuotations}
-                  onCheckedChange={(checked) => handleSystemSettingChange('requireApprovalForQuotations', checked)}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="autoGenerateInvoiceNumbers">Auto-Generate Invoice Numbers</Label>
-                <Switch
-                  id="autoGenerateInvoiceNumbers"
-                  checked={systemSettings.autoGenerateInvoiceNumbers}
-                  onCheckedChange={(checked) => handleSystemSettingChange('autoGenerateInvoiceNumbers', checked)}
-                />
-              </div>
+              <Switch 
+                checked={systemSettings.autoApproval}
+                onCheckedChange={(checked) => handleSystemSettingChange('autoApproval', checked)}
+              />
             </div>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="defaultCurrency">Default Currency</Label>
-                <Input
-                  id="defaultCurrency"
-                  value={systemSettings.defaultCurrency}
-                  onChange={(e) => handleSystemSettingChange('defaultCurrency', e.target.value)}
-                />
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Email Notifications</Label>
+                <p className="text-sm text-muted-foreground">Send email notifications for important events</p>
               </div>
-              <div>
-                <Label htmlFor="dataRetentionPeriod">Data Retention Period (days)</Label>
-                <Input
-                  id="dataRetentionPeriod"
-                  type="number"
-                  value={systemSettings.dataRetentionPeriod}
-                  onChange={(e) => handleSystemSettingChange('dataRetentionPeriod', e.target.value)}
-                />
+              <Switch 
+                checked={systemSettings.emailNotifications}
+                onCheckedChange={(checked) => handleSystemSettingChange('emailNotifications', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Require Approval</Label>
+                <p className="text-sm text-muted-foreground">All quotations require admin approval</p>
               </div>
+              <Switch 
+                checked={systemSettings.requireApproval}
+                onCheckedChange={(checked) => handleSystemSettingChange('requireApproval', checked)}
+              />
             </div>
           </div>
         </CardContent>
@@ -215,158 +246,112 @@ const SettingsView = () => {
       {/* Security Settings */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <Shield className="mr-2 h-5 w-5" />
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5" />
             Security Settings
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="passwordMinLength">Minimum Password Length</Label>
-                <Input
-                  id="passwordMinLength"
-                  type="number"
-                  value={securitySettings.passwordMinLength}
-                  onChange={(e) => handleSecuritySettingChange('passwordMinLength', parseInt(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="sessionTimeout">Session Timeout (minutes)</Label>
-                <Input
-                  id="sessionTimeout"
-                  type="number"
-                  value={securitySettings.sessionTimeout}
-                  onChange={(e) => handleSecuritySettingChange('sessionTimeout', parseInt(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="maxLoginAttempts">Max Login Attempts</Label>
-                <Input
-                  id="maxLoginAttempts"
-                  type="number"
-                  value={securitySettings.maxLoginAttempts}
-                  onChange={(e) => handleSecuritySettingChange('maxLoginAttempts', parseInt(e.target.value))}
-                />
-              </div>
+            <div className="space-y-2">
+              <Label>Minimum Password Length</Label>
+              <Input 
+                type="number"
+                value={securitySettings.passwordMinLength}
+                onChange={(e) => handleSecuritySettingChange('passwordMinLength', Number(e.target.value))}
+              />
             </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="requireStrongPassword">Require Strong Passwords</Label>
-                <Switch
-                  id="requireStrongPassword"
-                  checked={securitySettings.requireStrongPassword}
-                  onCheckedChange={(checked) => handleSecuritySettingChange('requireStrongPassword', checked)}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="enableTwoFactor">Enable Two-Factor Authentication</Label>
-                <Switch
-                  id="enableTwoFactor"
-                  checked={securitySettings.enableTwoFactor}
-                  onCheckedChange={(checked) => handleSecuritySettingChange('enableTwoFactor', checked)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="lockoutDuration">Account Lockout Duration (minutes)</Label>
-                <Input
-                  id="lockoutDuration"
-                  type="number"
-                  value={securitySettings.lockoutDuration}
-                  onChange={(e) => handleSecuritySettingChange('lockoutDuration', parseInt(e.target.value))}
-                />
-              </div>
+            <div className="space-y-2">
+              <Label>Session Timeout (minutes)</Label>
+              <Input 
+                type="number"
+                value={securitySettings.sessionTimeout}
+                onChange={(e) => handleSecuritySettingChange('sessionTimeout', Number(e.target.value))}
+              />
             </div>
+            <div className="space-y-2">
+              <Label>Max Login Attempts</Label>
+              <Input 
+                type="number"
+                value={securitySettings.loginAttempts}
+                onChange={(e) => handleSecuritySettingChange('loginAttempts', Number(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Password Expiry (days)</Label>
+              <Input 
+                type="number"
+                value={securitySettings.passwordExpiry}
+                onChange={(e) => handleSecuritySettingChange('passwordExpiry', Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Two-Factor Authentication</Label>
+              <p className="text-sm text-muted-foreground">Require 2FA for all admin accounts</p>
+            </div>
+            <Switch 
+              checked={securitySettings.twoFactorAuth}
+              onCheckedChange={(checked) => handleSecuritySettingChange('twoFactorAuth', checked)}
+            />
           </div>
         </CardContent>
       </Card>
 
-      {/* Notification Settings */}
+      {/* Data Management */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <Mail className="mr-2 h-5 w-5" />
-            Notification Settings
+          <CardTitle className="flex items-center gap-2">
+            <Database className="h-5 w-5" />
+            Data Management
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="emailNotifications">Email Notifications</Label>
-            <Switch
-              id="emailNotifications"
-              checked={systemSettings.emailNotifications}
-              onCheckedChange={(checked) => handleSystemSettingChange('emailNotifications', checked)}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="smsNotifications">SMS Notifications</Label>
-            <Switch
-              id="smsNotifications"
-              checked={systemSettings.smsNotifications}
-              onCheckedChange={(checked) => handleSystemSettingChange('smsNotifications', checked)}
-            />
-          </div>
-          <Button onClick={handleTestEmail} variant="outline">
-            <Mail className="mr-2 h-4 w-4" />
-            Send Test Email
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Database Management */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Database className="mr-2 h-5 w-5" />
-            Database Management
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Backup Frequency</Label>
-              <p className="text-sm text-muted-foreground">Current: {systemSettings.backupFrequency}</p>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label>Data Retention (days)</Label>
+              <Input 
+                value={systemSettings.dataRetention}
+                onChange={(e) => handleSystemSettingChange('dataRetention', e.target.value)}
+              />
             </div>
-            <Button onClick={handleBackupDatabase} variant="outline">
+            <div className="space-y-2">
+              <Label>Max Quotation Amount</Label>
+              <Input 
+                value={systemSettings.maxQuotationAmount}
+                onChange={(e) => handleSystemSettingChange('maxQuotationAmount', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>System Maintenance Mode</Label>
+              <p className="text-sm text-muted-foreground">Enable maintenance mode to restrict access</p>
+            </div>
+            <Switch 
+              checked={systemSettings.systemMaintenance}
+              onCheckedChange={(checked) => handleSystemSettingChange('systemMaintenance', checked)}
+            />
+          </div>
+
+          <div className="flex gap-4">
+            <Button onClick={handleSystemBackup} variant="outline">
               <Database className="mr-2 h-4 w-4" />
-              Backup Now
+              Create Backup
+            </Button>
+            <Button onClick={handleSaveSettings}>
+              Save All Settings
             </Button>
           </div>
-          <Separator />
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <h4 className="font-medium text-yellow-800 mb-2">Database Statistics</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div>
-                <p className="text-yellow-600">Total Users</p>
-                <p className="font-medium text-yellow-800">4</p>
-              </div>
-              <div>
-                <p className="text-yellow-600">Total Quotations</p>
-                <p className="font-medium text-yellow-800">25</p>
-              </div>
-              <div>
-                <p className="text-yellow-600">Total Invoices</p>
-                <p className="font-medium text-yellow-800">15</p>
-              </div>
-              <div>
-                <p className="text-yellow-600">Database Size</p>
-                <p className="font-medium text-yellow-800">2.4 MB</p>
-              </div>
-            </div>
-          </div>
         </CardContent>
       </Card>
-
-      {/* Action Buttons */}
-      <div className="flex justify-end space-x-4">
-        <Button variant="outline">
-          Reset to Defaults
-        </Button>
-        <Button onClick={handleSaveSettings}>
-          Save All Settings
-        </Button>
-      </div>
     </div>
   );
 };

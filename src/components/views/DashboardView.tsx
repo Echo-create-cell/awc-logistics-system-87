@@ -2,6 +2,7 @@
 import React from 'react';
 import DashboardStats from '@/components/DashboardStats';
 import RecentQuotations from '@/components/dashboard/RecentQuotations';
+import UserActivityMonitor from '@/components/admin/UserActivityMonitor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
@@ -39,6 +40,15 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
       </div>
 
       <DashboardStats user={user} users={users} quotations={quotations} />
+
+      {/* Admin User Activity Monitor */}
+      {user.role === 'admin' && (
+        <UserActivityMonitor 
+          users={users} 
+          quotations={quotations} 
+          invoices={invoices} 
+        />
+      )}
 
       {(user.role === 'admin' || user.role === 'sales_director' || user.role === 'sales_agent') && recentPendingQuotations.length > 0 && (
         <div className="grid grid-cols-1">

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import SearchableTable from '@/components/SearchableTable';
+import EnhancedSearchableTable from '@/components/enhanced/EnhancedSearchableTable';
 import { Button } from '@/components/ui/button';
 import { Plus, Grid, List } from 'lucide-react';
 import { Quotation, User } from '@/types';
@@ -54,6 +54,17 @@ const QuotationsView = ({
   const handleViewQuotation = (quotation: Quotation) => {
     setModalQuotation(quotation);
     setModalOpen(true);
+  };
+
+  const handleExport = () => {
+    const dataStr = JSON.stringify(filteredQuotations, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = `quotations-${new Date().toISOString().split('T')[0]}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
   };
 
   const quotationColumns = getQuotationColumns({
@@ -131,7 +142,7 @@ const QuotationsView = ({
           </div>
         </div>
       ) : (
-        <SearchableTable
+        <EnhancedSearchableTable
           title={`${filteredQuotations.length} Quotation${filteredQuotations.length === 1 ? '' : 's'}`}
           data={filteredQuotations}
           columns={quotationColumns}
@@ -147,6 +158,9 @@ const QuotationsView = ({
               ]
             }
           ]}
+          onExport={handleExport}
+          showExport={true}
+          showRefresh={true}
         />
       )}
       

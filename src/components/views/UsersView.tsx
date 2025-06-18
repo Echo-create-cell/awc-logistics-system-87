@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import SearchableTable from '@/components/SearchableTable';
+import EnhancedSearchableTable from '@/components/enhanced/EnhancedSearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2 } from 'lucide-react';
@@ -40,6 +40,25 @@ const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
   const handleDelete = (id: string) => {
     onDelete?.(id);
     setModalOpen(false);
+  };
+
+  const handleExport = () => {
+    const exportData = users.map(user => ({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      createdAt: user.createdAt
+    }));
+    
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = `users-${new Date().toISOString().split('T')[0]}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
   };
 
   const userColumns = [
@@ -127,7 +146,7 @@ const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
         </Button>
       </div>
       
-      <SearchableTable
+      <EnhancedSearchableTable
         title={`${users.length} System User${users.length === 1 ? '' : 's'}`}
         data={users}
         columns={userColumns}
@@ -152,6 +171,9 @@ const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
             ]
           }
         ]}
+        onExport={handleExport}
+        showExport={true}
+        showRefresh={true}
       />
       
       <UserModal
