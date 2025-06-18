@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Truck } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -35,12 +35,14 @@ const LoginForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-blue-600 text-white rounded-full">
-              <Truck size={32} />
-            </div>
+            <img 
+              src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" 
+              alt="AWC Logistics" 
+              className="h-20 w-auto"
+            />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-800">AWC Logistics</CardTitle>
           <p className="text-gray-600">Sign in to your account</p>

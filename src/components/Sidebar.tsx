@@ -60,7 +60,14 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
   return (
     <div className="bg-sidebar text-sidebar-foreground w-64 min-h-screen p-4 flex flex-col shadow-lg">
       <div className="mb-8">
-        <h1 className="text-xl font-bold fancy-gradient-text">AWC Logistics</h1>
+        <div className="flex items-center space-x-3 mb-2">
+          <img 
+            src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" 
+            alt="AWC Logo" 
+            className="h-10 w-auto"
+          />
+          <h1 className="text-lg font-bold fancy-gradient-text">AWC Logistics</h1>
+        </div>
         <p className="text-sm text-sidebar-foreground/70 capitalize">{userRole.replace('_', ' ')}</p>
         <p className="text-xs text-sidebar-foreground/50">{user?.name}</p>
       </div>

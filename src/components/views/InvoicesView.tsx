@@ -4,10 +4,11 @@ import InvoiceGenerator from '@/components/InvoiceGenerator';
 import SearchableTable from '@/components/SearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Printer } from 'lucide-react';
+import { Edit, Printer, Grid, List } from 'lucide-react';
 import { InvoiceData } from '@/types/invoice';
 import { User, Quotation } from '@/types';
 import InvoiceModal from '../modals/InvoiceModal';
+import AdminInvoiceCard from '../admin/AdminInvoiceCard';
 
 interface InvoicesViewProps {
   user: User;
@@ -26,6 +27,7 @@ const InvoicesView = ({
 }: InvoicesViewProps) => {
   const [modalInvoice, setModalInvoice] = useState<InvoiceData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   const handleEdit = (invoice: InvoiceData) => {
     setModalInvoice(invoice);
@@ -35,6 +37,11 @@ const InvoicesView = ({
   const handleSave = (updatedInvoice: InvoiceData) => {
     onEdit(updatedInvoice);
     setModalOpen(false);
+  };
+
+  const handleViewInvoice = (invoice: InvoiceData) => {
+    setModalInvoice(invoice);
+    setModalOpen(true);
   };
 
   const displayedInvoices = invoices;
@@ -158,25 +165,63 @@ const InvoicesView = ({
           <h2 className="text-2xl font-bold text-foreground">Invoices</h2>
           <p className="text-muted-foreground mt-1">Manage and track all generated invoices</p>
         </div>
+        {user.role === 'admin' && (
+          <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
+            <Button
+              size="sm"
+              variant={viewMode === 'table' ? 'default' : 'ghost'}
+              onClick={() => setViewMode('table')}
+            >
+              <List size={16} />
+            </Button>
+            <Button
+              size="sm"
+              variant={viewMode === 'cards' ? 'default' : 'ghost'}
+              onClick={() => setViewMode('cards')}
+            >
+              <Grid size={16} />
+            </Button>
+          </div>
+        )}
       </div>
       
-      <SearchableTable
-        title={`${displayedInvoices.length} Generated Invoice${displayedInvoices.length === 1 ? '' : 's'}`}
-        data={displayedInvoices}
-        columns={invoiceColumns}
-        searchFields={['invoiceNumber', 'clientName', 'status']}
-        filterOptions={[
-          {
-            key: 'status',
-            label: 'Status',
-            options: [
-              { value: 'pending', label: 'Pending' },
-              { value: 'paid', label: 'Paid' },
-              { value: 'overdue', label: 'Overdue' }
-            ]
-          }
-        ]}
-      />
+      {user.role === 'admin' && viewMode === 'cards' ? (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">
+              {displayedInvoices.length} Invoice{displayedInvoices.length === 1 ? '' : 's'}
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {displayedInvoices.map((invoice) => (
+              <AdminInvoiceCard
+                key={invoice.id}
+                invoice={invoice}
+                onView={handleViewInvoice}
+                onPrint={onPrint}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <SearchableTable
+          title={`${displayedInvoices.length} Generated Invoice${displayedInvoices.length === 1 ? '' : 's'}`}
+          data={displayedInvoices}
+          columns={invoiceColumns}
+          searchFields={['invoiceNumber', 'clientName', 'status']}
+          filterOptions={[
+            {
+              key: 'status',
+              label: 'Status',
+              options: [
+                { value: 'pending', label: 'Pending' },
+                { value: 'paid', label: 'Paid' },
+                { value: 'overdue', label: 'Overdue' }
+              ]
+            }
+          ]}
+        />
+      )}
       
       <InvoiceModal
         open={modalOpen}
