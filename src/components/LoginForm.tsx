@@ -41,7 +41,8 @@ const LoginForm = () => {
             <img 
               src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" 
               alt="AWC Logistics" 
-              className="h-20 w-auto opacity-90"
+              className="h-20 w-auto opacity-95 bg-transparent"
+              style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
             />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-800">AWC Logistics</CardTitle>

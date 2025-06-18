@@ -1,81 +1,68 @@
+
 import React from 'react';
+import DashboardView from './views/DashboardView';
+import QuotationsView from './views/QuotationsView';
+import CreateQuotationView from './views/CreateQuotationView';
+import InvoicesView from './views/InvoicesView';
+import UsersView from './views/UsersView';
+import ReportsView from './views/ReportsView';
+import SettingsView from './views/SettingsView';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 
-import DashboardView from '@/components/views/DashboardView';
-import UsersView from '@/components/views/UsersView';
-import QuotationsView from '@/components/views/QuotationsView';
-import CreateQuotationView from '@/components/views/CreateQuotationView';
-import InvoicesView from '@/components/views/InvoicesView';
-import ReportsView from '@/components/views/ReportsView';
-
 interface MainContentProps {
-    activeTab: string;
-    user: User;
-    quotations: Quotation[];
-    invoices: InvoiceData[];
-    users: User[];
-    invoiceQuotation: Quotation | null;
-    
-    handleApproveQuotation: (id: string) => void;
-    handleRejectQuotation: (id: string, reason: string) => void;
-    handleEditQuotation: (quotation: Quotation) => void;
-    handleGenerateInvoiceFromQuotation: (quotation: Quotation) => void;
-    setActiveTab: (tab: string) => void;
-    
-    handleQuotationCreated: (quotation: Quotation) => void;
-
-    handleSaveInvoice: (invoice: InvoiceData) => void;
-    handleEditInvoice: (invoice: InvoiceData) => void;
-    handlePrintInvoice: (invoice: InvoiceData) => void;
-    setInvoiceQuotation: (quotation: Quotation | null) => void;
-
-    handleEditUser: (user: User) => void;
-    handleDeleteUser: (userId: string) => void;
-    handleCreateUser: (user: Omit<User, 'id' | 'createdAt'>) => void;
+  user: User;
+  activeTab: string;
+  quotations: Quotation[];
+  users: User[];
+  invoices: InvoiceData[];
+  onTabChange: (tab: string) => void;
+  onApproveQuotation: (id: string) => void;
+  onRejectQuotation: (id: string, reason: string) => void;
+  onQuotationCreated: (quotation: Quotation) => void;
+  onGenerateInvoiceFromQuotation: (quotation: Quotation) => void;
+  onSaveInvoice: (invoice: InvoiceData) => void;
+  onEditInvoice: (invoice: InvoiceData) => void;
+  onPrintInvoice: (invoice: InvoiceData) => void;
+  onEditQuotation: (quotation: Quotation) => void;
+  onEditUser: (user: User) => void;
+  onDeleteUser: (id: string) => void;
+  onCreateUser: (user: Omit<User, 'id' | 'createdAt'>) => void;
+  invoiceQuotation: Quotation | null;
+  onInvoiceQuotationClear: () => void;
 }
 
-const MainContent = (props: MainContentProps) => {
-  const {
-    activeTab,
-    user,
-    quotations,
-    invoices,
-    users,
-    invoiceQuotation,
-    handleApproveQuotation,
-    handleRejectQuotation,
-    handleEditQuotation,
-    handleGenerateInvoiceFromQuotation,
-    setActiveTab,
-    handleQuotationCreated,
-    handleSaveInvoice,
-    handleEditInvoice,
-    handlePrintInvoice,
-    setInvoiceQuotation,
-    handleEditUser,
-    handleDeleteUser,
-    handleCreateUser,
-  } = props;
-
+const MainContent = ({
+  user,
+  activeTab,
+  quotations,
+  users,
+  invoices,
+  onTabChange,
+  onApproveQuotation,
+  onRejectQuotation,
+  onQuotationCreated,
+  onGenerateInvoiceFromQuotation,
+  onSaveInvoice,
+  onEditInvoice,
+  onPrintInvoice,
+  onEditQuotation,
+  onEditUser,
+  onDeleteUser,
+  onCreateUser,
+  invoiceQuotation,
+  onInvoiceQuotationClear,
+}: MainContentProps) => {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
         return (
-          <DashboardView
-            user={user}
+          <DashboardView 
+            user={user} 
+            quotations={quotations} 
+            invoices={invoices}
             users={users}
-            quotations={quotations}
-            setActiveTab={setActiveTab}
-          />
-        );
-      case 'users':
-        return (
-          <UsersView
-            users={users}
-            onEdit={handleEditUser}
-            onDelete={handleDeleteUser}
-            onCreate={handleCreateUser}
+            onTabChange={onTabChange}
           />
         );
       case 'quotations':
@@ -83,19 +70,18 @@ const MainContent = (props: MainContentProps) => {
           <QuotationsView
             user={user}
             quotations={quotations}
-            setActiveTab={setActiveTab}
-            onInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
-            onEdit={handleEditQuotation}
-            onApprove={handleApproveQuotation}
-            onReject={handleRejectQuotation}
+            setActiveTab={onTabChange}
+            onInvoiceFromQuotation={onGenerateInvoiceFromQuotation}
+            onEdit={onEditQuotation}
+            onApprove={onApproveQuotation}
+            onReject={onRejectQuotation}
           />
         );
       case 'create':
         return (
           <CreateQuotationView
             user={user}
-            onQuotationCreated={handleQuotationCreated}
-            setActiveTab={setActiveTab}
+            onQuotationCreated={onQuotationCreated}
           />
         );
       case 'invoices':
@@ -103,23 +89,46 @@ const MainContent = (props: MainContentProps) => {
           <InvoicesView
             user={user}
             invoices={invoices}
+            onSave={onSaveInvoice}
+            onEdit={onEditInvoice}
+            onPrint={onPrintInvoice}
+            setActiveTab={onTabChange}
             quotations={quotations}
-            onSave={handleSaveInvoice}
-            onEdit={handleEditInvoice}
-            onPrint={handlePrintInvoice}
-            setActiveTab={setActiveTab}
             invoiceQuotation={invoiceQuotation}
-            onInvoiceQuotationClear={() => setInvoiceQuotation(null)}
+            onInvoiceQuotationClear={onInvoiceQuotationClear}
+          />
+        );
+      case 'users':
+        return (
+          <UsersView
+            users={users}
+            onEdit={onEditUser}
+            onDelete={onDeleteUser}
+            onCreate={onCreateUser}
           />
         );
       case 'reports':
         return <ReportsView />;
+      case 'settings':
+        return <SettingsView />;
       default:
-        return <div>Content not found</div>;
+        return (
+          <DashboardView 
+            user={user} 
+            quotations={quotations} 
+            invoices={invoices}
+            users={users}
+            onTabChange={onTabChange}
+          />
+        );
     }
   };
 
-  return <div className="animate-fade-in">{renderContent()}</div>;
+  return (
+    <div className="flex-1 p-6 bg-background overflow-auto">
+      {renderContent()}
+    </div>
+  );
 };
 
 export default MainContent;

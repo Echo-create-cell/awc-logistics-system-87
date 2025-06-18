@@ -25,6 +25,7 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'users', label: 'User Management', icon: Users },
           { id: 'quotations', label: 'Quotation Approvals', icon: FileText },
           { id: 'invoices', label: 'All Invoices', icon: DollarSign },
+          { id: 'reports', label: 'System Reports', icon: BarChart3 },
           { id: 'settings', label: 'Settings', icon: Settings },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
@@ -34,6 +35,7 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'quotations', label: 'My Quotations', icon: FileText },
           { id: 'create', label: 'Create Quotation', icon: FileText },
           { id: 'invoices', label: 'Invoices', icon: DollarSign },
+          { id: 'reports', label: 'Sales Reports', icon: BarChart3 },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
       case 'sales_agent':
@@ -41,6 +43,7 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'dashboard', label: 'Dashboard', icon: Home },
           { id: 'quotations', label: 'Approved Quotations', icon: FileText },
           { id: 'invoices', label: 'Invoices', icon: DollarSign },
+          { id: 'reports', label: 'My Reports', icon: BarChart3 },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
       case 'finance_officer':
@@ -64,7 +67,8 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           <img 
             src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" 
             alt="AWC Logo" 
-            className="h-10 w-auto opacity-80"
+            className="h-10 w-auto opacity-95 bg-transparent"
+            style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))' }}
           />
           <h1 className="text-lg font-bold fancy-gradient-text">AWC Logistics</h1>
         </div>
