@@ -48,14 +48,21 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
       }
   };
 
+  // Calculate total volume from commodities
+  const getTotalVolume = () => {
+    return commodities.reduce((total, commodity) => total + (commodity.quantityKg || 0), 0);
+  };
+
   const getQuotationPayload = (): Quotation => {
     const client = clients.find(c => c.companyName.toLowerCase().trim() === clientName.toLowerCase().trim());
+    const totalVolume = getTotalVolume();
+    
     const baseQuotation = {
         ...initialQuotation,
         id: initialQuotation?.id || uuidv4(),
         clientId: client?.id,
         clientName: clientName,
-        volume: JSON.stringify(commodities),
+        volume: JSON.stringify(commodities), // Store commodities as JSON for detailed breakdown
         currency,
         buyRate,
         clientQuote,
@@ -72,6 +79,8 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
         cargoDescription,
         status: initialQuotation?.status || 'pending',
         createdAt: initialQuotation?.createdAt || new Date().toISOString(),
+        // Add total volume for easy access
+        totalVolumeKg: totalVolume,
     };
     return baseQuotation as Quotation;
   };
@@ -129,5 +138,6 @@ export const useQuotationForm = (initialQuotation: Quotation | null = null, user
     handleSelectChange,
     getQuotationPayload,
     resetForm,
+    getTotalVolume,
   };
 };

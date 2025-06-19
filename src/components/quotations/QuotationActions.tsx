@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, CheckCircle, XCircle } from 'lucide-react';
+import { Edit, CheckCircle, XCircle, Eye } from 'lucide-react';
 import { Quotation, User } from '@/types';
 
 interface QuotationActionsProps {
@@ -12,6 +12,7 @@ interface QuotationActionsProps {
   onReject?: (quotation: Quotation) => void;
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
+  onView?: (quotation: Quotation) => void;
 }
 
 const QuotationActions = ({
@@ -21,9 +22,11 @@ const QuotationActions = ({
   onReject,
   onInvoiceFromQuotation,
   onEdit,
+  onView,
 }: QuotationActionsProps) => {
   return (
     <div className="flex gap-2 items-center">
+      {/* Admin approval/rejection actions */}
       {user.role === 'admin' && row.status === 'pending' && (
         <>
           <Button
@@ -46,6 +49,21 @@ const QuotationActions = ({
           </Button>
         </>
       )}
+      
+      {/* Admin view-only for quotations */}
+      {user.role === 'admin' && onView && (
+        <Button 
+          size="sm" 
+          variant="ghost" 
+          onClick={() => onView(row)}
+          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+          title="View Details"
+        >
+          <Eye size={16} />
+        </Button>
+      )}
+      
+      {/* Invoice generation for sales roles */}
       {(user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won' && (
         (!row.linkedInvoiceIds || row.linkedInvoiceIds.length === 0) ? (
           <Button
@@ -59,12 +77,13 @@ const QuotationActions = ({
           <Badge variant="secondary">Invoice Generated</Badge>
         )
       )}
-      {/* Only sales_director can edit quotations - admin cannot edit */}
-      {user.role === 'sales_director' && (row.status === 'pending' || row.status === 'lost') && (
+      
+      {/* Only sales_director can edit quotations - admin and others cannot edit */}
+      {user.role === 'sales_director' && (row.status === 'pending' || row.status === 'lost') && onEdit && (
         <Button 
           size="sm" 
           variant="ghost" 
-          onClick={() => onEdit?.(row)}
+          onClick={() => onEdit(row)}
           className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
           title="Edit"
         >

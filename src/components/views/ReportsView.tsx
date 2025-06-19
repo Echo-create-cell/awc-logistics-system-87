@@ -1,222 +1,146 @@
 
-import React, { useRef } from 'react';
-import { useReportsData } from '@/hooks/useReportsData';
-import { useAppData } from '@/hooks/useAppData';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Printer } from 'lucide-react';
+import { FileText, Download, Printer } from 'lucide-react';
 import ReportFilters from '@/components/reports/ReportFilters';
+import ReportsCharts from '@/components/reports/ReportsCharts';
 import FinancialMetricsCards from '@/components/reports/FinancialMetricsCards';
 import UserActivityTable from '@/components/reports/UserActivityTable';
-import ReportsCharts from '@/components/reports/ReportsCharts';
 import PrintableReport from '@/components/reports/PrintableReport';
+import { useReportsData } from '@/hooks/useReportsData';
+import { User, Quotation } from '@/types';
+import { InvoiceData } from '@/types/invoice';
 
-const ReportsView = () => {
-  const { user } = useAuth();
-  const { quotations, invoices, users } = useAppData();
-  const { toast } = useToast();
-  const { reportData, filters, setFilters, canViewAllUsers } = useReportsData(quotations, invoices, users);
-  const printRef = useRef<HTMLDivElement>(null);
+interface ReportsViewProps {
+  user: User;
+  quotations: Quotation[];
+  invoices: InvoiceData[];
+}
 
-  // Redirect users who don't have access to reports
-  if (user?.role === 'sales_agent') {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-700 mb-2">Access Restricted</h2>
-          <p className="text-gray-500">You don't have permission to view reports.</p>
-        </div>
-      </div>
-    );
-  }
+const ReportsView = ({ user, quotations, invoices }: ReportsViewProps) => {
+  const [reportType, setReportType] = useState<'quotations' | 'financial' | 'users'>('financial');
+  const [dateRange, setDateRange] = useState({ from: '', to: '' });
+  const [selectedUser, setSelectedUser] = useState('__all__');
+  const [selectedStatus, setSelectedStatus] = useState('__all__');
+  const [showPrintPreview, setShowPrintPreview] = useState(false);
 
-  const handleExport = () => {
-    let reportContent;
-    
-    if (user?.role === 'finance_officer') {
-      // Full financial report for finance officer
-      reportContent = {
-        dateRange: filters.dateRange,
-        metrics: reportData.metrics,
-        userActivities: reportData.userActivities,
-        monthlyTrends: reportData.monthlyTrends,
-        topClients: reportData.topClients,
-        generatedAt: new Date().toISOString(),
-        generatedBy: user?.name,
-        userRole: user?.role
-      };
-    } else if (user?.role === 'sales_director') {
-      // Quotation-focused report for sales director
-      reportContent = {
-        dateRange: filters.dateRange,
-        quotationMetrics: {
-          totalQuotations: quotations.length,
-          wonQuotations: quotations.filter(q => q.status === 'won').length,
-          lostQuotations: quotations.filter(q => q.status === 'lost').length,
-          pendingQuotations: quotations.filter(q => q.status === 'pending').length,
-          winRate: reportData.metrics.winRate,
-          totalProfit: reportData.metrics.totalProfit
-        },
-        userActivities: reportData.userActivities,
-        generatedAt: new Date().toISOString(),
-        generatedBy: user?.name,
-        userRole: user?.role
-      };
-    }
-
-    const dataStr = JSON.stringify(reportContent, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
-    const reportType = user?.role === 'finance_officer' ? 'financial-report' : 'quotation-report';
-    const exportFileDefaultName = `${reportType}-${filters.dateRange.from.toISOString().split('T')[0]}-to-${filters.dateRange.to.toISOString().split('T')[0]}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-
-    toast({
-      title: "Report Exported",
-      description: `${user?.role === 'finance_officer' ? 'Financial' : 'Quotation'} report has been downloaded successfully.`,
-    });
-  };
+  const { filteredData, summary, chartData } = useReportsData({
+    quotations,
+    invoices,
+    dateRange,
+    selectedUser,
+    selectedStatus,
+    reportType,
+    user
+  });
 
   const handlePrint = () => {
-    const printContent = printRef.current?.innerHTML;
-    if (printContent) {
-      const printWindow = window.open('', '_blank');
-      if (printWindow) {
-        const reportTitle = user?.role === 'finance_officer' ? 'Financial Report' : 'Quotation Report';
-        printWindow.document.write(`
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <title>AWC Logistics - ${reportTitle}</title>
-              <style>
-                body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; }
-                @media print { 
-                  body { padding: 0; }
-                  .no-print { display: none !important; }
-                }
-                table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-                th, td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; }
-                th { background-color: #f9fafb; font-weight: 600; }
-                .grid { display: grid; gap: 1rem; }
-                .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
-                .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
-                .text-center { text-align: center; }
-                .text-right { text-align: right; }
-                .font-bold { font-weight: 700; }
-                .font-semibold { font-weight: 600; }
-                .text-green-600 { color: #059669; }
-                .text-blue-600 { color: #2563eb; }
-                .text-red-600 { color: #dc2626; }
-                .text-purple-600 { color: #9333ea; }
-                .text-yellow-600 { color: #d97706; }
-                .bg-green-50 { background-color: #f0fdf4; }
-                .bg-blue-50 { background-color: #eff6ff; }
-                .bg-red-50 { background-color: #fef2f2; }
-                .bg-purple-50 { background-color: #faf5ff; }
-                .bg-gray-50 { background-color: #f9fafb; }
-                .rounded-lg { border-radius: 0.5rem; }
-                .p-4 { padding: 1rem; }
-                .p-2 { padding: 0.5rem; }
-                .mb-6 { margin-bottom: 1.5rem; }
-                .mb-4 { margin-bottom: 1rem; }
-                .mb-2 { margin-bottom: 0.5rem; }
-                .space-y-2 > * + * { margin-top: 0.5rem; }
-                .border-t { border-top: 1px solid #e5e7eb; }
-                .border-b { border-bottom: 1px solid #e5e7eb; }
-                .pb-4 { padding-bottom: 1rem; }
-                .pt-4 { padding-top: 1rem; }
-              </style>
-            </head>
-            <body>
-              ${printContent}
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-        printWindow.close();
-      }
-    }
-
-    toast({
-      title: "Report Printed",
-      description: `${user?.role === 'finance_officer' ? 'Financial' : 'Quotation'} report has been sent to printer.`,
-    });
+    setShowPrintPreview(true);
+    // Small delay to ensure the component renders before printing
+    setTimeout(() => {
+      window.print();
+      setShowPrintPreview(false);
+    }, 100);
   };
 
-  const getReportTitle = () => {
-    switch (user?.role) {
-      case 'finance_officer':
-        return 'Financial Reports';
-      case 'sales_director':
-        return 'Quotation Reports';
-      default:
-        return 'Reports';
+  const handleExportCSV = () => {
+    let csvContent = '';
+    let filename = '';
+
+    if (reportType === 'quotations') {
+      csvContent = 'Date,Client,Destination,Buy Rate,Sell Rate,Profit,Status,Agent\n';
+      filteredData.forEach((item: any) => {
+        const quotation = item as Quotation;
+        csvContent += `${quotation.createdAt},${quotation.clientName || ''},${quotation.destination || ''},${quotation.buyRate},${quotation.clientQuote},${quotation.profit},${quotation.status},${quotation.quoteSentBy}\n`;
+      });
+      filename = `quotations-report-${new Date().toISOString().split('T')[0]}.csv`;
+    } else if (reportType === 'financial') {
+      csvContent = 'Date,Type,Client,Amount,Currency,Status\n';
+      filteredData.forEach((item: any) => {
+        if ('clientQuote' in item) {
+          const quotation = item as Quotation;
+          csvContent += `${quotation.createdAt},Quotation,${quotation.clientName || ''},${quotation.clientQuote},${quotation.currency},${quotation.status}\n`;
+        } else {
+          const invoice = item as InvoiceData;
+          csvContent += `${invoice.createdAt},Invoice,${invoice.clientName},${invoice.totalAmount},${invoice.currency},${invoice.status}\n`;
+        }
+      });
+      filename = `financial-report-${new Date().toISOString().split('T')[0]}.csv`;
     }
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-  const getReportDescription = () => {
-    switch (user?.role) {
-      case 'finance_officer':
-        return 'Comprehensive financial analysis including profit & loss, revenue metrics, and business performance.';
-      case 'sales_director':
-        return 'Quotation performance analysis and sales team activity reports.';
-      default:
-        return 'Business performance reports.';
-    }
-  };
+  if (showPrintPreview) {
+    return (
+      <PrintableReport
+        reportType={reportType}
+        data={filteredData}
+        summary={summary}
+        dateRange={dateRange}
+        user={user}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">{getReportTitle()}</h2>
+          <h2 className="text-2xl font-bold text-foreground">Financial Reports</h2>
           <p className="text-muted-foreground mt-1">
-            {getReportDescription()}
+            Comprehensive financial analysis and reporting dashboard
           </p>
         </div>
-        <Button onClick={handlePrint} variant="outline">
-          <Printer className="mr-2 h-4 w-4" />
-          Print Report
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExportCSV} className="flex items-center gap-2">
+            <Download size={16} />
+            Export CSV
+          </Button>
+          <Button onClick={handlePrint} className="flex items-center gap-2">
+            <Printer size={16} />
+            Print Report
+          </Button>
+        </div>
       </div>
 
       <ReportFilters
-        filters={filters}
-        onFiltersChange={setFilters}
-        users={users}
-        canViewAllUsers={canViewAllUsers}
-        onExport={handleExport}
+        reportType={reportType}
+        setReportType={setReportType}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+        selectedUser={selectedUser}
+        setSelectedUser={setSelectedUser}
+        selectedStatus={selectedStatus}
+        setSelectedStatus={setSelectedStatus}
+        user={user}
       />
 
-      {user?.role === 'finance_officer' && (
-        <>
-          <FinancialMetricsCards metrics={reportData.metrics} />
-          <ReportsCharts reportData={reportData} />
-        </>
-      )}
+      <FinancialMetricsCards summary={summary} />
 
-      {(user?.role === 'sales_director' || user?.role === 'finance_officer') && (
-        <UserActivityTable 
-          userActivities={reportData.userActivities} 
-          canViewAllUsers={canViewAllUsers}
-        />
-      )}
-
-      {/* Hidden printable version */}
-      <div className="hidden">
-        <div ref={printRef}>
-          <PrintableReport 
-            reportData={reportData} 
-            userRole={user?.role || ''} 
-            userName={user?.name || ''} 
-          />
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ReportsCharts chartData={chartData} reportType={reportType} />
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText size={20} />
+              Recent Activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <UserActivityTable data={filteredData.slice(0, 10)} reportType={reportType} />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

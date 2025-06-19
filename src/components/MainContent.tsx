@@ -71,10 +71,10 @@ const MainContent = ({
             user={user}
             quotations={quotations}
             setActiveTab={onTabChange}
-            onInvoiceFromQuotation={onGenerateInvoiceFromQuotation}
+            onInvoiceFromQuotation={user.role === 'admin' ? undefined : onGenerateInvoiceFromQuotation}
             onEdit={user.role === 'admin' ? undefined : onEditQuotation} // Admin cannot edit quotations
-            onApprove={onApproveQuotation}
-            onReject={onRejectQuotation}
+            onApprove={user.role === 'admin' ? onApproveQuotation : undefined}
+            onReject={user.role === 'admin' ? onRejectQuotation : undefined}
           />
         );
       case 'create':
@@ -108,9 +108,9 @@ const MainContent = ({
           />
         );
       case 'reports':
-        // Only finance_officer and sales_director can access reports
-        if (user.role === 'finance_officer' || user.role === 'sales_director') {
-          return <ReportsView />;
+        // Only finance_officer can access reports
+        if (user.role === 'finance_officer') {
+          return <ReportsView user={user} quotations={quotations} invoices={invoices} />;
         } else {
           return (
             <div className="flex items-center justify-center h-64">

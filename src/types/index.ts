@@ -35,6 +35,8 @@ export interface Quotation {
   cargoDescription?: string;
   requestType?: 'Import' | 'Export' | 'Re-Import' | 'Project' | 'Local';
   countryOfOrigin?: string;
+  // Total volume for easy access and calculations
+  totalVolumeKg?: number;
 }
 
 export interface Invoice {
