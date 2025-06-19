@@ -113,7 +113,7 @@ const ReportFilters = ({ filters, onFiltersChange, users, canViewAllUsers, onExp
                   <SelectValue placeholder="All users" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All users</SelectItem>
+                  <SelectItem value="__all__">All users</SelectItem>
                   {users.map(user => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.name}
@@ -131,7 +131,7 @@ const ReportFilters = ({ filters, onFiltersChange, users, canViewAllUsers, onExp
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All statuses</SelectItem>
+                <SelectItem value="__all__">All statuses</SelectItem>
                 <SelectItem value="won">Won</SelectItem>
                 <SelectItem value="lost">Lost</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
