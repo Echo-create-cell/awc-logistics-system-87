@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
-import { Activity, TrendingUp, Clock, Target } from 'lucide-react';
+import { Activity, TrendingUp, Clock, Target, DollarSign } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface UserActivityMonitorProps {
@@ -33,11 +33,16 @@ const UserActivityMonitor = ({ users, quotations, invoices }: UserActivityMonito
   const activeUsers = users.filter(u => u.status === 'active');
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Activity className="h-5 w-5" />
-          User Activity Monitor
+    <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-blue-50/30">
+      <CardHeader className="pb-6">
+        <CardTitle className="flex items-center gap-3 text-xl">
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <Activity className="h-6 w-6 text-blue-600" />
+          </div>
+          User Performance Overview
+          <Badge variant="secondary" className="ml-auto bg-blue-100 text-blue-800">
+            {activeUsers.length} Active Users
+          </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -46,56 +51,81 @@ const UserActivityMonitor = ({ users, quotations, invoices }: UserActivityMonito
             const activity = getUserActivity(user);
             
             return (
-              <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-blue-600 font-semibold text-sm">
-                      {user.name.split(' ').map(n => n[0]).join('')}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-sm text-muted-foreground capitalize">
-                      {user.role.replace('_', ' ')}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-6">
-                  <div className="text-center">
-                    <div className="flex items-center space-x-1">
-                      <Target className="h-4 w-4 text-blue-500" />
-                      <span className="text-sm font-medium">{activity.totalQuotations}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Quotations</p>
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className="flex items-center space-x-1">
-                      <TrendingUp className="h-4 w-4 text-green-500" />
-                      <span className="text-sm font-medium">{activity.wonQuotations}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Won</p>
-                  </div>
-                  
-                  <div className="text-center">
-                    <Badge 
-                      variant={activity.winRate >= 50 ? "default" : "secondary"}
-                      className={activity.winRate >= 50 ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}
-                    >
-                      {activity.winRate.toFixed(1)}%
-                    </Badge>
-                    <p className="text-xs text-muted-foreground mt-1">Win Rate</p>
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className="flex items-center space-x-1">
-                      <Clock className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm font-medium">
-                        {formatDistanceToNow(new Date(activity.lastActivity), { addSuffix: true })}
+              <div key={user.id} className="bg-white p-6 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-md">
+                      <span className="text-white font-bold text-sm">
+                        {user.name.split(' ').map(n => n[0]).join('')}
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground">Last Active</p>
+                    <div>
+                      <p className="font-semibold text-gray-900 text-lg">{user.name}</p>
+                      <Badge variant="outline" className="mt-1 capitalize font-medium bg-gray-50">
+                        {user.role.replace('_', ' ')}
+                      </Badge>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-8">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center space-x-2 mb-1">
+                        <div className="p-1.5 bg-blue-100 rounded-md">
+                          <Target className="h-4 w-4 text-blue-600" />
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">{activity.totalQuotations}</span>
+                      </div>
+                      <p className="text-xs text-gray-500 font-medium">Quotations</p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="flex items-center justify-center space-x-2 mb-1">
+                        <div className="p-1.5 bg-green-100 rounded-md">
+                          <TrendingUp className="h-4 w-4 text-green-600" />
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">{activity.wonQuotations}</span>
+                      </div>
+                      <p className="text-xs text-gray-500 font-medium">Won</p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="flex items-center justify-center space-x-2 mb-1">
+                        <div className="p-1.5 bg-purple-100 rounded-md">
+                          <DollarSign className="h-4 w-4 text-purple-600" />
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">
+                          ${activity.totalRevenue.toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 font-medium">Revenue</p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <Badge 
+                        variant={activity.winRate >= 50 ? "default" : "secondary"}
+                        className={`mb-1 px-3 py-1 text-sm font-bold ${
+                          activity.winRate >= 75 ? "bg-green-500 hover:bg-green-600" :
+                          activity.winRate >= 50 ? "bg-blue-500 hover:bg-blue-600" :
+                          activity.winRate >= 25 ? "bg-yellow-500 hover:bg-yellow-600 text-yellow-900" :
+                          "bg-red-100 text-red-800 hover:bg-red-200"
+                        }`}
+                      >
+                        {activity.winRate.toFixed(1)}%
+                      </Badge>
+                      <p className="text-xs text-gray-500 font-medium">Win Rate</p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="flex items-center justify-center space-x-2 mb-1">
+                        <div className="p-1.5 bg-gray-100 rounded-md">
+                          <Clock className="h-4 w-4 text-gray-600" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">
+                          {formatDistanceToNow(new Date(activity.lastActivity), { addSuffix: true })}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 font-medium">Last Active</p>
+                    </div>
                   </div>
                 </div>
               </div>
