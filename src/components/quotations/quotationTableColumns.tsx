@@ -1,11 +1,8 @@
+
 import { Quotation, User } from '@/types';
 import { TableColumn } from '@/types/table';
 import QuotationActions from './QuotationActions';
-import CargoDescriptionCell from './cells/CargoDescriptionCell';
-import DestinationCell from './cells/DestinationCell';
-import RemarksCell from './cells/RemarksCell';
 import StatusCell from './cells/StatusCell';
-import VolumeCell from './cells/VolumeCell';
 
 interface GetQuotationColumnsProps {
   user: User;
@@ -20,88 +17,90 @@ export const getQuotationColumns = ({
 }: GetQuotationColumnsProps): TableColumn[] => [
   {
     key: 'createdAt',
-    label: 'Q Ref Date',
-    minWidth: '120px',
+    label: 'Date',
+    minWidth: '90px',
     render: (_: any, row: Quotation) => (
-       <div className="text-sm font-medium">
-        <div className="whitespace-nowrap">{new Date(row.createdAt).toLocaleDateString()}</div>
+       <div className="text-xs font-medium">
+        <div className="whitespace-nowrap">{new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
        </div>
     )
   },
   { 
     key: 'clientName', 
-    label: 'Client Name',
-    minWidth: '150px',
+    label: 'Client',
+    minWidth: '120px',
     render: (value: string) => (
-      <div className="font-medium text-gray-900 truncate" title={value}>
+      <div className="font-medium text-gray-900 text-xs truncate" title={value}>
         {value || 'N/A'}
       </div>
     )
   },
   {
     key: 'freightMode',
-    label: 'Freight Mode',
-    minWidth: '120px',
+    label: 'Mode',
+    minWidth: '80px',
     render: (value: string) => (
-      <div className="text-gray-700 truncate" title={value}>
-        {value || 'N/A'}
+      <div className="text-gray-700 text-xs truncate" title={value}>
+        {value?.slice(0, 10) || 'N/A'}
       </div>
     )
   },
   {
     key: 'cargoDescription',
-    label: 'Cargo Description',
-    minWidth: '160px',
-    render: (value: string) => <CargoDescriptionCell value={value} />
-  },
-  {
-    key: 'requestType',
-    label: 'Request Type',
-    minWidth: '130px',
+    label: 'Cargo',
+    minWidth: '100px',
     render: (value: string) => (
-      <div className="text-gray-700 truncate" title={value}>
-        {value || 'N/A'}
+      <div className="text-gray-700 text-xs truncate" title={value}>
+        {value?.slice(0, 15) || 'N/A'}
       </div>
     )
   },
   {
     key: 'countryOfOrigin',
-    label: 'Country of Origin',
-    minWidth: '140px',
+    label: 'Origin',
+    minWidth: '80px',
     render: (value: string) => (
-      <div className="text-gray-700 truncate" title={value}>
-        {value || 'N/A'}
+      <div className="text-gray-700 text-xs truncate" title={value}>
+        {value?.slice(0, 10) || 'N/A'}
       </div>
     )
   },
   { 
     key: 'destination', 
-    label: 'Destination / Delivery',
-    minWidth: '180px',
-    render: (_: any, row: Quotation) => <DestinationCell row={row} />
+    label: 'Destination',
+    minWidth: '100px',
+    render: (value: string) => (
+      <div className="text-gray-700 text-xs truncate" title={value}>
+        {value?.slice(0, 12) || 'N/A'}
+      </div>
+    )
   },
   { 
     key: 'volume', 
-    label: 'Volume / Commodities',
-    minWidth: '160px',
-    render: (_: any, row: Quotation) => <VolumeCell row={row} />
+    label: 'Volume',
+    minWidth: '80px',
+    render: (value: string) => (
+      <div className="text-gray-700 text-xs truncate" title={value}>
+        {value?.slice(0, 8) || 'N/A'}
+      </div>
+    )
   },
   {
     key: 'buyRate', 
-    label: 'Total Buy Rate',
-    minWidth: '140px',
+    label: 'Buy Rate',
+    minWidth: '90px',
     render: (value: number, row: Quotation) => (
-      <div className="font-medium whitespace-nowrap">
+      <div className="font-medium text-xs whitespace-nowrap">
         {row.currency} {value.toLocaleString()}
       </div>
     )
   },
   {
     key: 'clientQuote', 
-    label: 'Client Quote (Sell Rate)',
-    minWidth: '160px',
+    label: 'Sell Rate',
+    minWidth: '90px',
     render: (value: number, row: Quotation) => (
-      <div className="font-medium text-blue-600 whitespace-nowrap">
+      <div className="font-medium text-blue-600 text-xs whitespace-nowrap">
         {row.currency} {value.toLocaleString()}
       </div>
     )
@@ -109,40 +108,33 @@ export const getQuotationColumns = ({
   {
     key: 'profit', 
     label: 'Profit',
-    minWidth: '120px',
+    minWidth: '80px',
     render: (value: number, row: Quotation) => (
-      <div className="font-medium text-green-600 whitespace-nowrap">
+      <div className="font-medium text-green-600 text-xs whitespace-nowrap">
         {row.currency} {value.toLocaleString()}
-        {row.profitPercentage && <span className="text-xs ml-1">({row.profitPercentage})</span>}
       </div>
     )
   },
   { 
     key: 'quoteSentBy', 
-    label: 'Quote Sent By',
-    minWidth: '140px',
+    label: 'Agent',
+    minWidth: '80px',
     render: (value: string) => (
-      <div className="text-gray-600 truncate" title={value}>
-        {value}
+      <div className="text-gray-600 text-xs truncate" title={value}>
+        {value?.split(' ')[0] || 'N/A'}
       </div>
     )
   },
   {
     key: 'status', 
-    label: 'Quotation Status',
-    minWidth: '140px',
+    label: 'Status',
+    minWidth: '80px',
     render: (_: any, row: Quotation) => <StatusCell row={row} />
-  },
-  {
-    key: 'remarks',
-    label: 'Follow-up & Remarks',
-    minWidth: '180px',
-    render: (_: any, row: Quotation) => <RemarksCell row={row} />
   },
   {
     key: 'actions', 
     label: 'Actions',
-    minWidth: '120px',
+    minWidth: '100px',
     render: (_: any, row: Quotation) => (
       <QuotationActions 
         quotation={row}

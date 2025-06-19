@@ -33,18 +33,32 @@ const ReportFilters = ({ filters, onFiltersChange, users, canViewAllUsers, onExp
     }
   };
 
-  const handleUserFilter = (userIds: string[]) => {
-    onFiltersChange({
-      ...filters,
-      userIds: userIds.length > 0 ? userIds : undefined
-    });
+  const handleUserFilter = (value: string) => {
+    if (value === '__all__') {
+      onFiltersChange({
+        ...filters,
+        userIds: undefined
+      });
+    } else {
+      onFiltersChange({
+        ...filters,
+        userIds: [value]
+      });
+    }
   };
 
-  const handleStatusFilter = (status: string[]) => {
-    onFiltersChange({
-      ...filters,
-      status: status.length > 0 ? status : undefined
-    });
+  const handleStatusFilter = (value: string) => {
+    if (value === '__all__') {
+      onFiltersChange({
+        ...filters,
+        status: undefined
+      });
+    } else {
+      onFiltersChange({
+        ...filters,
+        status: [value]
+      });
+    }
   };
 
   return (
@@ -108,7 +122,7 @@ const ReportFilters = ({ filters, onFiltersChange, users, canViewAllUsers, onExp
           {canViewAllUsers && (
             <div className="space-y-2">
               <Label>Filter by User</Label>
-              <Select onValueChange={(value) => handleUserFilter(value ? [value] : [])}>
+              <Select onValueChange={handleUserFilter}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="All users" />
                 </SelectTrigger>
@@ -126,7 +140,7 @@ const ReportFilters = ({ filters, onFiltersChange, users, canViewAllUsers, onExp
 
           <div className="space-y-2">
             <Label>Status Filter</Label>
-            <Select onValueChange={(value) => handleStatusFilter(value ? [value] : [])}>
+            <Select onValueChange={handleStatusFilter}>
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
