@@ -25,7 +25,6 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'users', label: 'User Management', icon: Users },
           { id: 'quotations', label: 'Quotation Approvals', icon: FileText },
           { id: 'invoices', label: 'All Invoices', icon: DollarSign },
-          { id: 'reports', label: 'System Reports', icon: BarChart3 },
           { id: 'settings', label: 'Settings', icon: Settings },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
@@ -35,7 +34,7 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'quotations', label: 'My Quotations', icon: FileText },
           { id: 'create', label: 'Create Quotation', icon: FileText },
           { id: 'invoices', label: 'Invoices', icon: DollarSign },
-          { id: 'reports', label: 'Sales Reports', icon: BarChart3 },
+          { id: 'reports', label: 'Quotation Reports', icon: BarChart3 },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
       case 'sales_agent':
@@ -43,7 +42,6 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'dashboard', label: 'Dashboard', icon: Home },
           { id: 'quotations', label: 'Approved Quotations', icon: FileText },
           { id: 'invoices', label: 'Invoices', icon: DollarSign },
-          { id: 'reports', label: 'My Reports', icon: BarChart3 },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
       case 'finance_officer':

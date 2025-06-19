@@ -72,7 +72,7 @@ const MainContent = ({
             quotations={quotations}
             setActiveTab={onTabChange}
             onInvoiceFromQuotation={onGenerateInvoiceFromQuotation}
-            onEdit={onEditQuotation}
+            onEdit={user.role === 'admin' ? undefined : onEditQuotation} // Admin cannot edit quotations
             onApprove={onApproveQuotation}
             onReject={onRejectQuotation}
           />
@@ -90,7 +90,7 @@ const MainContent = ({
             user={user}
             invoices={invoices}
             onSave={onSaveInvoice}
-            onEdit={onEditInvoice}
+            onEdit={user.role === 'admin' ? undefined : onEditInvoice} // Admin cannot edit invoices
             onPrint={onPrintInvoice}
             setActiveTab={onTabChange}
             quotations={quotations}
@@ -108,7 +108,19 @@ const MainContent = ({
           />
         );
       case 'reports':
-        return <ReportsView />;
+        // Only finance_officer and sales_director can access reports
+        if (user.role === 'finance_officer' || user.role === 'sales_director') {
+          return <ReportsView />;
+        } else {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <h2 className="text-xl font-semibold text-gray-700 mb-2">Access Restricted</h2>
+                <p className="text-gray-500">You don't have permission to view reports.</p>
+              </div>
+            </div>
+          );
+        }
       case 'settings':
         return <SettingsView />;
       default:

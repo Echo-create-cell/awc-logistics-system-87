@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -58,19 +59,18 @@ const QuotationActions = ({
           <Badge variant="secondary">Invoice Generated</Badge>
         )
       )}
-      { ((user.role !== 'sales_agent' && row.status === 'pending') || (user.role === 'sales_director' && row.status === 'lost')) &&
-        <>
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={() => onEdit?.(row)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-            title="Edit"
-          >
-            <Edit size={16} />
-          </Button>
-        </>
-      }
+      {/* Only sales_director can edit quotations - admin cannot edit */}
+      {user.role === 'sales_director' && (row.status === 'pending' || row.status === 'lost') && (
+        <Button 
+          size="sm" 
+          variant="ghost" 
+          onClick={() => onEdit?.(row)}
+          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+          title="Edit"
+        >
+          <Edit size={16} />
+        </Button>
+      )}
     </div>
   );
 };
