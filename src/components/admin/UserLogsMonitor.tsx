@@ -48,9 +48,9 @@ const UserLogsMonitor = ({ users, quotations, invoices }: UserLogsMonitorProps) 
         userRole: users.find(u => u.name === q.quoteSentBy)?.role || 'unknown',
         action: 'Created Quotation',
         actionType: 'quotation',
-        details: `Created quotation for ${q.clientName} - ${q.commodity}`,
+        details: `Created quotation for ${q.clientName} - ${q.cargoDescription || 'N/A'}`,
         timestamp: q.createdAt,
-        metadata: { quotationId: q.id, clientName: q.clientName, amount: q.totalAmount }
+        metadata: { quotationId: q.id, clientName: q.clientName, amount: q.clientQuote }
       });
 
       if (q.status === 'won' && q.approvedBy) {
