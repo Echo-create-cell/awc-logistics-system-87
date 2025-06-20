@@ -49,26 +49,15 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
     
     if (!selectedClient) {
       errors.push("Client must be selected");
-    }
-    
-    if (!invoiceData.destination.trim()) {
-      errors.push("Destination is required");
-    }
-    
-    if (!invoiceData.doorDelivery.trim()) {
-      errors.push("Door delivery address is required");
-    }
-    
-    if (!invoiceData.deliverDate) {
-      errors.push("Delivery date is required");
-    }
-    
-    if (!invoiceData.validityDate) {
-      errors.push("Validity date is required");
-    }
-    
-    if (!invoiceData.awbNumber.trim()) {
-      errors.push("AWB number is required");
+    } else {
+      // Focus on the three specific fields
+      if (!selectedClient.tinNumber || !selectedClient.tinNumber.trim()) {
+        errors.push("Client TIN number is required");
+      }
+      
+      if (!selectedClient.email || !selectedClient.email.trim()) {
+        errors.push("Client email is required");
+      }
     }
     
     if (!invoiceData.paymentConditions.trim()) {

@@ -111,7 +111,7 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 <div className="mb-6 text-sm">
                     <p><strong>Name of customer:</strong> {invoice.clientName || 'N/A'}</p>
                     <p><strong>Address:</strong> {invoice.clientAddress || 'N/A'}</p>
-                    <p><strong>TVA:</strong> {invoice.clientTin || 'N/A'}</p>
+                    <p><strong>TIN:</strong> {invoice.clientTin || 'N/A'}</p>
                 </div>
 
                 {/* Details Table */}

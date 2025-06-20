@@ -13,6 +13,13 @@ interface ClientInformationProps {
 }
 
 const ClientInformation = ({ clientsForSelection, selectedClient, onClientChange, disabled }: ClientInformationProps) => {
+  const RequiredLabel = ({ children, htmlFor }: { children: React.ReactNode; htmlFor: string }) => (
+    <Label htmlFor={htmlFor} className="flex items-center gap-1">
+      {children}
+      <span className="text-red-500">*</span>
+    </Label>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -20,7 +27,7 @@ const ClientInformation = ({ clientsForSelection, selectedClient, onClientChange
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <Label htmlFor="client">Select Client</Label>
+          <RequiredLabel htmlFor="client">Select Client</RequiredLabel>
           <Select
             value={selectedClient?.id}
             onValueChange={(value) => {
@@ -29,7 +36,7 @@ const ClientInformation = ({ clientsForSelection, selectedClient, onClientChange
             }}
             disabled={disabled}
           >
-            <SelectTrigger>
+            <SelectTrigger className={!selectedClient ? 'border-red-300 focus:border-red-500' : ''}>
               <SelectValue placeholder="Choose a client" />
             </SelectTrigger>
             <SelectContent>
@@ -46,9 +53,13 @@ const ClientInformation = ({ clientsForSelection, selectedClient, onClientChange
           <div className="p-3 bg-gray-50 rounded-lg space-y-2">
             <p><strong>Company:</strong> {selectedClient.companyName}</p>
             <p><strong>Contact:</strong> {selectedClient.contactPerson}</p>
-            <p><strong>TIN:</strong> {selectedClient.tinNumber || 'N/A'}</p>
+            <p className={!selectedClient.tinNumber?.trim() ? 'text-red-600 font-medium' : ''}>
+              <strong>TIN:</strong> {selectedClient.tinNumber || 'Missing - Required for invoice'}
+            </p>
             <p><strong>Address:</strong> {selectedClient.address}, {selectedClient.city}, {selectedClient.country}</p>
-            <p><strong>Email:</strong> {selectedClient.email}</p>
+            <p className={!selectedClient.email?.trim() ? 'text-red-600 font-medium' : ''}>
+              <strong>Email:</strong> {selectedClient.email || 'Missing - Required for invoice'}
+            </p>
           </div>
         )}
       </CardContent>
