@@ -72,7 +72,7 @@ const MainContent = ({
             quotations={quotations}
             setActiveTab={onTabChange}
             onInvoiceFromQuotation={user.role === 'admin' ? undefined : onGenerateInvoiceFromQuotation}
-            onEdit={user.role === 'admin' ? undefined : onEditQuotation} // Admin cannot edit quotations
+            onEdit={user.role === 'admin' ? undefined : onEditQuotation}
             onApprove={user.role === 'admin' ? onApproveQuotation : undefined}
             onReject={user.role === 'admin' ? onRejectQuotation : undefined}
           />
@@ -90,7 +90,7 @@ const MainContent = ({
             user={user}
             invoices={invoices}
             onSave={onSaveInvoice}
-            onEdit={user.role === 'admin' ? undefined : onEditInvoice} // Admin cannot edit invoices
+            onEdit={user.role === 'admin' ? undefined : onEditInvoice}
             onPrint={onPrintInvoice}
             setActiveTab={onTabChange}
             quotations={quotations}
@@ -108,8 +108,8 @@ const MainContent = ({
           />
         );
       case 'reports':
-        // Only finance_officer can access reports
-        if (user.role === 'finance_officer') {
+        // Allow finance_officer, sales_director, and admin to access reports
+        if (user.role === 'finance_officer' || user.role === 'sales_director' || user.role === 'admin') {
           return <ReportsView user={user} quotations={quotations} invoices={invoices} />;
         } else {
           return (

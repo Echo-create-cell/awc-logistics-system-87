@@ -1,7 +1,8 @@
+
 import { useState, useMemo } from 'react';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
-import { ReportData, ReportFilters, FinancialMetrics, UserActivity, DateRange } from '@/types/reports';
+import { ReportData, ReportFilters, FinancialMetrics, UserActivity } from '@/types/reports';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const useReportsData = (
@@ -44,7 +45,7 @@ export const useReportsData = (
       return issueDate >= dateRange.from && issueDate <= dateRange.to;
     });
 
-    // Apply additional filters - fix the filtering logic
+    // Apply additional filters
     if (userIds && userIds.length > 0 && !userIds.includes('__all__')) {
       const userNames = users.filter(u => userIds.includes(u.id)).map(u => u.name);
       filteredQuotations = filteredQuotations.filter(q => userNames.includes(q.quoteSentBy));
@@ -52,6 +53,7 @@ export const useReportsData = (
 
     if (status && status.length > 0 && !status.includes('__all__')) {
       filteredQuotations = filteredQuotations.filter(q => status.includes(q.status));
+      filteredInvoices = filteredInvoices.filter(i => status.includes(i.status));
     }
 
     return { quotations: filteredQuotations, invoices: filteredInvoices };
