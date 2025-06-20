@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Printer, Save } from 'lucide-react';
+import { Printer, Save, AlertCircle } from 'lucide-react';
 import { InvoiceData } from '@/types/invoice';
 import { Quotation } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
@@ -45,11 +44,81 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
     return `AWC-${year}${month}-${random}`;
   };
 
-  const getInvoicePayload = () => {
+  const validateRequiredFields = () => {
+    const errors = [];
+    
     if (!selectedClient) {
+      errors.push("Client must be selected");
+    }
+    
+    if (!invoiceData.destination.trim()) {
+      errors.push("Destination is required");
+    }
+    
+    if (!invoiceData.doorDelivery.trim()) {
+      errors.push("Door delivery address is required");
+    }
+    
+    if (!invoiceData.deliverDate) {
+      errors.push("Delivery date is required");
+    }
+    
+    if (!invoiceData.validityDate) {
+      errors.push("Validity date is required");
+    }
+    
+    if (!invoiceData.awbNumber.trim()) {
+      errors.push("AWB number is required");
+    }
+    
+    if (!invoiceData.paymentConditions.trim()) {
+      errors.push("Payment conditions are required");
+    }
+    
+    // Validate that at least one item exists with proper details
+    if (items.length === 0) {
+      errors.push("At least one invoice item is required");
+    } else {
+      items.forEach((item, index) => {
+        if (!item.commodity.trim()) {
+          errors.push(`Item ${index + 1}: Commodity description is required`);
+        }
+        if (!item.quantityKg || item.quantityKg <= 0) {
+          errors.push(`Item ${index + 1}: Quantity must be greater than 0`);
+        }
+        item.charges.forEach((charge, chargeIndex) => {
+          if (!charge.description.trim()) {
+            errors.push(`Item ${index + 1}, Charge ${chargeIndex + 1}: Description is required`);
+          }
+          if (!charge.rate || charge.rate <= 0) {
+            errors.push(`Item ${index + 1}, Charge ${chargeIndex + 1}: Rate must be greater than 0`);
+          }
+        });
+      });
+    }
+    
+    return errors;
+  };
+
+  const getInvoicePayload = () => {
+    const validationErrors = validateRequiredFields();
+    
+    if (validationErrors.length > 0) {
       toast({
-        title: "Client Required",
-        description: "Please select a client before proceeding.",
+        title: "Required Fields Missing",
+        description: (
+          <div className="space-y-1">
+            <p className="font-medium">Please fill in the following required fields:</p>
+            <ul className="list-disc list-inside text-sm">
+              {validationErrors.slice(0, 3).map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
+              {validationErrors.length > 3 && (
+                <li>...and {validationErrors.length - 3} more</li>
+              )}
+            </ul>
+          </div>
+        ),
         variant: "destructive",
       });
       return null;
@@ -61,13 +130,13 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       id: Date.now().toString(),
       invoiceNumber: generateInvoiceNumber(),
       quotationId: quotation?.id || '',
-      quotationData: quotation, // Store the full quotation data for reference
-      clientName: selectedClient.companyName,
-      clientAddress: `${selectedClient.address}, ${selectedClient.city}, ${selectedClient.country}`,
-      clientTin: selectedClient.tinNumber,
+      quotationData: quotation,
+      clientName: selectedClient!.companyName,
+      clientAddress: `${selectedClient!.address}, ${selectedClient!.city}, ${selectedClient!.country}`,
+      clientTin: selectedClient!.tinNumber || '',
       destination: invoiceData.destination,
       doorDelivery: invoiceData.doorDelivery,
-      salesperson: user?.name || '',
+      salesperson: user?.name || 'N/A',
       deliverDate: invoiceData.deliverDate,
       paymentConditions: invoiceData.paymentConditions,
       validityDate: invoiceData.validityDate,
@@ -92,7 +161,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       onSave?.(invoice);
       toast({
         title: "Invoice Saved",
-        description: `Invoice ${invoice.invoiceNumber} has been created successfully with volume information preserved.`,
+        description: `Invoice ${invoice.invoiceNumber} has been created successfully with all required information.`,
       });
     }
   };
@@ -105,6 +174,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
   };
 
   const { subTotal, tva, total } = calculateTotals();
+  const validationErrors = validateRequiredFields();
 
   // Calculate total volume from quotation for display
   const getTotalVolume = () => {
@@ -134,13 +204,27 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
           <p className="text-sm text-muted-foreground mt-1">
             Quotation Volume: <span className="font-medium">{getTotalVolume().toLocaleString()} kg</span>
           </p>
+          {validationErrors.length > 0 && (
+            <div className="flex items-center gap-2 mt-2 text-sm text-red-600">
+              <AlertCircle size={16} />
+              <span>{validationErrors.length} required field{validationErrors.length > 1 ? 's' : ''} missing</span>
+            </div>
+          )}
         </div>
         <div className="flex space-x-2">
-          <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700">
+          <Button 
+            onClick={handleSave} 
+            className="bg-green-600 hover:bg-green-700"
+            disabled={validationErrors.length > 0}
+          >
             <Save size={16} className="mr-2" />
             Save Invoice
           </Button>
-          <Button onClick={handlePrint} variant="outline">
+          <Button 
+            onClick={handlePrint} 
+            variant="outline"
+            disabled={validationErrors.length > 0}
+          >
             <Printer size={16} className="mr-2" />
             Print Preview
           </Button>
@@ -152,7 +236,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
           clientsForSelection={clientsForSelection}
           selectedClient={selectedClient}
           onClientChange={onClientChange}
-          disabled={true} // Client is set from quotation, so disable selection
+          disabled={true}
         />
         <InvoiceDetails 
           invoiceData={invoiceData}

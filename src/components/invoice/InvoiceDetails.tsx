@@ -25,6 +25,13 @@ const InvoiceDetails = ({ invoiceData, onInvoiceDataChange, currencyDisabled }: 
     onInvoiceDataChange(e.target.id, e.target.value);
   };
 
+  const RequiredLabel = ({ children, htmlFor }: { children: React.ReactNode; htmlFor: string }) => (
+    <Label htmlFor={htmlFor} className="flex items-center gap-1">
+      {children}
+      <span className="text-red-500">*</span>
+    </Label>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -33,48 +40,53 @@ const InvoiceDetails = ({ invoiceData, onInvoiceDataChange, currencyDisabled }: 
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="destination">Destination</Label>
+            <RequiredLabel htmlFor="destination">Destination</RequiredLabel>
             <Input
               id="destination"
               value={invoiceData.destination}
               onChange={handleChange}
-              placeholder="Destination"
+              placeholder="Enter destination"
+              className={!invoiceData.destination.trim() ? 'border-red-300 focus:border-red-500' : ''}
             />
           </div>
           <div>
-            <Label htmlFor="doorDelivery">Door Delivery</Label>
+            <RequiredLabel htmlFor="doorDelivery">Door Delivery</RequiredLabel>
             <Input
               id="doorDelivery"
               value={invoiceData.doorDelivery}
               onChange={handleChange}
-              placeholder="Door delivery address"
+              placeholder="Enter door delivery address"
+              className={!invoiceData.doorDelivery.trim() ? 'border-red-300 focus:border-red-500' : ''}
             />
           </div>
           <div>
-            <Label htmlFor="deliverDate">Delivery Date</Label>
+            <RequiredLabel htmlFor="deliverDate">Delivery Date</RequiredLabel>
             <Input
               id="deliverDate"
               type="date"
               value={invoiceData.deliverDate}
               onChange={handleChange}
+              className={!invoiceData.deliverDate ? 'border-red-300 focus:border-red-500' : ''}
             />
           </div>
           <div>
-            <Label htmlFor="validityDate">Validity Date</Label>
+            <RequiredLabel htmlFor="validityDate">Validity Date</RequiredLabel>
             <Input
               id="validityDate"
               type="date"
               value={invoiceData.validityDate}
               onChange={handleChange}
+              className={!invoiceData.validityDate ? 'border-red-300 focus:border-red-500' : ''}
             />
           </div>
           <div>
-            <Label htmlFor="awbNumber">AWB Number</Label>
+            <RequiredLabel htmlFor="awbNumber">AWB Number</RequiredLabel>
             <Input
               id="awbNumber"
               value={invoiceData.awbNumber}
               onChange={handleChange}
-              placeholder="Air Waybill number"
+              placeholder="Enter Air Waybill number"
+              className={!invoiceData.awbNumber.trim() ? 'border-red-300 focus:border-red-500' : ''}
             />
           </div>
           <div>
@@ -99,12 +111,13 @@ const InvoiceDetails = ({ invoiceData, onInvoiceDataChange, currencyDisabled }: 
         </div>
         
         <div>
-          <Label htmlFor="paymentConditions">Payment Conditions</Label>
+          <RequiredLabel htmlFor="paymentConditions">Payment Conditions</RequiredLabel>
           <Textarea
             id="paymentConditions"
             value={invoiceData.paymentConditions}
             onChange={handleChange}
-            placeholder="Payment terms and conditions"
+            placeholder="Enter payment terms and conditions"
+            className={!invoiceData.paymentConditions.trim() ? 'border-red-300 focus:border-red-500' : ''}
           />
         </div>
       </CardContent>

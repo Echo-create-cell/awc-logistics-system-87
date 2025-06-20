@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { InvoiceData } from '@/types/invoice';
 import { Button } from '@/components/ui/button';
@@ -102,17 +101,17 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                         <h1 className="text-4xl font-bold text-red-600 mb-2">Invoice</h1>
                         <p className="text-xs"><strong>Nr. Of Invoice:</strong> {invoice.invoiceNumber}</p>
                         <p className="text-xs"><strong>Date:</strong> {new Date(invoice.issueDate).toLocaleDateString('en-GB')}</p>
-                        {invoice.awbNumber && <p className="text-xs bg-blue-100 p-1 my-1"><strong>AWB:</strong> {invoice.awbNumber}</p>}
-                        <p className="text-xs"><strong>Destination:</strong> {invoice.destination}</p>
-                        <p className="text-xs"><strong>Door Delivery:</strong> {invoice.doorDelivery}</p>
+                        <p className="text-xs bg-blue-100 p-1 my-1"><strong>AWB:</strong> {invoice.awbNumber || 'N/A'}</p>
+                        <p className="text-xs"><strong>Destination:</strong> {invoice.destination || 'N/A'}</p>
+                        <p className="text-xs"><strong>Door Delivery:</strong> {invoice.doorDelivery || 'N/A'}</p>
                     </div>
                 </div>
 
                 {/* Client Information */}
                 <div className="mb-6 text-sm">
-                    <p><strong>Name of customer:</strong> {invoice.clientName}</p>
-                    <p><strong>Address:</strong> {invoice.clientAddress}</p>
-                    {invoice.clientTin && <p><strong>TVA:</strong> {invoice.clientTin}</p>}
+                    <p><strong>Name of customer:</strong> {invoice.clientName || 'N/A'}</p>
+                    <p><strong>Address:</strong> {invoice.clientAddress || 'N/A'}</p>
+                    <p><strong>TVA:</strong> {invoice.clientTin || 'N/A'}</p>
                 </div>
 
                 {/* Details Table */}
@@ -127,9 +126,9 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                     </thead>
                     <tbody>
                         <tr className="bg-gray-100">
-                            <td className="border border-black px-2 py-1">{invoice.salesperson}</td>
+                            <td className="border border-black px-2 py-1">{invoice.salesperson || 'N/A'}</td>
                             <td className="border border-black px-2 py-1">{invoice.deliverDate ? new Date(invoice.deliverDate).toLocaleDateString('en-GB') : 'N/A'}</td>
-                            <td className="border border-black px-2 py-1">{invoice.paymentConditions}</td>
+                            <td className="border border-black px-2 py-1">{invoice.paymentConditions || 'N/A'}</td>
                             <td className="border border-black px-2 py-1">{invoice.validityDate ? new Date(invoice.validityDate).toLocaleDateString('en-GB') : 'N/A'}</td>
                         </tr>
                     </tbody>
@@ -152,30 +151,30 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                                 const charge = item.charges[0];
                                 return (
                                     <tr key={item.id} className="even:bg-gray-100">
-                                        <td className="border border-black px-2 py-1 text-center">{item.quantityKg || ''}</td>
-                                        <td className="border border-black px-2 py-1">{item.commodity}</td>
-                                        <td className="border border-black px-2 py-1">{charge.description}</td>
-                                        <td className="border border-black px-2 py-1 text-right">{charge.rate.toFixed(2)}</td>
-                                        <td className="border border-black px-2 py-1 text-right">{item.total.toFixed(2)}</td>
+                                        <td className="border border-black px-2 py-1 text-center">{item.quantityKg || 0}</td>
+                                        <td className="border border-black px-2 py-1">{item.commodity || 'N/A'}</td>
+                                        <td className="border border-black px-2 py-1">{charge.description || 'N/A'}</td>
+                                        <td className="border border-black px-2 py-1 text-right">{(charge.rate || 0).toFixed(2)}</td>
+                                        <td className="border border-black px-2 py-1 text-right">{(item.total || 0).toFixed(2)}</td>
                                     </tr>
                                 );
                             } else {
                                 return (
                                     <React.Fragment key={item.id}>
                                         <tr className="bg-gray-200/60 font-bold">
-                                            <td className="border border-black px-2 py-1 text-center">{item.quantityKg || ''}</td>
-                                            <td className="border border-black px-2 py-1" colSpan={2}>{item.commodity}</td>
+                                            <td className="border border-black px-2 py-1 text-center">{item.quantityKg || 0}</td>
+                                            <td className="border border-black px-2 py-1" colSpan={2}>{item.commodity || 'N/A'}</td>
                                             <td className="border border-black px-2 py-1 text-right">
-                                                {(item.charges.reduce((sum, c) => sum + c.rate, 0)).toFixed(2)}
+                                                {(item.charges.reduce((sum, c) => sum + (c.rate || 0), 0)).toFixed(2)}
                                             </td>
-                                            <td className="border border-black px-2 py-1 text-right">{item.total.toFixed(2)}</td>
+                                            <td className="border border-black px-2 py-1 text-right">{(item.total || 0).toFixed(2)}</td>
                                         </tr>
                                         {item.charges.map(charge => (
                                             <tr key={charge.id} className="even:bg-gray-100">
                                                 <td className="border border-black px-2 py-1"></td>
-                                                <td className="border border-black px-2 py-1 italic" colSpan={2}>- {charge.description}</td>
-                                                <td className="border border-black px-2 py-1 text-right">{charge.rate.toFixed(2)}</td>
-                                                <td className="border border-black px-2 py-1 text-right">{(item.quantityKg * charge.rate).toFixed(2)}</td>
+                                                <td className="border border-black px-2 py-1 italic" colSpan={2}>- {charge.description || 'N/A'}</td>
+                                                <td className="border border-black px-2 py-1 text-right">{(charge.rate || 0).toFixed(2)}</td>
+                                                <td className="border border-black px-2 py-1 text-right">{((item.quantityKg || 0) * (charge.rate || 0)).toFixed(2)}</td>
                                             </tr>
                                         ))}
                                     </React.Fragment>
@@ -198,21 +197,21 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 <div className="flex justify-between items-start">
                     <div className="w-2/3 pt-20">
                          <p>Signature and Stump ..............................</p>
-                         <p className="mt-4 text-sm">Prepared by: {invoice.salesperson}</p>
+                         <p className="mt-4 text-sm">Prepared by: {invoice.salesperson || 'N/A'}</p>
                     </div>
                     <div className="w-1/3">
                         <div className="w-full text-sm">
                             <div className="flex justify-between py-1">
                                 <span>Sub-Total</span>
-                                <span>{invoice.subTotal.toFixed(2)}</span>
+                                <span>{(invoice.subTotal || 0).toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between py-1">
                                 <span>TVA</span>
-                                <span>{invoice.tva.toFixed(2)}</span>
+                                <span>{(invoice.tva || 0).toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between font-bold text-base py-1 border-t-2 border-black">
                                 <span>TOTAL</span>
-                                <span>{invoice.currency} {invoice.totalAmount.toFixed(2)}</span>
+                                <span>{invoice.currency} {(invoice.totalAmount || 0).toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
