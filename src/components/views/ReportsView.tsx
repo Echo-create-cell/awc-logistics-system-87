@@ -1,13 +1,7 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Download, Printer } from 'lucide-react';
-import ReportFilters from '@/components/reports/ReportFilters';
-import ReportsCharts from '@/components/reports/ReportsCharts';
-import FinancialMetricsCards from '@/components/reports/FinancialMetricsCards';
-import UserActivityTable from '@/components/reports/UserActivityTable';
-import PrintableReport from '@/components/reports/PrintableReport';
 import { useReportsData } from '@/hooks/useReportsData';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
@@ -23,17 +17,15 @@ const ReportsView = ({ user, quotations, invoices }: ReportsViewProps) => {
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
   const [selectedUser, setSelectedUser] = useState('__all__');
   const [selectedStatus, setSelectedStatus] = useState('__all__');
-  const [showPrintPreview, setShowPrintPreview] = useState(false);
 
-  const reportsData = useReportsData({
-    quotations,
-    invoices,
-    dateRange,
-    selectedUser,
-    selectedStatus,
-    reportType,
-    user
-  });
+  // Create mock users array for the hook
+  const users: User[] = [
+    { id: '1', name: 'Admin User', email: 'admin@example.com', role: 'admin', status: 'active', createdAt: new Date().toISOString() },
+    { id: '2', name: 'Sales Director', email: 'director@example.com', role: 'sales_director', status: 'active', createdAt: new Date().toISOString() },
+    { id: '3', name: 'Finance Officer', email: 'finance@example.com', role: 'finance_officer', status: 'active', createdAt: new Date().toISOString() }
+  ];
+
+  const reportsData = useReportsData(quotations, invoices, users);
 
   // Extract data from the hook response
   const filteredData = reportsData.reportData?.metrics ? 
