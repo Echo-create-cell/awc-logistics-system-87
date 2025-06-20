@@ -10,6 +10,38 @@ interface ReportDataTableProps {
 }
 
 const ReportDataTable = ({ filteredData }: ReportDataTableProps) => {
+  const formatVolume = (item: Quotation | InvoiceData) => {
+    const isQuotation = 'clientQuote' in item;
+    
+    if (isQuotation) {
+      const quotation = item as Quotation;
+      if (quotation.totalVolumeKg) {
+        return `${quotation.totalVolumeKg.toLocaleString()} kg`;
+      }
+      
+      // Try to parse volume from JSON
+      try {
+        const parsed = JSON.parse(quotation.volume);
+        if (Array.isArray(parsed)) {
+          const total = parsed.reduce((sum: number, c: any) => sum + (Number(c.quantityKg) || 0), 0);
+          return `${total.toLocaleString()} kg`;
+        }
+      } catch (e) {
+        // Fallback to direct volume if it's a number
+        const vol = Number(quotation.volume);
+        if (!isNaN(vol)) {
+          return `${vol.toLocaleString()} kg`;
+        }
+      }
+      return quotation.volume || 'N/A';
+    } else {
+      // For invoices, calculate total from items
+      const invoice = item as InvoiceData;
+      const totalKg = invoice.items?.reduce((sum, item) => sum + (item.quantityKg || 0), 0) || 0;
+      return `${totalKg.toLocaleString()} kg`;
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -26,6 +58,7 @@ const ReportDataTable = ({ filteredData }: ReportDataTableProps) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               </tr>
@@ -44,6 +77,9 @@ const ReportDataTable = ({ filteredData }: ReportDataTableProps) => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.clientName || 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {formatVolume(item)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       ${amount.toLocaleString()}

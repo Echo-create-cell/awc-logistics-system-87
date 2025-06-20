@@ -46,6 +46,34 @@ const InvoicesView = ({
 
   const displayedInvoices = invoices;
 
+  // Helper function to get quotation volume for an invoice
+  const getQuotationVolume = (invoice: InvoiceData) => {
+    const quotation = quotations.find(q => q.id === invoice.quotationId);
+    if (quotation) {
+      if (quotation.totalVolumeKg) {
+        return `${quotation.totalVolumeKg.toLocaleString()} kg`;
+      }
+      
+      try {
+        const parsed = JSON.parse(quotation.volume);
+        if (Array.isArray(parsed)) {
+          const total = parsed.reduce((sum: number, c: any) => sum + (Number(c.quantityKg) || 0), 0);
+          return `${total.toLocaleString()} kg`;
+        }
+      } catch (e) {
+        const vol = Number(quotation.volume);
+        if (!isNaN(vol)) {
+          return `${vol.toLocaleString()} kg`;
+        }
+      }
+      return quotation.volume || 'N/A';
+    }
+    
+    // Fallback to calculating from invoice items
+    const totalKg = invoice.items?.reduce((sum, item) => sum + (item.quantityKg || 0), 0) || 0;
+    return `${totalKg.toLocaleString()} kg`;
+  };
+
   // If user is creating invoice from a quotation, show InvoiceGenerator pre-filled
   if ((user.role === 'sales_director' || user.role === 'sales_agent') && invoiceQuotation) {
     return (
@@ -87,6 +115,15 @@ const InvoicesView = ({
       label: 'Client',
       render: (value: string) => (
         <div className="font-medium text-gray-700">{value}</div>
+      )
+    },
+    {
+      key: 'volume',
+      label: 'Volume',
+      render: (_: any, row: InvoiceData) => (
+        <div className="font-medium text-blue-600">
+          {getQuotationVolume(row)}
+        </div>
       )
     },
     {

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -60,6 +61,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       id: Date.now().toString(),
       invoiceNumber: generateInvoiceNumber(),
       quotationId: quotation?.id || '',
+      quotationData: quotation, // Store the full quotation data for reference
       clientName: selectedClient.companyName,
       clientAddress: `${selectedClient.address}, ${selectedClient.city}, ${selectedClient.country}`,
       clientTin: selectedClient.tinNumber,
@@ -90,7 +92,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       onSave?.(invoice);
       toast({
         title: "Invoice Saved",
-        description: `Invoice ${invoice.invoiceNumber} has been created successfully.`,
+        description: `Invoice ${invoice.invoiceNumber} has been created successfully with volume information preserved.`,
       });
     }
   };
@@ -104,10 +106,35 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
 
   const { subTotal, tva, total } = calculateTotals();
 
+  // Calculate total volume from quotation for display
+  const getTotalVolume = () => {
+    if (quotation.totalVolumeKg) {
+      return quotation.totalVolumeKg;
+    }
+    
+    try {
+      const parsed = JSON.parse(quotation.volume);
+      if (Array.isArray(parsed)) {
+        return parsed.reduce((sum: number, c: any) => sum + (Number(c.quantityKg) || 0), 0);
+      }
+    } catch (e) {
+      const vol = Number(quotation.volume);
+      if (!isNaN(vol)) {
+        return vol;
+      }
+    }
+    return 0;
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Generate Invoice</h2>
+        <div>
+          <h2 className="text-2xl font-bold">Generate Invoice</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Quotation Volume: <span className="font-medium">{getTotalVolume().toLocaleString()} kg</span>
+          </p>
+        </div>
         <div className="flex space-x-2">
           <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700">
             <Save size={16} className="mr-2" />

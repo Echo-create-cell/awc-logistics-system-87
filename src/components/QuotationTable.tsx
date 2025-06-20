@@ -35,6 +35,28 @@ const QuotationTable = ({
     }
   };
 
+  const formatVolume = (quotation: Quotation) => {
+    if (quotation.totalVolumeKg) {
+      return `${quotation.totalVolumeKg.toLocaleString()} kg`;
+    }
+    
+    // Try to parse volume from JSON
+    try {
+      const parsed = JSON.parse(quotation.volume);
+      if (Array.isArray(parsed)) {
+        const total = parsed.reduce((sum: number, c: any) => sum + (Number(c.quantityKg) || 0), 0);
+        return `${total.toLocaleString()} kg`;
+      }
+    } catch (e) {
+      // Fallback to direct volume if it's a number
+      const vol = Number(quotation.volume);
+      if (!isNaN(vol)) {
+        return `${vol.toLocaleString()} kg`;
+      }
+    }
+    return quotation.volume || 'N/A';
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm border">
       <div className="overflow-x-auto">
@@ -83,7 +105,7 @@ const QuotationTable = ({
                   {quotation.clientName || 'N/A'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
-                  {quotation.volume}
+                  {formatVolume(quotation)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {quotation.destination || 'N/A'}
