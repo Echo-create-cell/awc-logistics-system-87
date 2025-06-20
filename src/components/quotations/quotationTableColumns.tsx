@@ -1,8 +1,7 @@
-
 import { Quotation, User } from '@/types';
 import { TableColumn } from '@/types/table';
 import QuotationActions from './QuotationActions';
-import StatusCell from './StatusCell';
+import StatusCell from './cells/StatusCell';
 
 interface GetQuotationColumnsProps {
   user: User;
