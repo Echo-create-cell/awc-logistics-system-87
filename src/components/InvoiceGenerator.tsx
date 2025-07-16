@@ -24,6 +24,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
     clientsForSelection,
     selectedClient,
     onClientChange,
+    handleClientInfoChange,
     invoiceData,
     handleInvoiceDataChange,
     items,
@@ -225,7 +226,8 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
           clientsForSelection={clientsForSelection}
           selectedClient={selectedClient}
           onClientChange={onClientChange}
-          disabled={true}
+          onClientInfoChange={handleClientInfoChange}
+          disabled={false}
         />
         <InvoiceDetails 
           invoiceData={invoiceData}

@@ -247,6 +247,20 @@ export const useInvoiceForm = (quotation: Quotation) => {
     setInvoiceData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleClientInfoChange = (field: 'tinNumber' | 'email', value: string) => {
+    if (selectedClient) {
+      const updatedClient = { ...selectedClient, [field]: value };
+      setSelectedClient(updatedClient);
+      
+      // Update the client in the clients list as well
+      setClientsForSelection(prevClients => 
+        prevClients.map(client => 
+          client.id === selectedClient.id ? updatedClient : client
+        )
+      );
+    }
+  };
+
   const calculateTotals = useCallback(() => {
     const subTotal = items.reduce((sum, item) => sum + item.total, 0);
     const tva = subTotal * 0.18; // 18% VAT
@@ -258,6 +272,7 @@ export const useInvoiceForm = (quotation: Quotation) => {
     clientsForSelection,
     selectedClient,
     onClientChange: setSelectedClient,
+    handleClientInfoChange,
     invoiceData,
     handleInvoiceDataChange,
     items,
