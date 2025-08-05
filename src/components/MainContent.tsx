@@ -108,8 +108,8 @@ const MainContent = ({
           />
         );
       case 'reports':
-        // Allow finance_officer, sales_director, and admin to access reports
-        if (user.role === 'finance_officer' || user.role === 'sales_director' || user.role === 'admin') {
+        // Allow finance_officer, sales_director, admin, and partner to access reports
+        if (user.role === 'finance_officer' || user.role === 'sales_director' || user.role === 'admin' || user.role === 'partner') {
           return <ReportsView user={user} quotations={quotations} invoices={invoices} />;
         } else {
           return (
