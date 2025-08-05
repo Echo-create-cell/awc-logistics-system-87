@@ -13,31 +13,29 @@ interface StatsCardProps {
 }
 
 const StatsCard = ({ title, value, change, isPositive, icon }: StatsCardProps) => (
-  <Card className="group hover-lift">
+  <Card className="metric-card group cursor-pointer">
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-      <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+      <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors duration-300">
         {title}
       </CardTitle>
-      <div className="p-2 rounded-lg bg-gradient-primary/10 group-hover:bg-gradient-primary/20 transition-colors">
+      <div className="p-2.5 rounded-xl bg-gradient-primary/10 group-hover:bg-gradient-primary/20 transition-all duration-300 group-hover:scale-110">
         {icon}
       </div>
     </CardHeader>
-    <CardContent>
-      <div className="text-3xl font-bold font-display text-foreground mb-2">{value}</div>
-      <p className={`text-xs flex items-center transition-colors ${
-        isPositive 
-          ? 'text-success' 
-          : 'text-destructive'
+    <CardContent className="pb-4">
+      <div className="text-3xl font-display font-bold text-foreground group-hover:scale-105 transition-transform duration-300">
+        {value}
+      </div>
+      <div className={`flex items-center space-x-1 mt-2 ${
+        isPositive ? 'text-success' : 'text-destructive'
       }`}>
-        <div className={`p-1 rounded-full mr-2 ${
-          isPositive 
-            ? 'bg-success/10' 
-            : 'bg-destructive/10'
-        }`}>
-          {isPositive ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-        </div>
-        <span className="font-medium">{change} from last month</span>
-      </p>
+        {isPositive ? (
+          <TrendingUp className="h-3 w-3" />
+        ) : (
+          <TrendingDown className="h-3 w-3" />
+        )}
+        <span className="text-xs font-medium">{change} from last month</span>
+      </div>
     </CardContent>
   </Card>
 );
@@ -144,9 +142,13 @@ const DashboardStats = ({ user, users, quotations }: DashboardStatsProps) => {
   const stats = getStats();
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 animate-fade-in-up">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 animate-fade-in">
       {stats.map((stat, index) => (
-        <div key={index} style={{ animationDelay: `${index * 100}ms` }}>
+        <div 
+          key={index} 
+          className="smooth-entrance"
+          style={{ animationDelay: `${index * 150}ms` }}
+        >
           <StatsCard {...stat} />
         </div>
       ))}

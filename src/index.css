@@ -1,9 +1,31 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Professional Typography */
+.heading-primary {
+  @apply font-display font-bold text-3xl md:text-4xl lg:text-5xl;
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heading-secondary {
+  @apply font-display font-semibold text-xl md:text-2xl lg:text-3xl text-foreground;
+}
+
+.text-body {
+  @apply font-body text-base leading-relaxed text-muted-foreground;
+}
+
+.text-caption {
+  @apply font-body text-sm text-muted-foreground/80;
+}
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 

@@ -67,37 +67,44 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
   const menuItems = getMenuItems();
 
   return (
-    <div className="bg-sidebar text-sidebar-foreground w-64 min-h-screen p-4 flex flex-col shadow-lg">
-      <div className="mb-8">
-        <div className="flex items-center space-x-3 mb-2">
+    <div className="bg-sidebar text-sidebar-foreground w-64 min-h-screen p-6 flex flex-col shadow-2xl border-r border-border/20">
+      <div className="mb-8 smooth-entrance">
+        <div className="flex items-center space-x-3 mb-3">
           <img 
             src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" 
             alt="AWC Logo" 
-            className="h-10 w-auto opacity-95 bg-transparent"
-            style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))' }}
+            className="h-12 w-auto opacity-95 animate-float"
+            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}
           />
-          <h1 className="text-lg font-bold fancy-gradient-text">AWC Logistics</h1>
+          <div>
+            <h1 className="text-xl font-display font-bold fancy-gradient-text">AWC Logistics</h1>
+            <p className="text-xs text-sidebar-foreground/60 font-medium">Professional Suite</p>
+          </div>
         </div>
-        <p className="text-sm text-sidebar-foreground/70 capitalize">{userRole.replace('_', ' ')}</p>
-        <p className="text-xs text-sidebar-foreground/50">{user?.name}</p>
+        <div className="bg-sidebar-accent/20 rounded-lg p-3 border border-sidebar-border/30">
+          <p className="text-sm font-medium text-sidebar-foreground capitalize">{userRole.replace('_', ' ')}</p>
+          <p className="text-xs text-sidebar-foreground/70 font-medium">{user?.name}</p>
+        </div>
       </div>
       
-      <nav className="space-y-2 flex-1">
-        {menuItems.map((item) => {
+      <nav className="space-y-3 flex-1">
+        {menuItems.map((item, index) => {
           const Icon = item.icon;
           return (
             <button
               key={item.id}
               onClick={() => item.id === 'logout' ? handleLogout() : onTabChange(item.id)}
               className={cn(
-                "w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors font-medium",
+                "w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-300 font-medium group",
+                "hover:shadow-lg hover:scale-[1.02] transform",
                 activeTab === item.id
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md scale-[1.02]"
                   : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
+              style={{ animationDelay: `${index * 50}ms` }}
             >
-              <Icon size={20} />
-              <span>{item.label}</span>
+              <Icon size={20} className="transition-transform duration-300 group-hover:scale-110" />
+              <span className="font-medium">{item.label}</span>
             </button>
           );
         })}

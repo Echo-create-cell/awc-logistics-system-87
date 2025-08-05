@@ -18,6 +18,23 @@ interface DashboardViewProps {
 }
 
 const DashboardView = ({ user, users, quotations, invoices, onTabChange }: DashboardViewProps) => {
+  const getRoleDescription = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return 'Complete system oversight and user management';
+      case 'sales_director':
+        return 'Lead sales operations and strategic quotations';
+      case 'sales_agent':
+        return 'Manage customer relationships and quotations';
+      case 'finance_officer':
+        return 'Oversee financial operations and reporting';
+      case 'partner':
+        return 'Access business insights and performance data';
+      default:
+        return 'Welcome to AWC Logistics Management System';
+    }
+  };
+
   const recentPendingQuotations = quotations
     .filter(q => {
       if (user.role === 'admin') {
@@ -33,15 +50,15 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
   const cardTitle = user.role === 'admin' ? 'Pending Quotation Approvals' : 'Your Recent Pending Quotations';
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
+    <div className="space-y-8 animate-fade-in">
       <div className="relative overflow-hidden bg-gradient-subtle p-8 rounded-2xl border shadow-large">
         <div className="absolute inset-0 bg-gradient-primary opacity-5"></div>
         <div className="relative z-10">
-          <h2 className="text-4xl font-display font-bold text-foreground mb-3 fancy-gradient-text">
-            Dashboard
-          </h2>
-          <p className="text-muted-foreground text-lg">
-            Welcome back, <span className="font-semibold text-primary">{user.name}</span>! Here's a comprehensive overview of your activities and system insights.
+          <h1 className="heading-primary mb-3">
+            Welcome, {user.name}
+          </h1>
+          <p className="text-body text-lg">
+            {getRoleDescription(user.role)}
           </p>
         </div>
         <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>

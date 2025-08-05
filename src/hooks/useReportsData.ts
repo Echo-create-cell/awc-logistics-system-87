@@ -162,6 +162,6 @@ export const useReportsData = (
     reportData,
     filters,
     setFilters,
-    canViewAllUsers: user?.role === 'admin' || user?.role === 'sales_director' || user?.role === 'finance_officer'
+    canViewAllUsers: user?.role === 'admin' || user?.role === 'sales_director' || user?.role === 'finance_officer' || user?.role === 'partner'
   };
 };
