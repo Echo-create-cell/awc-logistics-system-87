@@ -71,28 +71,28 @@ const DashboardStats = ({ user, users, quotations }: DashboardStatsProps) => {
           {
             title: 'Total Users',
             value: users.length.toString(),
-            change: '+2', // Kept for demo
+            change: '0',
             isPositive: true,
             icon: <Users className="h-4 w-4 text-primary" />
           },
           {
             title: 'Pending Approvals',
             value: pendingApprovals.toString(),
-            change: '+3', // Kept for demo
+            change: '0',
             isPositive: pendingApprovals <= 5,
             icon: <FileText className="h-4 w-4 text-warning" />
           },
           {
             title: 'Approved This Month',
             value: approvedThisMonth.toString(),
-            change: '+12', // Kept for demo
+            change: '0',
             isPositive: true,
             icon: <FileText className="h-4 w-4 text-success" />
           },
           {
             title: 'Total Revenue',
             value: formatRevenue(totalRevenue),
-            change: '+8.1%', // Kept for demo
+            change: '0%',
             isPositive: true,
             icon: <DollarSign className="h-4 w-4 text-accent" />
           }
@@ -107,28 +107,28 @@ const DashboardStats = ({ user, users, quotations }: DashboardStatsProps) => {
           {
             title: 'My Quotations',
             value: myQuotations.length.toString(),
-            change: '+12', // Kept for demo
+            change: '0',
             isPositive: true,
             icon: <FileText className="h-4 w-4 text-primary" />
           },
           {
             title: 'Pending Approval',
             value: myQuotations.filter(q => q.status === 'pending').length.toString(),
-            change: '+3', // Kept for demo
+            change: '0',
             isPositive: false,
             icon: <FileText className="h-4 w-4 text-warning" />
           },
           {
             title: 'Won Deals',
             value: wonDeals.length.toString(),
-            change: '+15', // Kept for demo
+            change: '0',
             isPositive: true,
             icon: <TrendingUp className="h-4 w-4 text-success" />
           },
           {
             title: 'Win Rate',
             value: winRate,
-            change: '+5.2%', // Kept for demo
+            change: '0%',
             isPositive: true,
             icon: <TrendingUp className="h-4 w-4 text-accent" />
           }
@@ -148,28 +148,28 @@ const DashboardStats = ({ user, users, quotations }: DashboardStatsProps) => {
           {
             title: 'Total Revenue',
             value: formatRevenue(totalRevenue),
-            change: '+12.3%',
+            change: '0%',
             isPositive: true,
             icon: <DollarSign className="h-4 w-4 text-success" />
           },
           {
             title: 'Total Profit',
             value: formatRevenue(totalProfit),
-            change: '+8.7%',
+            change: '0%',
             isPositive: true,
             icon: <TrendingUp className="h-4 w-4 text-primary" />
           },
           {
             title: 'Active Quotations',
             value: quotations.length.toString(),
-            change: '+5',
+            change: '0',
             isPositive: true,
             icon: <FileText className="h-4 w-4 text-warning" />
           },
           {
             title: 'Win Rate',
             value: winRate,
-            change: '+2.1%',
+            change: '0%',
             isPositive: true,
             icon: <TrendingUp className="h-4 w-4 text-accent" />
           }

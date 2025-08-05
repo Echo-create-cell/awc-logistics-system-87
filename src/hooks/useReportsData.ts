@@ -13,7 +13,7 @@ export const useReportsData = (
   const { user } = useAuth();
   const [filters, setFilters] = useState<ReportFilters>({
     dateRange: {
-      from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      from: new Date(),
       to: new Date()
     },
     includeUserActivity: true

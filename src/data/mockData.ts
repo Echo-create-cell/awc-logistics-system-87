@@ -6,43 +6,43 @@ export const mockQuotations: Quotation[] = [];
 export const mockUsers: User[] = [
   {
     id: '1',
-    name: 'John Admin',
-    email: 'admin@quotationpro.com',
+    name: 'Admin User',
+    email: 'admin@awclogistics.com',
     role: 'admin',
     status: 'active',
-    createdAt: '2024-01-15'
+    createdAt: new Date().toISOString()
   },
   {
     id: '2',
-    name: 'Sarah Director',
-    email: 'sarah@quotationpro.com',
+    name: 'John Sales Director',
+    email: 'john@awclogistics.com',
     role: 'sales_director',
     status: 'active',
-    createdAt: '2024-02-01'
+    createdAt: new Date().toISOString()
   },
   {
     id: '3',
-    name: 'Mike Agent',
-    email: 'mike@quotationpro.com',
+    name: 'Mike Sales Agent',
+    email: 'mike@awclogistics.com',
     role: 'sales_agent',
     status: 'active',
-    createdAt: '2024-02-15'
+    createdAt: new Date().toISOString()
   },
   {
     id: '4',
-    name: 'Lisa Finance',
-    email: 'lisa@quotationpro.com',
+    name: 'Lisa Finance Officer',
+    email: 'lisa@awclogistics.com',
     role: 'finance_officer',
     status: 'active',
-    createdAt: '2024-03-01'
+    createdAt: new Date().toISOString()
   },
   {
     id: '5',
-    name: 'Alex Partner',
-    email: 'alex@partner.com',
+    name: 'Partner User',
+    email: 'partner@partner.com',
     role: 'partner',
     status: 'active',
-    createdAt: '2024-03-15'
+    createdAt: new Date().toISOString()
   }
 ];
 
