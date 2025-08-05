@@ -79,10 +79,6 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
-			fontFamily: {
-				'display': ['Playfair Display', 'serif'],
-				'sans': ['Inter', 'sans-serif'],
-			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-accent': 'var(--gradient-accent)',
