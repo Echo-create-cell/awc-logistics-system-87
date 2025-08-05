@@ -45,8 +45,8 @@ const LoginForm = () => {
               style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
             />
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-800">AWC Logistics</CardTitle>
-          <p className="text-gray-600">Sign in to your account</p>
+          <CardTitle className="heading-md">AWC Logistics</CardTitle>
+          <p className="text-lead">Sign in to your account</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,13 +89,13 @@ const LoginForm = () => {
           </form>
           
           <div className="mt-6 p-3 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 font-medium mb-2">Demo Accounts:</p>
-            <div className="text-xs text-gray-500 space-y-1">
+            <p className="text-label mb-2">Demo Accounts:</p>
+            <div className="text-body-sm space-y-1">
               <p>• admin@awclogistics.com (Admin)</p>
               <p>• john@awclogistics.com (Sales Director)</p>
               <p>• mike@awclogistics.com (Sales Agent)</p>
               <p>• lisa@awclogistics.com (Finance Officer)</p>
-              <p className="font-medium text-gray-700 mt-2">Password: password</p>
+              <p className="text-label mt-2">Password: password</p>
             </div>
           </div>
         </CardContent>

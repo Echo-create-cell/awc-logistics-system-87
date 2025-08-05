@@ -77,13 +77,13 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
             style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}
           />
           <div>
-            <h1 className="text-xl font-display font-bold fancy-gradient-text">AWC Logistics</h1>
-            <p className="text-xs text-sidebar-foreground/60 font-medium">Professional Suite</p>
+            <h1 className="heading-xs gradient-text">AWC Logistics</h1>
+            <p className="text-caption">Professional Suite</p>
           </div>
         </div>
         <div className="bg-sidebar-accent/20 rounded-lg p-3 border border-sidebar-border/30">
-          <p className="text-sm font-medium text-sidebar-foreground capitalize">{userRole.replace('_', ' ')}</p>
-          <p className="text-xs text-sidebar-foreground/70 font-medium">{user?.name}</p>
+          <p className="text-label capitalize">{userRole.replace('_', ' ')}</p>
+          <p className="text-body-sm">{user?.name}</p>
         </div>
       </div>
       
@@ -95,8 +95,8 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
               key={item.id}
               onClick={() => item.id === 'logout' ? handleLogout() : onTabChange(item.id)}
               className={cn(
-                "w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-300 font-medium group",
-                "hover:shadow-lg hover:scale-[1.02] transform",
+                "w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-300 group",
+                "hover:shadow-lg hover:scale-[1.02] transform text-label",
                 activeTab === item.id
                   ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md scale-[1.02]"
                   : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -104,7 +104,7 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <Icon size={20} className="transition-transform duration-300 group-hover:scale-110" />
-              <span className="font-medium">{item.label}</span>
+              <span>{item.label}</span>
             </button>
           );
         })}

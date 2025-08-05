@@ -48,6 +48,21 @@ export default {
         extrabold: '800',
         black: '900',
       },
+      spacing: {
+        'xs': 'var(--spacing-xs)',
+        'sm': 'var(--spacing-sm)', 
+        'md': 'var(--spacing-md)',
+        'lg': 'var(--spacing-lg)',
+        'xl': 'var(--spacing-xl)',
+        '2xl': 'var(--spacing-2xl)',
+      },
+      letterSpacing: {
+        tighter: 'var(--letter-spacing-tight)',
+        tight: 'var(--letter-spacing-tight)',
+        normal: 'var(--letter-spacing-normal)',
+        wide: 'var(--letter-spacing-wide)',
+        wider: 'var(--letter-spacing-wider)',
+      },
       colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',

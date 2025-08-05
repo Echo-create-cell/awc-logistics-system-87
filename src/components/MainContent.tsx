@@ -115,8 +115,8 @@ const MainContent = ({
           return (
             <div className="flex items-center justify-center h-64">
               <div className="text-center">
-                <h2 className="text-xl font-semibold text-gray-700 mb-2">Access Restricted</h2>
-                <p className="text-gray-500">You don't have permission to view reports.</p>
+                <h2 className="heading-sm">Access Restricted</h2>
+                <p className="text-body-sm">You don't have permission to view reports.</p>
               </div>
             </div>
           );
