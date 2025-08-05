@@ -6,27 +6,30 @@ import { InvoiceData } from '@/types/invoice';
 import ReportFiltersCard from '@/components/reports/ReportFiltersCard';
 import FinancialMetricsCards from '@/components/reports/FinancialMetricsCards';
 import ReportDataTable from '@/components/reports/ReportDataTable';
+import ReportsCharts from '@/components/reports/ReportsCharts';
+import UserActivityTable from '@/components/reports/UserActivityTable';
 import { generatePrintReport, generateCSVExport } from '@/components/reports/ReportExportUtils';
 
 interface ReportsViewProps {
   user: User;
   quotations: Quotation[];
   invoices: InvoiceData[];
+  users?: User[];
 }
 
-const ReportsView = ({ user, quotations, invoices }: ReportsViewProps) => {
+const ReportsView = ({ user, quotations, invoices, users: propUsers }: ReportsViewProps) => {
   const [reportType, setReportType] = useState<'quotations' | 'financial' | 'users'>('financial');
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
   const [selectedStatus, setSelectedStatus] = useState('__all__');
 
-  // Create users array for the hook
-  const users: User[] = [
+  // Use provided users or fallback to default users
+  const users: User[] = propUsers || [
     { id: '1', name: 'Admin User', email: 'admin@example.com', role: 'admin', status: 'active', createdAt: new Date().toISOString() },
     { id: '2', name: 'Sales Director', email: 'director@example.com', role: 'sales_director', status: 'active', createdAt: new Date().toISOString() },
     { id: '3', name: 'Finance Officer', email: 'finance@example.com', role: 'finance_officer', status: 'active', createdAt: new Date().toISOString() }
   ];
 
-  const { reportData } = useReportsData(quotations, invoices, users);
+  const { reportData, canViewAllUsers } = useReportsData(quotations, invoices, users);
 
   // Apply filtering logic
   const filteredData = [...quotations, ...invoices].filter(item => {
@@ -89,6 +92,15 @@ const ReportsView = ({ user, quotations, invoices }: ReportsViewProps) => {
       />
 
       <FinancialMetricsCards metrics={summary} />
+
+      {reportData && <ReportsCharts reportData={reportData} />}
+
+      {reportType === 'users' && (
+        <UserActivityTable 
+          userActivities={reportData?.userActivities || []} 
+          canViewAllUsers={canViewAllUsers}
+        />
+      )}
 
       <ReportDataTable filteredData={filteredData} />
     </div>

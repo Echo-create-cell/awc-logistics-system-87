@@ -12,13 +12,13 @@ const ReportsCharts = ({ reportData }: ReportsChartsProps) => {
   const formatCurrency = (value: number) => `$${value.toLocaleString()}`;
 
   const pieData = [
-    { name: 'Paid', value: reportData.metrics.paidInvoices, color: '#10B981' },
-    { name: 'Pending', value: reportData.metrics.pendingInvoices, color: '#F59E0B' },
-    { name: 'Overdue', value: reportData.metrics.overdueInvoices, color: '#EF4444' }
+    { name: 'Paid', value: reportData.metrics.paidInvoices, color: 'hsl(160, 84%, 39%)' },
+    { name: 'Pending', value: reportData.metrics.pendingInvoices, color: 'hsl(43, 96%, 56%)' },
+    { name: 'Overdue', value: reportData.metrics.overdueInvoices, color: 'hsl(0, 84%, 60%)' }
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 animate-in fade-in-50 duration-500">
       {/* Monthly Trends */}
       <Card>
         <CardHeader>
@@ -31,8 +31,8 @@ const ReportsCharts = ({ reportData }: ReportsChartsProps) => {
               <XAxis dataKey="month" />
               <YAxis tickFormatter={formatCurrency} />
               <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-              <Line type="monotone" dataKey="revenue" stroke="#10B981" name="Revenue" strokeWidth={2} />
-              <Line type="monotone" dataKey="profit" stroke="#3B82F6" name="Profit" strokeWidth={2} />
+              <Line type="monotone" dataKey="revenue" stroke="hsl(160, 84%, 39%)" name="Revenue" strokeWidth={3} />
+              <Line type="monotone" dataKey="profit" stroke="hsl(221, 83%, 53%)" name="Profit" strokeWidth={3} />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
@@ -76,7 +76,7 @@ const ReportsCharts = ({ reportData }: ReportsChartsProps) => {
               <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
               <YAxis tickFormatter={formatCurrency} />
               <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-              <Bar dataKey="revenue" fill="#8B5CF6" />
+              <Bar dataKey="revenue" fill="hsl(262, 83%, 58%)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -94,7 +94,7 @@ const ReportsCharts = ({ reportData }: ReportsChartsProps) => {
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="quotations" fill="#F59E0B" />
+              <Bar dataKey="quotations" fill="hsl(43, 96%, 56%)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
