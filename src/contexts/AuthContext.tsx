@@ -44,6 +44,14 @@ const mockUsers: User[] = [
     role: 'finance_officer',
     status: 'active',
     createdAt: '2024-01-01'
+  },
+  {
+    id: '5',
+    name: 'Alex Partner',
+    email: 'alex@awclogistics.com',
+    role: 'partner',
+    status: 'active',
+    createdAt: '2024-01-01'
   }
 ];
 
