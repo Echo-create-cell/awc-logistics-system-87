@@ -13,18 +13,30 @@ interface StatsCardProps {
 }
 
 const StatsCard = ({ title, value, change, isPositive, icon }: StatsCardProps) => (
-  <Card>
-    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      {icon}
+  <Card className="group hover-lift">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+      <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+        {title}
+      </CardTitle>
+      <div className="p-2 rounded-lg bg-gradient-primary/10 group-hover:bg-gradient-primary/20 transition-colors">
+        {icon}
+      </div>
     </CardHeader>
     <CardContent>
-      <div className="text-2xl font-bold">{value}</div>
-      <p className={`text-xs flex items-center ${
-        isPositive ? 'text-green-600' : 'text-red-600'
+      <div className="text-3xl font-bold font-display text-foreground mb-2">{value}</div>
+      <p className={`text-xs flex items-center transition-colors ${
+        isPositive 
+          ? 'text-success' 
+          : 'text-destructive'
       }`}>
-        {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-        <span className="ml-1">{change} from last month</span>
+        <div className={`p-1 rounded-full mr-2 ${
+          isPositive 
+            ? 'bg-success/10' 
+            : 'bg-destructive/10'
+        }`}>
+          {isPositive ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+        </div>
+        <span className="font-medium">{change} from last month</span>
       </p>
     </CardContent>
   </Card>
@@ -63,28 +75,28 @@ const DashboardStats = ({ user, users, quotations }: DashboardStatsProps) => {
             value: users.length.toString(),
             change: '+2', // Kept for demo
             isPositive: true,
-            icon: <Users className="h-4 w-4 text-slate-600" />
+            icon: <Users className="h-4 w-4 text-primary" />
           },
           {
             title: 'Pending Approvals',
             value: pendingApprovals.toString(),
             change: '+3', // Kept for demo
             isPositive: pendingApprovals <= 5,
-            icon: <FileText className="h-4 w-4 text-slate-600" />
+            icon: <FileText className="h-4 w-4 text-warning" />
           },
           {
             title: 'Approved This Month',
             value: approvedThisMonth.toString(),
             change: '+12', // Kept for demo
             isPositive: true,
-            icon: <FileText className="h-4 w-4 text-slate-600" />
+            icon: <FileText className="h-4 w-4 text-success" />
           },
           {
             title: 'Total Revenue',
             value: formatRevenue(totalRevenue),
             change: '+8.1%', // Kept for demo
             isPositive: true,
-            icon: <DollarSign className="h-4 w-4 text-slate-600" />
+            icon: <DollarSign className="h-4 w-4 text-accent" />
           }
         ];
       }
@@ -99,28 +111,28 @@ const DashboardStats = ({ user, users, quotations }: DashboardStatsProps) => {
             value: myQuotations.length.toString(),
             change: '+12', // Kept for demo
             isPositive: true,
-            icon: <FileText className="h-4 w-4 text-slate-600" />
+            icon: <FileText className="h-4 w-4 text-primary" />
           },
           {
             title: 'Pending Approval',
             value: myQuotations.filter(q => q.status === 'pending').length.toString(),
             change: '+3', // Kept for demo
             isPositive: false,
-            icon: <FileText className="h-4 w-4 text-slate-600" />
+            icon: <FileText className="h-4 w-4 text-warning" />
           },
           {
             title: 'Won Deals',
             value: wonDeals.length.toString(),
             change: '+15', // Kept for demo
             isPositive: true,
-            icon: <TrendingUp className="h-4 w-4 text-slate-600" />
+            icon: <TrendingUp className="h-4 w-4 text-success" />
           },
           {
             title: 'Win Rate',
             value: winRate,
             change: '+5.2%', // Kept for demo
             isPositive: true,
-            icon: <TrendingUp className="h-4 w-4 text-slate-600" />
+            icon: <TrendingUp className="h-4 w-4 text-accent" />
           }
         ];
       }
@@ -132,9 +144,11 @@ const DashboardStats = ({ user, users, quotations }: DashboardStatsProps) => {
   const stats = getStats();
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 animate-fade-in-up">
       {stats.map((stat, index) => (
-        <StatsCard key={index} {...stat} />
+        <div key={index} style={{ animationDelay: `${index * 100}ms` }}>
+          <StatsCard {...stat} />
+        </div>
       ))}
     </div>
   );

@@ -33,12 +33,19 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
   const cardTitle = user.role === 'admin' ? 'Pending Quotation Approvals' : 'Your Recent Pending Quotations';
 
   return (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border">
-        <h2 className="text-3xl font-bold text-foreground mb-2">Dashboard</h2>
-        <p className="text-muted-foreground text-lg">
-          Welcome back, <span className="font-semibold text-blue-600">{user.name}</span>! Here's a comprehensive overview of your activities and system insights.
-        </p>
+    <div className="space-y-8 animate-fade-in-up">
+      <div className="relative overflow-hidden bg-gradient-subtle p-8 rounded-2xl border shadow-large">
+        <div className="absolute inset-0 bg-gradient-primary opacity-5"></div>
+        <div className="relative z-10">
+          <h2 className="text-4xl font-display font-bold text-foreground mb-3 fancy-gradient-text">
+            Dashboard
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Welcome back, <span className="font-semibold text-primary">{user.name}</span>! Here's a comprehensive overview of your activities and system insights.
+          </p>
+        </div>
+        <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-4 -left-4 w-24 h-24 bg-accent/10 rounded-full blur-2xl"></div>
       </div>
 
       <DashboardStats user={user} users={users} quotations={quotations} />
@@ -77,9 +84,9 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
 
       {/* Recent Quotations Section */}
       {(user.role === 'admin' || user.role === 'sales_director' || user.role === 'sales_agent') && recentPendingQuotations.length > 0 && (
-        <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+        <Card className="glass-effect hover-lift">
           <CardHeader className="pb-4">
-            <CardTitle className="text-xl font-semibold text-gray-800">
+            <CardTitle className="text-xl font-display font-semibold text-foreground">
               {cardTitle}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -99,49 +106,49 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
       {/* Finance Officer Enhanced Dashboard */}
       {user.role === 'finance_officer' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+          <Card className="hover-lift bg-gradient-to-br from-success/5 to-success/10 border-success/20">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-green-800">
+              <CardTitle className="text-lg font-display font-semibold text-success">
                 Monthly Revenue
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-700">
+              <div className="text-3xl font-bold font-display text-success">
                 ${invoices.reduce((sum, inv) => sum + inv.totalAmount, 0).toLocaleString()}
               </div>
-              <p className="text-sm text-green-600 mt-1">
+              <p className="text-sm text-success/70 mt-2">
                 Total from {invoices.length} invoices
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+          <Card className="hover-lift bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-blue-800">
+              <CardTitle className="text-lg font-display font-semibold text-primary">
                 Pending Payments
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-700">
+              <div className="text-3xl font-bold font-display text-primary">
                 {invoices.filter(inv => inv.status === 'pending').length}
               </div>
-              <p className="text-sm text-blue-600 mt-1">
+              <p className="text-sm text-primary/70 mt-2">
                 Awaiting payment
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+          <Card className="hover-lift bg-gradient-to-br from-warning/5 to-warning/10 border-warning/20">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-orange-800">
+              <CardTitle className="text-lg font-display font-semibold text-warning">
                 Overdue Invoices
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-700">
+              <div className="text-3xl font-bold font-display text-warning">
                 {invoices.filter(inv => inv.status === 'overdue').length}
               </div>
-              <p className="text-sm text-orange-600 mt-1">
+              <p className="text-sm text-warning/70 mt-2">
                 Require attention
               </p>
             </CardContent>
