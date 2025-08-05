@@ -51,6 +51,14 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'invoices', label: 'Invoice Management', icon: DollarSign },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
+      case 'partner':
+        return [
+          { id: 'dashboard', label: 'Dashboard', icon: Home },
+          { id: 'quotations', label: 'View Quotations', icon: FileText },
+          { id: 'invoices', label: 'View Invoices', icon: DollarSign },
+          { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
+          { id: 'logout', label: 'Logout', icon: LogOut },
+        ];
       default:
         return [];
     }

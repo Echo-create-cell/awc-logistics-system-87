@@ -62,7 +62,7 @@ const ReportsView = ({ user, quotations, invoices }: ReportsViewProps) => {
     generateCSVExport(reportType, quotations, filteredData);
   };
 
-  // Role-based access control
+  // Role-based access control - Partners can access reports in read-only mode
   if (user.role === 'sales_agent') {
     return (
       <div className="flex items-center justify-center h-64">

@@ -75,7 +75,7 @@ const QuotationsView = ({
     onEdit: handleEdit,
   });
 
-  // Admins see only pending, others see all
+  // Admins see only pending, partners and others see all
   const filteredQuotations = user.role === 'admin'
     ? quotations.filter(q => q.status === 'pending')
     : quotations;

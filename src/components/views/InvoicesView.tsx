@@ -180,7 +180,7 @@ const InvoicesView = ({
               <Printer size={16} />
             </Button>
           )}
-          {row.status !== 'paid' && (
+          {row.status !== 'paid' && user.role !== 'partner' && (
             <Button
               size="sm"
               variant="ghost"
@@ -188,6 +188,16 @@ const InvoicesView = ({
               className="text-green-600 hover:text-green-700 hover:bg-green-50"
             >
               <Edit size={16} />
+            </Button>
+          )}
+          {user.role === 'partner' && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onPrint(row)}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              <Printer size={16} />
             </Button>
           )}
         </div>

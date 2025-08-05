@@ -3,7 +3,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'sales_director' | 'sales_agent' | 'finance_officer';
+  role: 'admin' | 'sales_director' | 'sales_agent' | 'finance_officer' | 'partner';
   status: 'active' | 'inactive';
   createdAt: string;
 }

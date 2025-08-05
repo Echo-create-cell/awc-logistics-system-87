@@ -50,8 +50,8 @@ const QuotationActions = ({
         </>
       )}
       
-      {/* Admin view-only for quotations */}
-      {user.role === 'admin' && onView && (
+      {/* Admin and Partner view-only for quotations */}
+      {(user.role === 'admin' || user.role === 'partner') && onView && (
         <Button 
           size="sm" 
           variant="ghost" 
