@@ -134,6 +134,47 @@ const DashboardStats = ({ user, users, quotations }: DashboardStatsProps) => {
           }
         ];
       }
+      case 'partner': {
+        const totalRevenue = quotations
+          .filter(q => q.status === 'won')
+          .reduce((sum, q) => sum + q.clientQuote, 0);
+        const totalProfit = quotations
+          .filter(q => q.status === 'won')
+          .reduce((sum, q) => sum + q.profit, 0);
+        const wonDeals = quotations.filter(q => q.status === 'won').length;
+        const winRate = quotations.length > 0 ? `${Math.round((wonDeals / quotations.length) * 100)}%` : '0%';
+        
+        return [
+          {
+            title: 'Total Revenue',
+            value: formatRevenue(totalRevenue),
+            change: '+12.3%',
+            isPositive: true,
+            icon: <DollarSign className="h-4 w-4 text-success" />
+          },
+          {
+            title: 'Total Profit',
+            value: formatRevenue(totalProfit),
+            change: '+8.7%',
+            isPositive: true,
+            icon: <TrendingUp className="h-4 w-4 text-primary" />
+          },
+          {
+            title: 'Active Quotations',
+            value: quotations.length.toString(),
+            change: '+5',
+            isPositive: true,
+            icon: <FileText className="h-4 w-4 text-warning" />
+          },
+          {
+            title: 'Win Rate',
+            value: winRate,
+            change: '+2.1%',
+            isPositive: true,
+            icon: <TrendingUp className="h-4 w-4 text-accent" />
+          }
+        ];
+      }
       default:
         return [];
     }

@@ -4,10 +4,13 @@ import DashboardStats from '@/components/DashboardStats';
 import RecentQuotations from '@/components/dashboard/RecentQuotations';
 import UserActivityMonitor from '@/components/admin/UserActivityMonitor';
 import UserLogsMonitor from '@/components/admin/UserLogsMonitor';
+import FinancialMetricsCards from '@/components/reports/FinancialMetricsCards';
+import ReportsCharts from '@/components/reports/ReportsCharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
+import { useReportsData } from '@/hooks/useReportsData';
 
 interface DashboardViewProps {
   user: User;
@@ -18,6 +21,15 @@ interface DashboardViewProps {
 }
 
 const DashboardView = ({ user, users, quotations, invoices, onTabChange }: DashboardViewProps) => {
+  // Create users array for reports data
+  const mockUsers: User[] = [
+    { id: '1', name: 'Admin User', email: 'admin@example.com', role: 'admin', status: 'active', createdAt: new Date().toISOString() },
+    { id: '2', name: 'Sales Director', email: 'director@example.com', role: 'sales_director', status: 'active', createdAt: new Date().toISOString() },
+    { id: '3', name: 'Finance Officer', email: 'finance@example.com', role: 'finance_officer', status: 'active', createdAt: new Date().toISOString() }
+  ];
+
+  const { reportData } = useReportsData(quotations, invoices, mockUsers);
+
   const getRoleDescription = (role: string) => {
     switch (role) {
       case 'admin':
@@ -29,7 +41,7 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
       case 'finance_officer':
         return 'Oversee financial operations and reporting';
       case 'partner':
-        return 'Access business insights and performance data';
+        return 'Access comprehensive business insights and analytics';
       default:
         return 'Welcome to AWC Logistics Management System';
     }
@@ -170,6 +182,78 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
               </p>
             </CardContent>
           </Card>
+        </div>
+      )}
+
+      {/* Partner Enhanced Analytics Dashboard */}
+      {user.role === 'partner' && reportData && (
+        <div className="space-y-8">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-display font-bold text-foreground">
+              Business Analytics & Reports
+            </h2>
+            <p className="text-muted-foreground">
+              Comprehensive overview of company performance and key metrics
+            </p>
+          </div>
+
+          {/* Financial Metrics Overview */}
+          <FinancialMetricsCards metrics={reportData.metrics} />
+
+          {/* Analytics Charts */}
+          <ReportsCharts reportData={reportData} />
+
+          {/* Additional Partner Insights */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="hover-lift bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-lg font-display font-semibold text-primary">
+                  Performance Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Total Active Quotations</span>
+                  <span className="text-lg font-bold text-primary">{quotations.length}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Conversion Rate</span>
+                  <span className="text-lg font-bold text-success">{reportData.metrics.winRate.toFixed(1)}%</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Average Deal Value</span>
+                  <span className="text-lg font-bold text-accent">${reportData.metrics.avgDealSize.toLocaleString()}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover-lift bg-gradient-to-br from-success/5 to-success/10 border-success/20">
+              <CardHeader>
+                <CardTitle className="text-lg font-display font-semibold text-success">
+                  Revenue Insights
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Total Revenue</span>
+                  <span className="text-lg font-bold text-success">${reportData.metrics.totalRevenue.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Total Profit</span>
+                  <span className="text-lg font-bold text-primary">${reportData.metrics.totalProfit.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Profit Margin</span>
+                  <span className="text-lg font-bold text-accent">
+                    {reportData.metrics.totalRevenue > 0 
+                      ? ((reportData.metrics.totalProfit / reportData.metrics.totalRevenue) * 100).toFixed(1)
+                      : '0'
+                    }%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       )}
     </div>

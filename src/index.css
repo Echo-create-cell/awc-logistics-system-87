@@ -121,4 +121,20 @@
   .hover-lift {
     @apply smooth-transition hover:shadow-large hover:-translate-y-1;
   }
+
+  .metric-card {
+    @apply bg-gradient-card backdrop-blur-sm border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300;
+  }
+
+  .heading-primary {
+    @apply text-3xl font-display font-bold gradient-text;
+  }
+
+  .text-body {
+    @apply text-muted-foreground;
+  }
+
+  .smooth-entrance {
+    @apply animate-fade-in;
+  }
 }
