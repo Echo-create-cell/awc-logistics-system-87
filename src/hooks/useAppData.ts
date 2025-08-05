@@ -11,6 +11,7 @@ const mockInvoices: InvoiceData[] = Array.from({ length: 15 }, (_, i) => ({
     quotationId: `qt-2025-${i + 1}`,
     clientName: `Client Corp ${i % 4 + 1}`,
     clientAddress: `${i+1} Business Avenue`,
+    clientContactPerson: `Contact ${i % 4 + 1}`,
     clientTin: `TIN${1000+i}`,
     destination: "Kigali",
     doorDelivery: "Yes",

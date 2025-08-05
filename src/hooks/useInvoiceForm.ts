@@ -247,7 +247,7 @@ export const useInvoiceForm = (quotation: Quotation) => {
     setInvoiceData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleClientInfoChange = (field: 'tinNumber' | 'email', value: string) => {
+  const handleClientInfoChange = (field: 'tinNumber' | 'email' | 'contactPerson', value: string) => {
     if (selectedClient) {
       const updatedClient = { ...selectedClient, [field]: value };
       setSelectedClient(updatedClient);

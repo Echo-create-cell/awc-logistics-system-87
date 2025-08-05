@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -10,7 +9,7 @@ interface ClientInformationProps {
   clientsForSelection: Client[];
   selectedClient: Client | null;
   onClientChange: (client: Client | null) => void;
-  onClientInfoChange?: (field: 'tinNumber' | 'email', value: string) => void;
+  onClientInfoChange?: (field: 'tinNumber' | 'email' | 'contactPerson', value: string) => void;
   disabled?: boolean;
 }
 
@@ -55,11 +54,22 @@ const ClientInformation = ({ clientsForSelection, selectedClient, onClientChange
           <div className="space-y-4">
             <div className="p-3 bg-gray-50 rounded-lg space-y-2">
               <p><strong>Company:</strong> {selectedClient.companyName}</p>
-              <p><strong>Contact:</strong> {selectedClient.contactPerson}</p>
               <p><strong>Address:</strong> {selectedClient.address}, {selectedClient.city}, {selectedClient.country}</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <RequiredLabel htmlFor="contactPerson">Contact Person</RequiredLabel>
+                <Input
+                  id="contactPerson"
+                  value={selectedClient.contactPerson || ''}
+                  onChange={(e) => onClientInfoChange?.('contactPerson', e.target.value)}
+                  placeholder="Enter contact person"
+                  disabled={disabled}
+                  className={!selectedClient.contactPerson?.trim() ? 'border-red-300 focus:border-red-500' : ''}
+                />
+              </div>
+              
               <div>
                 <RequiredLabel htmlFor="tinNumber">TIN Number</RequiredLabel>
                 <Input

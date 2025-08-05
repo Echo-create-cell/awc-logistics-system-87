@@ -123,6 +123,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       quotationData: quotation,
       clientName: selectedClient!.companyName,
       clientAddress: `${selectedClient!.address}, ${selectedClient!.city}, ${selectedClient!.country}`,
+      clientContactPerson: selectedClient!.contactPerson || '',
       clientTin: selectedClient!.tinNumber || '',
       destination: invoiceData.destination,
       doorDelivery: invoiceData.doorDelivery,

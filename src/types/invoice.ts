@@ -27,6 +27,7 @@ export interface InvoiceData {
   quotationData?: import('@/types').Quotation; // For prefilling from quotation
   clientName: string;
   clientAddress: string;
+  clientContactPerson: string;
   clientTin: string;
   destination: string;
   doorDelivery: string;

@@ -110,6 +110,7 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 {/* Client Information */}
                 <div className="mb-6 text-sm">
                     <p><strong>Name of customer:</strong> {invoice.clientName || 'N/A'}</p>
+                    <p><strong>Contact:</strong> {invoice.clientContactPerson || 'N/A'}</p>
                     <p><strong>Address:</strong> {invoice.clientAddress || 'N/A'}</p>
                     <p><strong>TIN:</strong> {invoice.clientTin || 'N/A'}</p>
                 </div>
