@@ -59,12 +59,6 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
     onPrint();
   };
 
-  const totalRows = invoice.items.reduce((count, item) => {
-    // If an item has more than one charge, it takes a header row + one row per charge.
-    // Otherwise, it's just one row.
-    return count + (item.charges.length > 1 ? 1 + item.charges.length : 1);
-  }, 0);
-  const emptyRowsCount = Math.max(0, 10 - totalRows);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -235,15 +229,6 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                                 );
                             }
                         })}
-                        {Array.from({ length: emptyRowsCount }).map((_, index) => (
-                            <tr key={`empty-${index}`} className="even:bg-gray-100">
-                                <td className="border border-black px-2 py-1">&nbsp;</td>
-                                <td className="border border-black px-2 py-1">&nbsp;</td>
-                                <td className="border border-black px-2 py-1">&nbsp;</td>
-                                <td className="border border-black px-2 py-1">&nbsp;</td>
-                                <td className="border border-black px-2 py-1">&nbsp;</td>
-                            </tr>
-                        ))}
                     </tbody>
                 </table>
 
