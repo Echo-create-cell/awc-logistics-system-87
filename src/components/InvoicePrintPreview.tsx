@@ -85,55 +85,108 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
         <div className="p-8">
             <div id="invoice-print-area">
                 {/* Company Header */}
-                <div className="flex justify-between items-start mb-6 pb-4 border-b-2 border-red-600">
-                    <div className="w-2/3 pr-4">
-                        <img src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" alt="AWC Logo" className="w-48 mb-2"/>
-                        <h2 className="font-bold text-sm">Africa World Cargo Ltd/ TIN: 112933303 RW</h2>
-                        <p className="text-xs whitespace-pre-line">KN 5 rd, Av18, 30 Remera{"\n"}Kigali, Rwanda</p>
-                        <p className="text-xs mt-2"><strong>Bank of Kigali</strong></p>
-                        <p className="text-xs whitespace-pre-line">
-                        {'00265 07771361 40/Rwf\n00265-07771427-09/Eur\n00265-07771426-08/Usd'}
+                <div className="flex justify-between items-start mb-8 pb-6 border-b-2 border-red-600">
+                    <div className="w-2/3 pr-6">
+                        <img src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" alt="AWC Logo" className="w-52 mb-3"/>
+                        <h2 className="font-bold text-base text-gray-800 mb-2">Africa World Cargo Ltd</h2>
+                        <p className="text-sm text-gray-600 mb-1">TIN: 112933303 RW</p>
+                        <p className="text-sm text-gray-700 leading-relaxed mb-3">
+                            KN 5 rd, Av18, 30 Remera<br/>
+                            Kigali, Rwanda
                         </p>
-                        <p className="text-xs mt-1"><strong>Swift code:</strong> BKIGRWRW</p>
-                        <p className="text-xs"><strong>Phone Nr.:</strong> +250 784 445 373</p>
+                        <div className="border-t border-gray-200 pt-3">
+                            <p className="text-sm font-semibold text-gray-800 mb-2">Banking Details</p>
+                            <p className="text-sm text-gray-700 mb-1"><strong>Bank of Kigali</strong></p>
+                            <div className="text-sm text-gray-600 space-y-1">
+                                <p>RWF: 00265 07771361 40</p>
+                                <p>EUR: 00265-07771427-09</p>
+                                <p>USD: 00265-07771426-08</p>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-2"><strong>Swift:</strong> BKIGRWRW</p>
+                            <p className="text-sm text-gray-600"><strong>Phone:</strong> +250 784 445 373</p>
+                        </div>
                     </div>
                     <div className="text-right w-1/3">
-                        <h1 className="text-4xl font-bold text-red-600 mb-2">Invoice</h1>
-                        <p className="text-xs"><strong>Nr. Of Invoice:</strong> {invoice.invoiceNumber}</p>
-                        <p className="text-xs"><strong>Date:</strong> {new Date(invoice.issueDate).toLocaleDateString('en-GB')}</p>
-                        {invoice.awbNumber && <p className="text-xs bg-blue-100 p-1 my-1"><strong>AWB:</strong> {invoice.awbNumber}</p>}
-                        {invoice.destination && <p className="text-xs"><strong>Destination:</strong> {invoice.destination}</p>}
-                        {invoice.doorDelivery && <p className="text-xs"><strong>Door Delivery:</strong> {invoice.doorDelivery}</p>}
+                        <h1 className="text-5xl font-bold text-red-600 mb-4">INVOICE</h1>
+                        <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                            <p className="text-sm font-semibold"><strong>Invoice #:</strong> {invoice.invoiceNumber}</p>
+                            <p className="text-sm"><strong>Date:</strong> {new Date(invoice.issueDate).toLocaleDateString('en-GB')}</p>
+                            {invoice.awbNumber && (
+                                <div className="bg-blue-100 border border-blue-200 p-2 rounded">
+                                    <p className="text-sm font-medium text-blue-800"><strong>AWB:</strong> {invoice.awbNumber}</p>
+                                </div>
+                            )}
+                            {invoice.destination && <p className="text-sm"><strong>Destination:</strong> {invoice.destination}</p>}
+                            {invoice.doorDelivery && <p className="text-sm"><strong>Door Delivery:</strong> {invoice.doorDelivery}</p>}
+                        </div>
                     </div>
                 </div>
 
                 {/* Client Information */}
-                <div className="mb-6 text-sm">
-                    {invoice.clientName && <p><strong>Name of customer:</strong> {invoice.clientName}</p>}
-                    {invoice.clientContactPerson && <p><strong>Contact:</strong> {invoice.clientContactPerson}</p>}
-                    {invoice.clientAddress && <p><strong>Address:</strong> {invoice.clientAddress}</p>}
-                    {invoice.clientTin && <p><strong>TIN:</strong> {invoice.clientTin}</p>}
-                </div>
+                {(invoice.clientName || invoice.clientContactPerson || invoice.clientAddress || invoice.clientTin) && (
+                    <div className="mb-8 bg-gray-50 p-4 rounded-lg">
+                        <h3 className="font-semibold text-base text-gray-800 mb-3 border-b border-gray-300 pb-2">Client Information</h3>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                            {invoice.clientName && (
+                                <div>
+                                    <span className="font-medium text-gray-700">Customer:</span>
+                                    <p className="text-gray-900">{invoice.clientName}</p>
+                                </div>
+                            )}
+                            {invoice.clientContactPerson && (
+                                <div>
+                                    <span className="font-medium text-gray-700">Contact Person:</span>
+                                    <p className="text-gray-900">{invoice.clientContactPerson}</p>
+                                </div>
+                            )}
+                            {invoice.clientAddress && (
+                                <div>
+                                    <span className="font-medium text-gray-700">Address:</span>
+                                    <p className="text-gray-900">{invoice.clientAddress}</p>
+                                </div>
+                            )}
+                            {invoice.clientTin && (
+                                <div>
+                                    <span className="font-medium text-gray-700">TIN:</span>
+                                    <p className="text-gray-900">{invoice.clientTin}</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
 
-                {/* Details Table */}
-                <table className="w-full border-collapse mb-6 text-sm">
-                    <thead>
-                        <tr className="bg-gray-800 text-white">
-                            <th className="border border-black px-2 py-1 text-left font-normal">Salesperson</th>
-                            <th className="border border-black px-2 py-1 text-left font-normal">Deliver date</th>
-                            <th className="border border-black px-2 py-1 text-left font-normal">Payment conditions</th>
-                            <th className="border border-black px-2 py-1 text-left font-normal">Validity to Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="bg-gray-100">
-                            <td className="border border-black px-2 py-1">{invoice.salesperson || ''}</td>
-                            <td className="border border-black px-2 py-1">{invoice.deliverDate ? new Date(invoice.deliverDate).toLocaleDateString('en-GB') : ''}</td>
-                            <td className="border border-black px-2 py-1">{invoice.paymentConditions || ''}</td>
-                            <td className="border border-black px-2 py-1">{invoice.validityDate ? new Date(invoice.validityDate).toLocaleDateString('en-GB') : ''}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                {/* Details Table - Only show if at least one field has data */}
+                {(invoice.salesperson || invoice.deliverDate || invoice.paymentConditions || invoice.validityDate) && (
+                    <div className="mb-8">
+                        <h3 className="font-semibold text-base text-gray-800 mb-3">Service Details</h3>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg text-sm">
+                            {invoice.salesperson && (
+                                <div>
+                                    <span className="font-medium text-gray-700 block">Salesperson</span>
+                                    <p className="text-gray-900">{invoice.salesperson}</p>
+                                </div>
+                            )}
+                            {invoice.deliverDate && (
+                                <div>
+                                    <span className="font-medium text-gray-700 block">Delivery Date</span>
+                                    <p className="text-gray-900">{new Date(invoice.deliverDate).toLocaleDateString('en-GB')}</p>
+                                </div>
+                            )}
+                            {invoice.paymentConditions && (
+                                <div>
+                                    <span className="font-medium text-gray-700 block">Payment Terms</span>
+                                    <p className="text-gray-900">{invoice.paymentConditions}</p>
+                                </div>
+                            )}
+                            {invoice.validityDate && (
+                                <div>
+                                    <span className="font-medium text-gray-700 block">Valid Until</span>
+                                    <p className="text-gray-900">{new Date(invoice.validityDate).toLocaleDateString('en-GB')}</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
 
                 {/* Items Table */}
                 <table className="w-full border-collapse mb-6 text-sm">
@@ -195,33 +248,49 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 </table>
 
                 {/* Totals & Signature */}
-                <div className="flex justify-between items-start">
-                    <div className="w-2/3 pt-20">
-                         <p>Signature and Stump ..............................</p>
-                         {invoice.salesperson && <p className="mt-4 text-sm">Prepared by: {invoice.salesperson}</p>}
+                <div className="flex justify-between items-start mt-8">
+                    <div className="w-2/3 pt-16">
+                        <div className="border-t border-gray-300 pt-6">
+                            <p className="text-sm text-gray-700 mb-2">Authorized Signature:</p>
+                            <div className="h-12 border-b border-gray-300 w-2/3"></div>
+                            {invoice.salesperson && (
+                                <p className="mt-6 text-sm text-gray-600">
+                                    <span className="font-medium">Prepared by:</span> {invoice.salesperson}
+                                </p>
+                            )}
+                        </div>
                     </div>
                     <div className="w-1/3">
-                        <div className="w-full text-sm">
-                            <div className="flex justify-between py-1">
-                                <span>Sub-Total</span>
-                                <span>{(invoice.subTotal || 0).toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between py-1">
-                                <span>TVA</span>
-                                <span>{(invoice.tva || 0).toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between font-bold text-base py-1 border-t-2 border-black">
-                                <span>TOTAL</span>
-                                <span>{invoice.currency} {(invoice.totalAmount || 0).toFixed(2)}</span>
+                        <div className="bg-gray-50 p-4 rounded-lg border">
+                            <h4 className="font-semibold text-gray-800 mb-3">Invoice Summary</h4>
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between py-1 border-b border-gray-200">
+                                    <span className="text-gray-600">Sub-Total:</span>
+                                    <span className="font-medium">{invoice.currency} {(invoice.subTotal || 0).toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between py-1 border-b border-gray-200">
+                                    <span className="text-gray-600">VAT/TVA:</span>
+                                    <span className="font-medium">{invoice.currency} {(invoice.tva || 0).toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between py-2 font-bold text-lg border-t-2 border-red-600 text-red-600">
+                                    <span>TOTAL:</span>
+                                    <span>{invoice.currency} {(invoice.totalAmount || 0).toFixed(2)}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="text-center pt-8 mt-8 border-t">
-                    <p className="font-bold">All checks are payable to Africa World Cargo Ltd.</p>
-                    <p className="font-bold text-red-600 mt-2">WE THANK YOU FOR YOUR TRUST</p>
+                <div className="text-center pt-12 mt-8 border-t-2 border-gray-200">
+                    <div className="bg-gray-50 p-4 rounded-lg mx-auto max-w-md">
+                        <p className="font-semibold text-gray-800 mb-2">Payment Information</p>
+                        <p className="text-sm text-gray-700 mb-3">All payments should be made payable to:</p>
+                        <p className="font-bold text-gray-900">Africa World Cargo Ltd</p>
+                        <div className="mt-4 pt-4 border-t border-gray-300">
+                            <p className="font-bold text-red-600 text-lg">WE THANK YOU FOR YOUR TRUST</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
