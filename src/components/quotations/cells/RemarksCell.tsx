@@ -8,13 +8,13 @@ interface RemarksCellProps {
 
 const RemarksCell = ({ row }: RemarksCellProps) => {
   const value = row.remarks;
-  if (!value && !row.followUpDate) return <span className="text-gray-400">N/A</span>;
+  if (!value && !row.followUpDate) return <span className="text-muted-foreground">N/A</span>;
 
   return (
-    <div className='space-y-1 text-sm'>
-      {row.followUpDate && <div className="text-xs text-orange-600 font-semibold">Follow-up: {new Date(row.followUpDate).toLocaleDateString()}</div>}
+    <div className='space-y-1'>
+      {row.followUpDate && <div className="text-caption text-warning">Follow-up: {new Date(row.followUpDate).toLocaleDateString()}</div>}
       {value && (
-        <p className="whitespace-pre-wrap max-w-sm text-gray-700">{value}</p>
+        <p className="text-body-sm whitespace-pre-wrap max-w-sm">{value}</p>
       )}
     </div>
   );

@@ -15,7 +15,7 @@ interface StatsCardProps {
 const StatsCard = ({ title, value, change, isPositive, icon }: StatsCardProps) => (
   <Card className="metric-card group cursor-pointer">
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-      <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors duration-300">
+      <CardTitle className="text-caption group-hover:text-foreground transition-colors duration-300">
         {title}
       </CardTitle>
       <div className="p-2.5 rounded-xl bg-gradient-primary/10 group-hover:bg-gradient-primary/20 transition-all duration-300 group-hover:scale-110">
@@ -23,7 +23,7 @@ const StatsCard = ({ title, value, change, isPositive, icon }: StatsCardProps) =
       </div>
     </CardHeader>
     <CardContent className="pb-4">
-      <div className="text-3xl font-display font-bold text-foreground group-hover:scale-105 transition-transform duration-300">
+      <div className="heading-md group-hover:scale-105 transition-transform duration-300">
         {value}
       </div>
       <div className={`flex items-center space-x-1 mt-2 ${
@@ -34,7 +34,7 @@ const StatsCard = ({ title, value, change, isPositive, icon }: StatsCardProps) =
         ) : (
           <TrendingDown className="h-3 w-3" />
         )}
-        <span className="text-xs font-medium">{change} from last month</span>
+        <span className="text-caption">{change} from last month</span>
       </div>
     </CardContent>
   </Card>
