@@ -100,25 +100,28 @@ const LoginForm = () => {
                 </div>
               </div>
 
-              {/* Demo Accounts Info */}
-              <Card className="border-blue-200 bg-blue-50">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <Building2 className="h-5 w-5 text-blue-600 mt-0.5" />
-                    <div className="text-sm text-blue-800">
-                      <strong>Demo Accounts Available:</strong>
-                      <div className="mt-2 space-y-1 text-xs">
-                        <div>• <strong>admin@awclogistics.com</strong> - Full system access</div>
-                        <div>• <strong>john@awclogistics.com</strong> - Sales management</div>
-                        <div>• <strong>mike@awclogistics.com</strong> - Sales operations</div>
-                        <div>• <strong>lisa@awclogistics.com</strong> - Financial access</div>
-                        <div>• <strong>partner@awclogistics.com</strong> - View-only access</div>
-                        <div className="mt-2 text-blue-600"><strong>Password:</strong> password</div>
-                      </div>
-                    </div>
+              {/* Professional Aircraft Image */}
+              <div className="relative h-48 overflow-hidden rounded-lg shadow-lg group">
+                <img 
+                  src="/lovable-uploads/5505c740-be40-46fc-9f87-32e40b86008d.png" 
+                  alt="AWC Logistics Air Cargo Operations"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/40 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <div className="text-white animate-fade-in">
+                    <h3 className="text-lg font-semibold mb-1">Global Air Cargo Solutions</h3>
+                    <p className="text-blue-100 text-sm opacity-90">
+                      Professional logistics management at your fingertips
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+                <div className="absolute top-4 right-4">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 animate-pulse">
+                    <Building2 className="h-5 w-5 text-white" />
+                  </div>
+                </div>
+              </div>
 
               {/* Submit Button */}
               <Button 
