@@ -8,7 +8,6 @@ import { Quotation, User } from '@/types';
 import QuotationModal from '../modals/QuotationModal';
 import { getQuotationColumns } from '../quotations/quotationTableColumns';
 import RejectQuotationModal from '../modals/RejectQuotationModal';
-import AdminQuotationCard from '../admin/AdminQuotationCard';
 
 interface QuotationsViewProps {
   user: User;
@@ -147,16 +146,8 @@ const QuotationsView = ({
               {filteredQuotations.length} Pending Quotation{filteredQuotations.length === 1 ? '' : 's'}
             </h3>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredQuotations.map((quotation) => (
-              <AdminQuotationCard
-                key={quotation.id}
-                quotation={quotation}
-                onApprove={onApprove!}
-                onReject={handleRequestReject}
-                onView={handleViewQuotation}
-              />
-            ))}
+          <div className="text-center text-muted-foreground">
+            Card view temporarily unavailable. Please use table view.
           </div>
         </div>
       ) : (

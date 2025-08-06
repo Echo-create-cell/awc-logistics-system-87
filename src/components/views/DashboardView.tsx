@@ -4,7 +4,6 @@ import DashboardStats from '@/components/DashboardStats';
 import RecentQuotations from '@/components/dashboard/RecentQuotations';
 import UserActivityMonitor from '@/components/admin/UserActivityMonitor';
 import UserLogsMonitor from '@/components/admin/UserLogsMonitor';
-import AdminQuotationCard from '@/components/admin/AdminQuotationCard';
 import FinancialMetricsCards from '@/components/reports/FinancialMetricsCards';
 import ReportsCharts from '@/components/reports/ReportsCharts';
 import PartnerDataFilter from '@/components/partner/PartnerDataFilter';
@@ -20,12 +19,9 @@ interface DashboardViewProps {
   quotations: Quotation[];
   invoices: InvoiceData[];
   onTabChange: (tab: string) => void;
-  onApproveQuotation?: (id: string) => void;
-  onRejectQuotation?: (id: string) => void;
-  onViewQuotation?: (id: string) => void;
 }
 
-const DashboardView = ({ user, users, quotations, invoices, onTabChange, onApproveQuotation, onRejectQuotation, onViewQuotation }: DashboardViewProps) => {
+const DashboardView = ({ user, users, quotations, invoices, onTabChange }: DashboardViewProps) => {
   // Create users array for reports data
   const mockUsers: User[] = [
     { id: '1', name: 'Admin User', email: 'admin@example.com', role: 'admin', status: 'active', createdAt: new Date().toISOString() },
@@ -68,93 +64,51 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange, onAppro
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Admin Quotation Approvals Section - Default View */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-primary to-primary-glow p-8 rounded-lg text-white shadow-large">
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold mb-2">
+            Welcome, {user.name}
+          </h1>
+          <p className="text-primary-foreground/90 text-lg">
+            {getRoleDescription(user.role)}
+          </p>
+        </div>
+        <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+        <div className="absolute -top-8 -left-8 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
+      </div>
+
+      <DashboardStats user={user} users={users} quotations={quotations} />
+
+      {/* Enhanced Admin Section */}
       {user.role === 'admin' && (
         <div className="space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-gray-900">Quotation Approvals</h1>
-            <p className="text-gray-600">Review and approve pending quotations</p>
-          </div>
-
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900">
-              {recentPendingQuotations.length} Pending Quotations
-            </h2>
+          <Tabs defaultValue="activity" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="activity" className="text-sm font-medium">
+                User Activity Overview
+              </TabsTrigger>
+              <TabsTrigger value="logs" className="text-sm font-medium">
+                Detailed Activity Logs
+              </TabsTrigger>
+            </TabsList>
             
-            {recentPendingQuotations.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recentPendingQuotations.map((quotation) => (
-                  <AdminQuotationCard
-                    key={quotation.id}
-                    quotation={quotation}
-                    onApprove={onApproveQuotation || (() => {})}
-                    onReject={onRejectQuotation || (() => {})}
-                    onView={onViewQuotation || (() => {})}
-                  />
-                ))}
-              </div>
-            ) : (
-              <Card className="p-8 text-center">
-                <CardContent>
-                  <div className="text-gray-500">
-                    <h3 className="text-lg font-medium mb-2">No pending quotations</h3>
-                    <p>All quotations have been reviewed and processed.</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* Enhanced Admin Activity Section */}
-          <div className="space-y-6 mt-12">
-            <Tabs defaultValue="activity" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="activity" className="text-sm font-medium">
-                  User Activity Overview
-                </TabsTrigger>
-                <TabsTrigger value="logs" className="text-sm font-medium">
-                  Detailed Activity Logs
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="activity" className="space-y-6">
-                <UserActivityMonitor 
-                  users={users} 
-                  quotations={quotations} 
-                  invoices={invoices} 
-                />
-              </TabsContent>
-              
-              <TabsContent value="logs" className="space-y-6">
-                <UserLogsMonitor 
-                  users={users} 
-                  quotations={quotations} 
-                  invoices={invoices} 
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
+            <TabsContent value="activity" className="space-y-6">
+              <UserActivityMonitor 
+                users={users} 
+                quotations={quotations} 
+                invoices={invoices} 
+              />
+            </TabsContent>
+            
+            <TabsContent value="logs" className="space-y-6">
+              <UserLogsMonitor 
+                users={users} 
+                quotations={quotations} 
+                invoices={invoices} 
+              />
+            </TabsContent>
+          </Tabs>
         </div>
-      )}
-
-      {/* Non-Admin Dashboard */}
-      {user.role !== 'admin' && (
-        <>
-          <div className="relative overflow-hidden bg-gradient-to-r from-primary to-primary-glow p-8 rounded-lg text-white shadow-large">
-            <div className="relative z-10">
-              <h1 className="text-3xl font-bold mb-2">
-                Welcome, {user.name}
-              </h1>
-              <p className="text-primary-foreground/90 text-lg">
-                {getRoleDescription(user.role)}
-              </p>
-            </div>
-            <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-            <div className="absolute -top-8 -left-8 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
-          </div>
-
-          <DashboardStats user={user} users={users} quotations={quotations} />
-        </>
       )}
 
       {/* Recent Quotations Section */}

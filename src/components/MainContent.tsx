@@ -63,9 +63,6 @@ const MainContent = ({
             invoices={invoices}
             users={users}
             onTabChange={onTabChange}
-            onApproveQuotation={onApproveQuotation}
-            onRejectQuotation={(id: string) => onRejectQuotation(id, 'Admin rejection')}
-            onViewQuotation={(id: string) => onEditQuotation(quotations.find(q => q.id === id)!)}
           />
         );
       case 'quotations':
@@ -134,9 +131,6 @@ const MainContent = ({
             invoices={invoices}
             users={users}
             onTabChange={onTabChange}
-            onApproveQuotation={onApproveQuotation}
-            onRejectQuotation={(id: string) => onRejectQuotation(id, 'Admin rejection')}
-            onViewQuotation={(id: string) => onEditQuotation(quotations.find(q => q.id === id)!)}
           />
         );
     }
