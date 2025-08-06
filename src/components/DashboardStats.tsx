@@ -13,20 +13,20 @@ interface StatsCardProps {
 }
 
 const StatsCard = ({ title, value, change, isPositive, icon }: StatsCardProps) => (
-  <Card className="metric-card group cursor-pointer">
-    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-      <CardTitle className="text-caption group-hover:text-foreground transition-colors duration-300">
+  <Card className="dashboard-card group cursor-pointer">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
         {title}
       </CardTitle>
-      <div className="p-2.5 rounded-xl bg-gradient-primary/10 group-hover:bg-gradient-primary/20 transition-all duration-300 group-hover:scale-110">
+      <div className="p-2 rounded-lg bg-primary/10 text-primary">
         {icon}
       </div>
     </CardHeader>
     <CardContent className="pb-4">
-      <div className="heading-md group-hover:scale-105 transition-transform duration-300">
+      <div className="text-2xl font-bold text-foreground mb-1">
         {value}
       </div>
-      <div className={`flex items-center space-x-1 mt-2 ${
+      <div className={`flex items-center space-x-1 text-xs ${
         isPositive ? 'text-success' : 'text-destructive'
       }`}>
         {isPositive ? (
@@ -34,7 +34,7 @@ const StatsCard = ({ title, value, change, isPositive, icon }: StatsCardProps) =
         ) : (
           <TrendingDown className="h-3 w-3" />
         )}
-        <span className="text-caption">{change} from last month</span>
+        <span>{change} from last month</span>
       </div>
     </CardContent>
   </Card>

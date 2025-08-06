@@ -64,18 +64,17 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="relative overflow-hidden bg-gradient-subtle p-8 rounded-2xl border shadow-large">
-        <div className="absolute inset-0 bg-gradient-primary opacity-5"></div>
+      <div className="relative overflow-hidden bg-gradient-to-r from-primary to-primary-glow p-8 rounded-lg text-white shadow-large">
         <div className="relative z-10">
-          <h1 className="heading-primary mb-3">
+          <h1 className="text-3xl font-bold mb-2">
             Welcome, {user.name}
           </h1>
-          <p className="text-body text-lg">
+          <p className="text-primary-foreground/90 text-lg">
             {getRoleDescription(user.role)}
           </p>
         </div>
-        <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
-        <div className="absolute -top-4 -left-4 w-24 h-24 bg-accent/10 rounded-full blur-2xl"></div>
+        <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+        <div className="absolute -top-8 -left-8 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
       </div>
 
       <DashboardStats user={user} users={users} quotations={quotations} />

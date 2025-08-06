@@ -67,23 +67,22 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
   const menuItems = getMenuItems();
 
   return (
-    <div className="bg-sidebar text-sidebar-foreground w-64 min-h-screen p-6 flex flex-col shadow-2xl border-r border-border/20">
+    <div className="bg-sidebar text-sidebar-foreground w-64 min-h-screen p-6 flex flex-col shadow-large">
       <div className="mb-8 smooth-entrance">
-        <div className="flex items-center space-x-3 mb-3">
+        <div className="flex items-center space-x-3 mb-4">
           <img 
             src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" 
             alt="AWC Logo" 
-            className="h-12 w-auto opacity-95 animate-float"
-            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}
+            className="h-10 w-auto brightness-0 invert"
           />
           <div>
-            <h1 className="heading-xs gradient-text">AWC Logistics</h1>
-            <p className="text-caption">Professional Suite</p>
+            <h1 className="text-lg font-bold text-sidebar-foreground">AWC Logistics</h1>
+            <p className="text-xs text-sidebar-foreground/70 uppercase tracking-wider">Professional Suite</p>
           </div>
         </div>
-        <div className="bg-sidebar-accent/20 rounded-lg p-3 border border-sidebar-border/30">
-          <p className="text-label capitalize">{userRole.replace('_', ' ')}</p>
-          <p className="text-body-sm">{user?.name}</p>
+        <div className="bg-sidebar-accent/30 rounded-lg p-3 border border-sidebar-border/20">
+          <p className="text-sm font-medium text-sidebar-foreground capitalize">{userRole.replace('_', ' ')}</p>
+          <p className="text-xs text-sidebar-foreground/80">{user?.name}</p>
         </div>
       </div>
       
@@ -95,16 +94,15 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
               key={item.id}
               onClick={() => item.id === 'logout' ? handleLogout() : onTabChange(item.id)}
               className={cn(
-                "w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-300 group",
-                "hover:shadow-lg hover:scale-[1.02] transform text-label",
+                "w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group text-sm font-medium",
                 activeTab === item.id
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md scale-[1.02]"
-                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-sidebar-foreground/90 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
               )}
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <Icon size={20} className="transition-transform duration-300 group-hover:scale-110" />
-              <span>{item.label}</span>
+              <Icon size={18} className="flex-shrink-0" />
+              <span className="truncate">{item.label}</span>
             </button>
           );
         })}
