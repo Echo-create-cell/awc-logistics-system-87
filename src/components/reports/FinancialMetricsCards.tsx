@@ -91,14 +91,14 @@ const FinancialMetricsCards = ({ metrics }: FinancialMetricsCardsProps) => {
         </CardContent>
       </Card>
 
-      <Card className="hover:shadow-lg transition-shadow duration-200">
+      <Card className="hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium">Win Rate</CardTitle>
-          <Users className="h-4 w-4 text-purple-600" />
+          <CardTitle className="text-sm font-medium text-orange-700">Win Rate</CardTitle>
+          <Users className="h-4 w-4 text-orange-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{formatPercentage(metrics.winRate)}</div>
-          <p className="text-xs text-muted-foreground">Success rate</p>
+          <div className="text-2xl font-bold text-orange-600">{formatPercentage(metrics.winRate)}</div>
+          <p className="text-xs text-orange-600/70">Success rate</p>
         </CardContent>
       </Card>
     </div>

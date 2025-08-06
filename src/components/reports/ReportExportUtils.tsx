@@ -1,4 +1,3 @@
-
 import { Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 import { User } from '@/types';
@@ -11,11 +10,19 @@ export const generatePrintReport = (
   user: User,
   reportData?: any
 ) => {
-  const printWindow = window.open('', '_blank');
-  if (!printWindow) {
-    alert('Please allow popups to generate the PDF report');
-    return;
-  }
+  try {
+    console.log('Starting PDF generation...', { 
+      dataCount: filteredData.length, 
+      summary, 
+      dateRange, 
+      reportType 
+    });
+    
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups to generate the PDF report. Check your browser settings and try again.');
+      return;
+    }
 
   const currentDate = new Date().toLocaleDateString();
   const reportTitle = `${user.role === 'partner' ? 'Partner Analytics' : 'Business'} Report - ${currentDate}`;
@@ -83,7 +90,7 @@ export const generatePrintReport = (
           .revenue { color: #10b981; }
           .profit { color: #3b82f6; }
           .loss { color: #ef4444; }
-          .rate { color: #8b5cf6; }
+          .rate { color: #f97316; } /* Orange color for win rate */
           .filter-info {
             background: #f3f4f6;
             padding: 15px;
@@ -180,135 +187,64 @@ export const generatePrintReport = (
 
         <div class="section">
           <h2>📈 Recent Activity Data</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Client</th>
-              <th>Amount</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${filteredData.slice(0, 25).map(item => {
-              const isQuotation = 'clientQuote' in item;
-              const amount = isQuotation ? (item as Quotation).clientQuote : (item as InvoiceData).totalAmount;
-              const statusClass = item.status === 'won' || item.status === 'paid' ? 'status-won' : 
-                                item.status === 'pending' ? 'status-pending' : 'status-lost';
-              return `
-                <tr>
-                  <td>${new Date(item.createdAt).toLocaleDateString()}</td>
-                  <td>${isQuotation ? 'Quotation' : 'Invoice'}</td>
-                  <td>${item.clientName || 'N/A'}</td>
-                  <td>$${amount.toLocaleString()}</td>
-                  <td><span class="status-badge ${statusClass}">${item.status.toUpperCase()}</span></td>
-                </tr>
-              `;
-            }).join('')}
-          </tbody>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Client</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredData.slice(0, 25).map(item => {
+                const isQuotation = 'clientQuote' in item;
+                const amount = isQuotation ? (item as Quotation).clientQuote : (item as InvoiceData).totalAmount;
+                const statusClass = item.status === 'won' || item.status === 'paid' ? 'status-won' : 
+                                  item.status === 'pending' ? 'status-pending' : 'status-lost';
+                return `
+                  <tr>
+                    <td>${new Date(item.createdAt).toLocaleDateString()}</td>
+                    <td>${isQuotation ? 'Quotation' : 'Invoice'}</td>
+                    <td>${item.clientName || 'N/A'}</td>
+                    <td>$${amount ? amount.toLocaleString() : '0'}</td>
+                    <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
         </div>
 
         ${reportData ? `
         <div class="section">
           <h2>🎯 Detailed Analytics</h2>
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-title">Total Invoices</div>
-            <div class="metric-value">${summary.totalInvoices}</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Paid Invoices</div>
-            <div class="metric-value">${summary.paidInvoices}</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Pending Invoices</div>
-            <div class="metric-value">${summary.pendingInvoices}</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Overdue Invoices</div>
-            <div class="metric-value">${summary.overdueInvoices}</div>
-          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Revenue</th>
+                <th>Quotations</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${reportData.topClients.slice(0, 10).map((client: any) => `
+                <tr>
+                  <td>${client.name}</td>
+                  <td>$${client.revenue.toLocaleString()}</td>
+                  <td>${client.quotations}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
         </div>
-
-        ${reportData.topClients && reportData.topClients.length > 0 ? `
-        <h2>Top Clients by Revenue</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Client Name</th>
-              <th>Revenue</th>
-              <th>Quotations</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${reportData.topClients.slice(0, 10).map((client: any) => `
-              <tr>
-                <td>${client.name}</td>
-                <td>$${client.revenue.toLocaleString()}</td>
-                <td>${client.quotations}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-        ` : ''}
-
-        ${reportData.monthlyTrends && reportData.monthlyTrends.length > 0 ? `
-        <h2>Monthly Performance Trends</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Month</th>
-              <th>Revenue</th>
-              <th>Profit</th>
-              <th>Quotations</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${reportData.monthlyTrends.map((trend: any) => `
-              <tr>
-                <td>${trend.month}</td>
-                <td>$${trend.revenue.toLocaleString()}</td>
-                <td>$${trend.profit.toLocaleString()}</td>
-                <td>${trend.quotations}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-        ` : ''}
-
-        ${(user.role === 'admin' || user.role === 'sales_director' || user.role === 'finance_officer' || user.role === 'partner') && reportData.userActivities && reportData.userActivities.length > 0 ? `
-        <h2>User Activity Summary</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Quotations Created</th>
-              <th>Quotations Won</th>
-              <th>Win Rate</th>
-              <th>Total Profit</th>
-              <th>Total Revenue</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${reportData.userActivities.map((activity: any) => `
-              <tr>
-                <td>${activity.userName}</td>
-                <td>${activity.quotationsCreated}</td>
-                <td>${activity.quotationsWon}</td>
-                <td>${activity.winRate.toFixed(1)}%</td>
-                <td>$${activity.totalProfit.toLocaleString()}</td>
-                <td>$${activity.totalRevenue.toLocaleString()}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-        ` : ''}
         ` : ''}
 
         <div class="footer">
-          <p>This report was generated automatically by AWC Logistics Management System</p>
-          <p>© ${new Date().getFullYear()} AWC Logistics. All rights reserved.</p>
+          <p>© ${new Date().getFullYear()} AWC Logistics Management System</p>
+          <p>This report was generated on ${new Date().toLocaleString()} by ${user.name}</p>
+          <p style="margin-top: 10px; font-weight: bold;">📄 Report contains ${filteredData.length} records</p>
         </div>
       </body>
     </html>
@@ -316,9 +252,20 @@ export const generatePrintReport = (
 
   printWindow.document.write(printContent);
   printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
-  printWindow.close();
+  
+  // Wait for content to load then trigger print
+  printWindow.onload = () => {
+    console.log('PDF content loaded, triggering print...');
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  };
+  
+  console.log('PDF generation completed successfully');
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    alert('Error generating PDF report. Please try again.');
+  }
 };
 
 export const generateCSVExport = (
@@ -330,33 +277,30 @@ export const generateCSVExport = (
   let filename = '';
 
   if (reportType === 'quotations') {
-    csvContent = 'Date,Client,Destination,Volume,Buy Rate,Sell Rate,Profit,Status,Agent\n';
-    quotations.forEach((item) => {
-      const volume = item.totalVolumeKg || 0;
-      csvContent += `${item.createdAt},${item.clientName || ''},${item.destination || ''},${volume},${item.buyRate},${item.clientQuote},${item.profit},${item.status},${item.quoteSentBy}\n`;
+    filename = `quotations-${new Date().toISOString().split('T')[0]}.csv`;
+    csvContent = 'Date,Client,Destination,Status,Amount,Sent By\n';
+    quotations.forEach(q => {
+      csvContent += `${new Date(q.createdAt).toLocaleDateString()},"${q.clientName}","${q.destination}","${q.status}","${q.clientQuote}","${q.quoteSentBy}"\n`;
     });
-    filename = `quotations-report-${new Date().toISOString().split('T')[0]}.csv`;
-  } else if (reportType === 'financial') {
-    csvContent = 'Date,Type,Client,Amount,Currency,Status\n';
-    filteredData.forEach((item: any) => {
-      if ('clientQuote' in item) {
-        const quotation = item as Quotation;
-        csvContent += `${quotation.createdAt},Quotation,${quotation.clientName || ''},${quotation.clientQuote},${quotation.currency},${quotation.status}\n`;
-      } else {
-        const invoice = item as InvoiceData;
-        csvContent += `${invoice.createdAt},Invoice,${invoice.clientName},${invoice.totalAmount},${invoice.currency},${invoice.status}\n`;
-      }
+  } else {
+    filename = `report-${new Date().toISOString().split('T')[0]}.csv`;
+    csvContent = 'Date,Type,Client,Amount,Status\n';
+    filteredData.forEach(item => {
+      const isQuotation = 'clientQuote' in item;
+      const amount = isQuotation ? (item as Quotation).clientQuote : (item as InvoiceData).totalAmount;
+      csvContent += `${new Date(item.createdAt).toLocaleDateString()},"${isQuotation ? 'Quotation' : 'Invoice'}","${item.clientName}","${amount}","${item.status}"\n`;
     });
-    filename = `financial-report-${new Date().toISOString().split('T')[0]}.csv`;
   }
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename);
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 };

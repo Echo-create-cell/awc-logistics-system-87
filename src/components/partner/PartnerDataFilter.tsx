@@ -107,6 +107,7 @@ const PartnerDataFilter = ({
   }, [filteredData]);
 
   const handlePrintPDF = () => {
+    console.log('Generating PDF report...', { filteredData, summary, dateRange });
     generatePrintReport(filteredData, summary, dateRange, 'comprehensive', user);
   };
 
@@ -268,9 +269,9 @@ const PartnerDataFilter = ({
             <span className="font-semibold text-primary">${summary.totalProfit.toLocaleString()}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-accent rounded-full"></div>
+            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
             <span className="text-muted-foreground">Win Rate:</span>
-            <span className="font-semibold text-accent">{summary.winRate.toFixed(1)}%</span>
+            <span className="font-semibold text-orange-600">{summary.winRate.toFixed(1)}%</span>
           </div>
         </div>
       </div>

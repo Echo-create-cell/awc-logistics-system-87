@@ -239,7 +239,7 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Conversion Rate</span>
-                  <span className="text-lg font-bold text-success">{reportData.metrics.winRate.toFixed(1)}%</span>
+                  <span className="text-lg font-bold text-orange-600">{reportData.metrics.winRate.toFixed(1)}%</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Average Deal Value</span>
