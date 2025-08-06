@@ -143,126 +143,138 @@ const PartnerDataFilter = ({
   };
 
   return (
-    <Card className="hover-lift glass-effect">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-primary" />
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="flex justify-between items-start">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">
             {title}
+          </h2>
+          <p className="text-muted-foreground mt-1">
+            Full business intelligence with PDF export and date filtering capabilities
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={handleExportCSV} className="flex items-center gap-2">
+            <Download size={16} />
+            Export CSV
+          </Button>
+          <Button onClick={handlePrintPDF} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700">
+            <Printer size={16} />
+            Print Report
+          </Button>
+        </div>
+      </div>
+
+      {/* Report Filters Card */}
+      <Card className="shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Filter size={20} />
+            Report Filters
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* Report Type */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">Report Type</Label>
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">All Types</SelectItem>
+                  <SelectItem value="quotation">Quotations</SelectItem>
+                  <SelectItem value="invoice">Invoices</SelectItem>
+                  <SelectItem value="financial">Financial</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* From Date */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">From Date</Label>
+              <div className="relative">
+                <Input
+                  type="date"
+                  value={dateRange.from}
+                  onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
+                  className="h-10 pr-10"
+                  placeholder="mm/dd/yyyy"
+                />
+                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
+              </div>
+            </div>
+
+            {/* To Date */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">To Date</Label>
+              <div className="relative">
+                <Input
+                  type="date"
+                  value={dateRange.to}
+                  onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
+                  className="h-10 pr-10"
+                  placeholder="mm/dd/yyyy"
+                />
+                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
+              </div>
+            </div>
+
+            {/* Status Filter */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">Status Filter</Label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">All Statuses</SelectItem>
+                  <SelectItem value="won">Won</SelectItem>
+                  <SelectItem value="lost">Lost</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="paid">Paid</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={handleExportCSV} className="flex items-center gap-1">
-              <Download className="h-4 w-4" />
-              CSV
+        </CardContent>
+      </Card>
+
+      {/* Results Summary */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-muted-foreground">
+            Showing <span className="font-medium text-foreground">{filteredData.length}</span> of {allData.length} items
+          </span>
+          {(searchTerm || dateRange.from || dateRange.to || statusFilter !== '__all__' || typeFilter !== '__all__') && (
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs">
+              Clear All Filters
             </Button>
-            <Button size="sm" onClick={handlePrintPDF} className="flex items-center gap-1">
-              <Printer className="h-4 w-4" />
-              PDF Report
-            </Button>
+          )}
+        </div>
+        
+        <div className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-success rounded-full"></div>
+            <span className="text-muted-foreground">Revenue:</span>
+            <span className="font-semibold text-success">${summary.totalRevenue.toLocaleString()}</span>
           </div>
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        {/* Search and Filters Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
-          {/* Search */}
-          <div className="space-y-1">
-            <Label className="text-xs font-medium">Search</Label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={14} />
-              <Input
-                placeholder="Client, cargo, invoice..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 h-9 text-sm"
-              />
-            </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-primary rounded-full"></div>
+            <span className="text-muted-foreground">Profit:</span>
+            <span className="font-semibold text-primary">${summary.totalProfit.toLocaleString()}</span>
           </div>
-
-          {/* From Date */}
-          <div className="space-y-1">
-            <Label className="text-xs font-medium">From Date</Label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={14} />
-              <Input
-                type="date"
-                value={dateRange.from}
-                onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
-                className="pl-8 h-9 text-sm"
-              />
-            </div>
-          </div>
-
-          {/* To Date */}
-          <div className="space-y-1">
-            <Label className="text-xs font-medium">To Date</Label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={14} />
-              <Input
-                type="date"
-                value={dateRange.to}
-                onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
-                className="pl-8 h-9 text-sm"
-              />
-            </div>
-          </div>
-
-          {/* Status Filter */}
-          <div className="space-y-1">
-            <Label className="text-xs font-medium">Status</Label>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__all__">All Status</SelectItem>
-                <SelectItem value="won">Won</SelectItem>
-                <SelectItem value="lost">Lost</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="paid">Paid</SelectItem>
-                <SelectItem value="overdue">Overdue</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Type Filter */}
-          <div className="space-y-1">
-            <Label className="text-xs font-medium">Type</Label>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__all__">All Types</SelectItem>
-                <SelectItem value="quotation">Quotations</SelectItem>
-                <SelectItem value="invoice">Invoices</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-accent rounded-full"></div>
+            <span className="text-muted-foreground">Win Rate:</span>
+            <span className="font-semibold text-accent">{summary.winRate.toFixed(1)}%</span>
           </div>
         </div>
-
-        {/* Results Summary */}
-        <div className="flex items-center justify-between pt-3 border-t border-border/50">
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              Showing <span className="font-medium text-foreground">{filteredData.length}</span> of {allData.length} items
-            </span>
-            {(searchTerm || dateRange.from || dateRange.to || statusFilter !== '__all__' || typeFilter !== '__all__') && (
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs">
-                Clear Filters
-              </Button>
-            )}
-          </div>
-          
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <span>Revenue: <span className="font-medium text-success">${summary.totalRevenue.toLocaleString()}</span></span>
-            <span>Profit: <span className="font-medium text-primary">${summary.totalProfit.toLocaleString()}</span></span>
-            <span>Win Rate: <span className="font-medium text-accent">{summary.winRate.toFixed(1)}%</span></span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

@@ -12,71 +12,174 @@ export const generatePrintReport = (
   reportData?: any
 ) => {
   const printWindow = window.open('', '_blank');
-  if (!printWindow) return;
+  if (!printWindow) {
+    alert('Please allow popups to generate the PDF report');
+    return;
+  }
 
+  const currentDate = new Date().toLocaleDateString();
+  const reportTitle = `${user.role === 'partner' ? 'Partner Analytics' : 'Business'} Report - ${currentDate}`;
+  
   const printContent = `
     <html>
       <head>
-        <title>Financial Report - ${new Date().toLocaleDateString()}</title>
+        <title>${reportTitle}</title>
         <style>
-          body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-          .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
-          .logo { font-size: 24px; font-weight: bold; color: #2563eb; }
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            margin: 20px; 
+            color: #1f2937; 
+            line-height: 1.5;
+          }
+          .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 3px solid #6366f1; 
+            padding-bottom: 20px; 
+            margin-bottom: 30px; 
+          }
+          .logo { 
+            font-size: 28px; 
+            font-weight: bold; 
+            color: #6366f1; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          }
+          .logo::before {
+            content: "📊";
+            font-size: 24px;
+          }
           .report-info { text-align: right; }
-          h1, h2 { color: #333; margin: 20px 0 10px 0; }
-          .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 30px 0; }
-          .metric-card { border: 1px solid #ddd; padding: 20px; border-radius: 8px; text-align: center; background: #f9f9f9; }
-          .metric-title { font-size: 14px; color: #666; margin-bottom: 8px; }
-          .metric-value { font-size: 24px; font-weight: bold; }
+          .report-info h1 { font-size: 24px; margin-bottom: 8px; color: #1f2937; }
+          .report-info p { color: #6b7280; margin: 4px 0; }
+          .section { margin: 30px 0; }
+          .section h2 { 
+            color: #1f2937; 
+            font-size: 20px; 
+            margin-bottom: 15px; 
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e5e7eb;
+          }
+          .metrics-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px; 
+            margin: 25px 0; 
+          }
+          .metric-card { 
+            border: 2px solid #e5e7eb; 
+            padding: 20px; 
+            border-radius: 12px; 
+            text-align: center; 
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            transition: all 0.3s ease;
+          }
+          .metric-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+          .metric-title { font-size: 14px; color: #6b7280; margin-bottom: 8px; font-weight: 500; }
+          .metric-value { font-size: 28px; font-weight: bold; margin-bottom: 4px; }
           .revenue { color: #10b981; }
           .profit { color: #3b82f6; }
           .loss { color: #ef4444; }
           .rate { color: #8b5cf6; }
-          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-          th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-          th { background-color: #f2f2f2; font-weight: bold; }
-          .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+          .filter-info {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #6366f1;
+          }
+          table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 20px 0; 
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          }
+          th, td { 
+            border: 1px solid #e5e7eb; 
+            padding: 12px 16px; 
+            text-align: left; 
+          }
+          th { 
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); 
+            color: white; 
+            font-weight: 600; 
+            font-size: 14px;
+          }
+          td { font-size: 13px; }
+          .status-badge { 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 11px; 
+            font-weight: 600;
+            text-transform: uppercase;
+          }
           .status-won, .status-paid { background: #dcfce7; color: #166534; }
           .status-pending { background: #fef3c7; color: #92400e; }
           .status-lost, .status-overdue { background: #fee2e2; color: #991b1b; }
-          @media print { body { margin: 0; } .no-print { display: none; } }
-          .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px; }
+          .footer { 
+            text-align: center; 
+            margin-top: 40px; 
+            padding-top: 20px; 
+            border-top: 2px solid #e5e7eb; 
+            color: #6b7280; 
+            font-size: 12px; 
+          }
+          @media print { 
+            body { margin: 0; } 
+            .no-print { display: none; } 
+            .metric-card { break-inside: avoid; }
+            table { break-inside: avoid; }
+          }
         </style>
       </head>
       <body>
         <div class="header">
           <div class="logo">AWC Logistics</div>
           <div class="report-info">
-            <div><strong>Financial Report</strong></div>
-            <div>Generated: ${new Date().toLocaleDateString()}</div>
-            <div>By: ${user.name} (${user.role.replace('_', ' ')})</div>
+            <h1>${reportTitle}</h1>
+            <p><strong>Generated:</strong> ${currentDate}</p>
+            <p><strong>By:</strong> ${user.name} (${user.role.replace('_', ' ').toUpperCase()})</p>
+            <p><strong>Report Type:</strong> ${reportType.toUpperCase()}</p>
           </div>
         </div>
 
-        <h1>Executive Summary</h1>
-        <p><strong>Report Period:</strong> ${dateRange.from || 'All time'} to ${dateRange.to || 'Present'}</p>
-        <p><strong>Report Type:</strong> ${reportType.toUpperCase()}</p>
+        <div class="filter-info">
+          <h3 style="margin-bottom: 10px; color: #1f2937; font-size: 16px;">📋 Report Filters Applied</h3>
+          <p><strong>Date Range:</strong> ${dateRange.from || 'All time'} to ${dateRange.to || 'Present'}</p>
+          <p><strong>Report Type:</strong> ${reportType.charAt(0).toUpperCase() + reportType.slice(1)}</p>
+          <p><strong>Total Records:</strong> ${filteredData.length} items</p>
+        </div>
         
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-title">Total Revenue</div>
-            <div class="metric-value revenue">$${summary.totalRevenue.toLocaleString()}</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Total Profit</div>
-            <div class="metric-value profit">$${summary.totalProfit.toLocaleString()}</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Total Loss</div>
-            <div class="metric-value loss">$${summary.totalLoss.toLocaleString()}</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Win Rate</div>
-            <div class="metric-value rate">${summary.winRate.toFixed(1)}%</div>
+        <div class="section">
+          <h2>📊 Executive Summary</h2>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-title">Total Revenue</div>
+              <div class="metric-value revenue">$${summary.totalRevenue.toLocaleString()}</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-title">Total Profit</div>
+              <div class="metric-value profit">$${summary.totalProfit.toLocaleString()}</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-title">Total Loss</div>
+              <div class="metric-value loss">$${summary.totalLoss.toLocaleString()}</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-title">Win Rate</div>
+              <div class="metric-value rate">${summary.winRate.toFixed(1)}%</div>
+            </div>
           </div>
         </div>
 
-        <h2>Recent Activity</h2>
+        <div class="section">
+          <h2>📈 Recent Activity Data</h2>
         <table>
           <thead>
             <tr>
@@ -104,10 +207,11 @@ export const generatePrintReport = (
               `;
             }).join('')}
           </tbody>
-        </table>
+        </div>
 
         ${reportData ? `
-        <h2>Analytics Summary</h2>
+        <div class="section">
+          <h2>🎯 Detailed Analytics</h2>
         <div class="metrics-grid">
           <div class="metric-card">
             <div class="metric-title">Total Invoices</div>
