@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
 @tailwind base;
 @tailwind components;
@@ -147,6 +146,65 @@
 }
 
 @layer components {
+  /* Interactive Elements */
+  .smooth-transition {
+    @apply transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-lift {
+    @apply smooth-transition hover:shadow-large hover:-translate-y-2 hover:scale-[1.02];
+  }
+
+  .interactive-scale {
+    @apply transition-transform duration-200 hover:scale-105 active:scale-95;
+  }
+
+  .glass-morphism {
+    @apply backdrop-blur-xl bg-white/10 dark:bg-black/10 border border-white/20 dark:border-white/10;
+  }
+
+  .glow-effect {
+    @apply relative before:absolute before:inset-0 before:rounded-lg before:p-px before:bg-gradient-to-r before:from-primary/50 before:to-accent/50 before:animate-gradient-shift;
+  }
+
+  /* Professional Card Components */
+  .metric-card {
+    @apply bg-gradient-card backdrop-blur-sm border border-border/20 shadow-soft hover:shadow-large hover:-translate-y-1 transition-all duration-300 rounded-lg animate-slide-up;
+  }
+  
+  .card-professional {
+    @apply bg-card border border-border/20 shadow-soft rounded-lg p-6 smooth-transition hover:shadow-large hover:-translate-y-1 hover:border-primary/20;
+  }
+  
+  .dashboard-card {
+    @apply bg-card border border-border/20 shadow-soft rounded-lg p-6 hover:shadow-large hover:-translate-y-1 transition-all duration-300 group;
+  }
+  
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md;
+  }
+  
+  .sidebar-item-active {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-md -translate-y-0.5;
+  }
+
+  .interactive-button {
+    @apply relative overflow-hidden transform transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-glow;
+  }
+
+  .floating-element {
+    @apply animate-float;
+  }
+
+  .delayed-entrance {
+    @apply opacity-0 animate-fade-in-up;
+  }
+
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+
   /* Glass Effects */
   .glass-effect {
     @apply backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border border-white/20 dark:border-gray-700/30;
@@ -211,36 +269,6 @@
   
   .gradient-text {
     @apply bg-gradient-primary bg-clip-text text-transparent;
-  }
-  
-  /* Interactive Elements */
-  .smooth-transition {
-    @apply transition-all duration-300 ease-smooth;
-  }
-  
-  .hover-lift {
-    @apply smooth-transition hover:shadow-large hover:-translate-y-1;
-  }
-
-  /* Professional Card Components */
-  .metric-card {
-    @apply bg-gradient-card backdrop-blur-sm border border-border/20 shadow-soft hover:shadow-medium transition-all duration-300 rounded-lg;
-  }
-  
-  .card-professional {
-    @apply bg-card border border-border/20 shadow-soft rounded-lg p-6 smooth-transition hover:shadow-medium;
-  }
-  
-  .dashboard-card {
-    @apply bg-card border border-border/20 shadow-soft rounded-lg p-6 hover:shadow-medium transition-all duration-300;
-  }
-  
-  .sidebar-item {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-200;
-  }
-  
-  .sidebar-item-active {
-    @apply bg-sidebar-accent text-sidebar-accent-foreground font-medium;
   }
 
   /* Legacy Support */

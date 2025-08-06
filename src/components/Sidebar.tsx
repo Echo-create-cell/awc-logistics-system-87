@@ -94,15 +94,19 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
               key={item.id}
               onClick={() => item.id === 'logout' ? handleLogout() : onTabChange(item.id)}
               className={cn(
-                "w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group text-sm font-medium",
+                "w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group text-sm font-medium relative overflow-hidden hover:shadow-md",
                 activeTab === item.id
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/90 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-md -translate-y-0.5"
+                  : "text-sidebar-foreground/90 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:-translate-y-0.5"
               )}
-              style={{ animationDelay: `${index * 50}ms` }}
+              style={{ 
+                animationDelay: `${index * 50}ms`,
+                animation: `slide-down 0.4s ease-out ${index * 50}ms both`
+              }}
             >
-              <Icon size={18} className="flex-shrink-0" />
-              <span className="truncate">{item.label}</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-sidebar-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <Icon size={18} className="flex-shrink-0 relative z-10 group-hover:scale-110 transition-transform duration-200" />
+              <span className="truncate relative z-10">{item.label}</span>
             </button>
           );
         })}

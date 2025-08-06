@@ -13,20 +13,21 @@ interface StatsCardProps {
 }
 
 const StatsCard = ({ title, value, change, isPositive, icon }: StatsCardProps) => (
-  <Card className="dashboard-card group cursor-pointer">
-    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+  <Card className="dashboard-card group cursor-pointer relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
       <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
         {title}
       </CardTitle>
-      <div className="p-2 rounded-lg bg-primary/10 text-primary">
+      <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
         {icon}
       </div>
     </CardHeader>
-    <CardContent className="pb-4">
-      <div className="text-2xl font-bold text-foreground mb-1">
+    <CardContent className="pb-4 relative z-10">
+      <div className="text-2xl font-bold text-foreground mb-1 group-hover:text-primary transition-colors duration-300">
         {value}
       </div>
-      <div className={`flex items-center space-x-1 text-xs ${
+      <div className={`flex items-center space-x-1 text-xs transition-all duration-300 group-hover:scale-110 ${
         isPositive ? 'text-success' : 'text-destructive'
       }`}>
         {isPositive ? (
@@ -187,8 +188,11 @@ const DashboardStats = ({ user, users, quotations }: DashboardStatsProps) => {
       {stats.map((stat, index) => (
         <div 
           key={index} 
-          className="smooth-entrance"
-          style={{ animationDelay: `${index * 150}ms` }}
+          className="opacity-0 animate-slide-up"
+          style={{ 
+            animationDelay: `${index * 150}ms`,
+            animationFillMode: 'forwards'
+          }}
         >
           <StatsCard {...stat} />
         </div>
