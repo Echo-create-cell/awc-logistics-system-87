@@ -28,7 +28,7 @@ interface PartnerRecentActivityProps {
 const PartnerRecentActivity = ({ users, quotations, invoices }: PartnerRecentActivityProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Show fewer items per page for better UX
+  const itemsPerPage = 23; // Show all items as before
 
   // Generate activity data from all sources
   const activityData = useMemo(() => {
@@ -224,7 +224,7 @@ const PartnerRecentActivity = ({ users, quotations, invoices }: PartnerRecentAct
           )}
         </div>
 
-        {/* Pagination Controls */}
+        {/* Show pagination only if there are more than 23 items */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between pt-4 border-t border-border/50">
             <p className="text-sm text-muted-foreground">
