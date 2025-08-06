@@ -153,9 +153,9 @@ const InvoicesView = ({
       minWidth: '90px',
       render: (value: string) => {
         const colors: {[key: string]: string} = {
-          paid: 'bg-green-100 text-green-800 hover:bg-green-200',
-          pending: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-          overdue: 'bg-red-100 text-red-800 hover:bg-red-200'
+          paid: 'bg-success/10 text-success hover:bg-success/20 border-success/20',
+          pending: 'bg-warning/10 text-warning hover:bg-warning/20 border-warning/20',
+          overdue: 'bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/20'
         };
         return <Badge className={`${colors[value]} font-medium`}>{value}</Badge>;
       }

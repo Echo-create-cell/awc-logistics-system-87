@@ -40,9 +40,9 @@ const QuotationModal = ({ open, quotation, onClose, onSave, user, viewOnly = fal
                   <Badge 
                     variant={quotation.status === 'won' ? "default" : quotation.status === 'lost' ? "destructive" : "secondary"} 
                     className={
-                      quotation.status === 'won' ? "bg-green-100 text-green-800" : 
-                      quotation.status === 'lost' ? "bg-red-100 text-red-800" : 
-                      "bg-yellow-100 text-yellow-800"
+                      quotation.status === 'won' ? "bg-success/10 text-success border-success/20" : 
+                      quotation.status === 'lost' ? "bg-destructive/10 text-destructive border-destructive/20" : 
+                      "bg-warning/10 text-warning border-warning/20"
                     }
                   >
                     {quotation.status}

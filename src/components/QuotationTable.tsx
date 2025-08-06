@@ -25,11 +25,11 @@ const QuotationTable = ({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'won':
-        return <Badge className="bg-green-100 text-green-800">Won</Badge>;
+        return <Badge className="bg-success/10 text-success border-success/20">Won</Badge>;
       case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+        return <Badge className="bg-warning/10 text-warning border-warning/20">Pending</Badge>;
       case 'lost':
-        return <Badge className="bg-red-100 text-red-800">Lost</Badge>;
+        return <Badge className="bg-destructive/10 text-destructive border-destructive/20">Lost</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
