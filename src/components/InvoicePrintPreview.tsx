@@ -39,12 +39,102 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
     for (let i = 0; i < styles.length; i++) {
         doc.write(styles[i].outerHTML);
     }
-    // Add a style to ensure text is black for printing
-    doc.write('<style>body { -webkit-print-color-adjust: exact; print-color-adjust: exact; color: black !important; }</style>');
+    // Add comprehensive print styles for one-page layout
+    doc.write(`<style>
+      body { 
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact; 
+        color: black !important; 
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+        margin: 0;
+        padding: 10px;
+      }
+      @page { 
+        size: A4; 
+        margin: 0.3in; 
+        margin-top: 0.2in;
+        margin-bottom: 0.2in;
+      }
+      .invoice-container { 
+        max-height: 100vh; 
+        overflow: hidden; 
+        font-size: 10px !important;
+      }
+      h1, h2, h3, h4 { 
+        font-size: 12px !important; 
+        margin: 4px 0 !important; 
+      }
+      h1 { font-size: 18px !important; }
+      table { 
+        font-size: 9px !important; 
+        border-collapse: collapse !important;
+        width: 100% !important;
+      }
+      th, td { 
+        padding: 2px 4px !important; 
+        border: 1px solid #000 !important;
+        font-size: 9px !important;
+      }
+      .company-header { 
+        margin-bottom: 8px !important; 
+        padding-bottom: 8px !important;
+      }
+      .client-info, .service-details { 
+        margin-bottom: 6px !important; 
+        padding: 6px !important;
+      }
+      .totals-section { 
+        margin-top: 8px !important;
+      }
+      .signature-area { 
+        margin-top: 8px !important;
+        padding-top: 8px !important;
+      }
+      .footer-section { 
+        margin-top: 8px !important;
+        padding-top: 8px !important;
+      }
+      .banking-details { 
+        font-size: 8px !important;
+        line-height: 1.1 !important;
+      }
+      .invoice-summary { 
+        font-size: 9px !important;
+      }
+      .grid { 
+        display: grid !important;
+        gap: 4px !important;
+      }
+      .space-y-1 > * + * { 
+        margin-top: 2px !important;
+      }
+      .space-y-2 > * + * { 
+        margin-top: 4px !important;
+      }
+      .mb-8 { 
+        margin-bottom: 6px !important;
+      }
+      .mb-6 { 
+        margin-bottom: 4px !important;
+      }
+      .p-4 { 
+        padding: 6px !important;
+      }
+      .pt-16 { 
+        padding-top: 8px !important;
+      }
+      .pt-12 { 
+        padding-top: 6px !important;
+      }
+      .mt-8 { 
+        margin-top: 6px !important;
+      }
+    </style>`);
 
-    doc.write('</head><body class="font-sans text-xs leading-relaxed">');
+    doc.write('</head><body class="font-sans"><div class="invoice-container">');
     doc.write(printElement.innerHTML);
-    doc.write('</body></html>');
+    doc.write('</div></body></html>');
     doc.close();
 
     iframe.onload = function() {
@@ -78,50 +168,47 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
         </div>
         
         <div className="p-8">
-            <div id="invoice-print-area">
+            <div id="invoice-print-area" className="print:text-xs print:leading-tight">
                 {/* Company Header */}
-                <div className="flex justify-between items-start mb-8 pb-6 border-b-2 border-red-600">
-                    <div className="w-2/3 pr-6">
-                        <ProfessionalLogo size="xl" variant="invoice" className="mb-3" />
-                        <h2 className="font-bold text-base text-gray-800 mb-2">Africa World Cargo Ltd</h2>
-                        <p className="text-sm text-gray-600 mb-1">TIN: 112933303 RW</p>
-                        <p className="text-sm text-gray-700 leading-relaxed mb-3">
-                            KN 5 rd, Av18, 30 Remera<br/>
-                            Kigali, Rwanda
+                <div className="company-header flex justify-between items-start mb-4 pb-3 border-b border-red-600">
+                    <div className="w-2/3 pr-4">
+                        <ProfessionalLogo size="lg" variant="invoice" className="mb-2" />
+                        <h2 className="font-bold text-sm text-gray-800 mb-1">Africa World Cargo Ltd</h2>
+                        <p className="text-xs text-gray-600 mb-1">TIN: 112933303 RW</p>
+                        <p className="text-xs text-gray-700 leading-tight mb-2">
+                            KN 5 rd, Av18, 30 Remera, Kigali, Rwanda
                         </p>
-                        <div className="border-t border-gray-200 pt-3">
-                            <p className="text-sm font-semibold text-gray-800 mb-2">Banking Details</p>
-                            <p className="text-sm text-gray-700 mb-1"><strong>Bank of Kigali</strong></p>
-                            <div className="text-sm text-gray-600 space-y-1">
-                                <p>RWF: 00265 07771361 40</p>
-                                <p>EUR: 00265-07771427-09</p>
-                                <p>USD: 00265-07771426-08</p>
+                        <div className="banking-details border-t border-gray-200 pt-2">
+                            <p className="text-xs font-semibold text-gray-800 mb-1">Banking Details</p>
+                            <p className="text-xs text-gray-700 mb-1"><strong>Bank of Kigali</strong></p>
+                            <div className="text-xs text-gray-600 leading-tight">
+                                <p>RWF: 00265 07771361 40 | EUR: 00265-07771427-09</p>
+                                <p>USD: 00265-07771426-08 | Swift: BKIGRWRW</p>
+                                <p><strong>Phone:</strong> +250 784 445 373</p>
                             </div>
-                            <p className="text-sm text-gray-600 mt-2"><strong>Swift:</strong> BKIGRWRW</p>
-                            <p className="text-sm text-gray-600"><strong>Phone:</strong> +250 784 445 373</p>
                         </div>
                     </div>
                     <div className="text-right w-1/3">
-                        <h1 className="text-5xl font-bold text-red-600 mb-4">INVOICE</h1>
-                        <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                            <p className="text-sm font-semibold"><strong>Invoice #:</strong> {invoice.invoiceNumber}</p>
-                            <p className="text-sm"><strong>Date:</strong> {new Date(invoice.issueDate).toLocaleDateString('en-GB')}</p>
+                        <h1 className="text-2xl font-bold text-red-600 mb-2">INVOICE</h1>
+                        <div className="bg-gray-50 p-2 rounded text-xs space-y-1">
+                            <p className="font-semibold"><strong>Invoice #:</strong> {invoice.invoiceNumber}</p>
+                            <p><strong>Date:</strong> {new Date(invoice.issueDate).toLocaleDateString('en-GB')}</p>
                             {invoice.awbNumber && (
-                                <div className="bg-blue-100 border border-blue-200 p-2 rounded">
-                                    <p className="text-sm font-medium text-blue-800"><strong>AWB:</strong> {invoice.awbNumber}</p>
+                                <div className="bg-blue-100 border border-blue-200 p-1 rounded">
+                                    <p className="font-medium text-blue-800"><strong>AWB:</strong> {invoice.awbNumber}</p>
                                 </div>
                             )}
-                            {invoice.destination && <p className="text-sm"><strong>Destination:</strong> {invoice.destination}</p>}
-                            {invoice.doorDelivery && <p className="text-sm"><strong>Door Delivery:</strong> {invoice.doorDelivery}</p>}
+                            {invoice.destination && <p><strong>Destination:</strong> {invoice.destination}</p>}
+                            {invoice.doorDelivery && <p><strong>Door Delivery:</strong> {invoice.doorDelivery}</p>}
                         </div>
                     </div>
                 </div>
 
                 {/* Client Information */}
                 {(invoice.clientName || invoice.clientContactPerson || invoice.clientAddress || invoice.clientTin) && (
-                    <div className="mb-8 bg-gray-50 p-4 rounded-lg">
-                        <h3 className="font-semibold text-base text-gray-800 mb-3 border-b border-gray-300 pb-2">Client Information</h3>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="client-info mb-3 bg-gray-50 p-2 rounded">
+                        <h3 className="font-semibold text-sm text-gray-800 mb-2 border-b border-gray-300 pb-1">Client Information</h3>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
                             {invoice.clientName && (
                                 <div>
                                     <span className="font-medium text-gray-700">Customer:</span>
@@ -152,9 +239,9 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
 
                 {/* Details Table - Only show if at least one field has data */}
                 {(invoice.salesperson || invoice.deliverDate || invoice.paymentConditions || invoice.validityDate) && (
-                    <div className="mb-8">
-                        <h3 className="font-semibold text-base text-gray-800 mb-3">Service Details</h3>
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg text-sm">
+                    <div className="service-details mb-3">
+                        <h3 className="font-semibold text-sm text-gray-800 mb-2">Service Details</h3>
+                        <div className="grid grid-cols-4 gap-2 bg-gray-50 p-2 rounded text-xs">
                             {invoice.salesperson && (
                                 <div>
                                     <span className="font-medium text-gray-700 block">Salesperson</span>
@@ -184,14 +271,14 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 )}
 
                 {/* Items Table */}
-                <table className="w-full border-collapse mb-6 text-sm">
+                <table className="w-full border-collapse mb-3 text-xs">
                     <thead>
                         <tr className="bg-gray-800 text-white">
-                            <th className="border border-black px-2 py-1 text-left font-normal">Quantity in kg</th>
-                            <th className="border border-black px-2 py-1 text-left font-normal">Commodity</th>
-                            <th className="border border-black px-2 py-1 text-left font-normal">Description</th>
-                            <th className="border border-black px-2 py-1 text-right font-normal">Price</th>
-                            <th className="border border-black px-2 py-1 text-right font-normal">Total Amount all incl./{invoice.currency}</th>
+                            <th className="border border-black px-1 py-1 text-left font-normal text-xs">Qty (kg)</th>
+                            <th className="border border-black px-1 py-1 text-left font-normal text-xs">Commodity</th>
+                            <th className="border border-black px-1 py-1 text-left font-normal text-xs">Description</th>
+                            <th className="border border-black px-1 py-1 text-right font-normal text-xs">Price</th>
+                            <th className="border border-black px-1 py-1 text-right font-normal text-xs">Total ({invoice.currency})</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -200,30 +287,30 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                                 const charge = item.charges[0];
                                 return (
                                     <tr key={item.id} className="even:bg-gray-100">
-                                        <td className="border border-black px-2 py-1 text-center">{item.quantityKg || 0}</td>
-                                        <td className="border border-black px-2 py-1">{item.commodity || ''}</td>
-                                        <td className="border border-black px-2 py-1">{charge.description || ''}</td>
-                                        <td className="border border-black px-2 py-1 text-right">{(charge.rate || 0).toFixed(2)}</td>
-                                        <td className="border border-black px-2 py-1 text-right">{(item.total || 0).toFixed(2)}</td>
+                                        <td className="border border-black px-1 py-1 text-center text-xs">{item.quantityKg || 0}</td>
+                                        <td className="border border-black px-1 py-1 text-xs">{item.commodity || ''}</td>
+                                        <td className="border border-black px-1 py-1 text-xs">{charge.description || ''}</td>
+                                        <td className="border border-black px-1 py-1 text-right text-xs">{(charge.rate || 0).toFixed(2)}</td>
+                                        <td className="border border-black px-1 py-1 text-right text-xs">{(item.total || 0).toFixed(2)}</td>
                                     </tr>
                                 );
                             } else {
                                 return (
                                     <React.Fragment key={item.id}>
                                         <tr className="bg-gray-200/60 font-bold">
-                                            <td className="border border-black px-2 py-1 text-center">{item.quantityKg || 0}</td>
-                                            <td className="border border-black px-2 py-1" colSpan={2}>{item.commodity || ''}</td>
-                                            <td className="border border-black px-2 py-1 text-right">
+                                            <td className="border border-black px-1 py-1 text-center text-xs">{item.quantityKg || 0}</td>
+                                            <td className="border border-black px-1 py-1 text-xs" colSpan={2}>{item.commodity || ''}</td>
+                                            <td className="border border-black px-1 py-1 text-right text-xs">
                                                 {(item.charges.reduce((sum, c) => sum + (c.rate || 0), 0)).toFixed(2)}
                                             </td>
-                                            <td className="border border-black px-2 py-1 text-right">{(item.total || 0).toFixed(2)}</td>
+                                            <td className="border border-black px-1 py-1 text-right text-xs">{(item.total || 0).toFixed(2)}</td>
                                         </tr>
                                         {item.charges.map(charge => (
                                             <tr key={charge.id} className="even:bg-gray-100">
-                                                <td className="border border-black px-2 py-1"></td>
-                                                <td className="border border-black px-2 py-1 italic" colSpan={2}>- {charge.description || ''}</td>
-                                                <td className="border border-black px-2 py-1 text-right">{(charge.rate || 0).toFixed(2)}</td>
-                                                <td className="border border-black px-2 py-1 text-right">{((item.quantityKg || 0) * (charge.rate || 0)).toFixed(2)}</td>
+                                                <td className="border border-black px-1 py-1"></td>
+                                                <td className="border border-black px-1 py-1 italic text-xs" colSpan={2}>- {charge.description || ''}</td>
+                                                <td className="border border-black px-1 py-1 text-right text-xs">{(charge.rate || 0).toFixed(2)}</td>
+                                                <td className="border border-black px-1 py-1 text-right text-xs">{((item.quantityKg || 0) * (charge.rate || 0)).toFixed(2)}</td>
                                             </tr>
                                         ))}
                                     </React.Fragment>
@@ -234,22 +321,22 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 </table>
 
                 {/* Totals & Signature */}
-                <div className="flex justify-between items-start mt-8">
-                    <div className="w-2/3 pt-16">
-                        <div className="border-t border-gray-300 pt-6">
-                            <p className="text-sm text-gray-700 mb-2">Authorized Signature:</p>
-                            <div className="h-12 border-b border-gray-300 w-2/3"></div>
+                <div className="totals-section flex justify-between items-start mt-4">
+                    <div className="signature-area w-2/3 pt-4">
+                        <div className="border-t border-gray-300 pt-2">
+                            <p className="text-xs text-gray-700 mb-1">Authorized Signature:</p>
+                            <div className="h-6 border-b border-gray-300 w-2/3"></div>
                             {invoice.salesperson && (
-                                <p className="mt-6 text-sm text-gray-600">
+                                <p className="mt-2 text-xs text-gray-600">
                                     <span className="font-medium">Prepared by:</span> {invoice.salesperson}
                                 </p>
                             )}
                         </div>
                     </div>
                     <div className="w-1/3">
-                        <div className="bg-gray-50 p-4 rounded-lg border">
-                            <h4 className="font-semibold text-gray-800 mb-3">Invoice Summary</h4>
-                            <div className="space-y-2 text-sm">
+                        <div className="invoice-summary bg-gray-50 p-2 rounded border">
+                            <h4 className="font-semibold text-gray-800 mb-2 text-xs">Invoice Summary</h4>
+                            <div className="space-y-1 text-xs">
                                 <div className="flex justify-between py-1 border-b border-gray-200">
                                     <span className="text-gray-600">Sub-Total:</span>
                                     <span className="font-medium">{invoice.currency} {(invoice.subTotal || 0).toFixed(2)}</span>
@@ -258,7 +345,7 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                                     <span className="text-gray-600">VAT/TVA:</span>
                                     <span className="font-medium">{invoice.currency} {(invoice.tva || 0).toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between py-2 font-bold text-lg border-t-2 border-red-600 text-red-600">
+                                <div className="flex justify-between py-1 font-bold text-sm border-t border-red-600 text-red-600">
                                     <span>TOTAL:</span>
                                     <span>{invoice.currency} {(invoice.totalAmount || 0).toFixed(2)}</span>
                                 </div>
@@ -268,13 +355,13 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 </div>
 
                 {/* Footer */}
-                <div className="text-center pt-12 mt-8 border-t-2 border-gray-200">
-                    <div className="bg-gray-50 p-4 rounded-lg mx-auto max-w-md">
-                        <p className="font-semibold text-gray-800 mb-2">Payment Information</p>
-                        <p className="text-sm text-gray-700 mb-3">All payments should be made payable to:</p>
-                        <p className="font-bold text-gray-900">Africa World Cargo Ltd</p>
-                        <div className="mt-4 pt-4 border-t border-gray-300">
-                            <p className="font-bold text-red-600 text-lg">WE THANK YOU FOR YOUR TRUST</p>
+                <div className="footer-section text-center pt-4 mt-4 border-t border-gray-200">
+                    <div className="bg-gray-50 p-2 rounded mx-auto max-w-md">
+                        <p className="font-semibold text-gray-800 mb-1 text-xs">Payment Information</p>
+                        <p className="text-xs text-gray-700 mb-1">All payments should be made payable to:</p>
+                        <p className="font-bold text-gray-900 text-xs">Africa World Cargo Ltd</p>
+                        <div className="mt-2 pt-2 border-t border-gray-300">
+                            <p className="font-bold text-red-600 text-sm">WE THANK YOU FOR YOUR TRUST</p>
                         </div>
                     </div>
                 </div>
