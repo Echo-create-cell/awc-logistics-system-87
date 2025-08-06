@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { User } from '@/types';
+import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/hooks/useNotifications';
 
 interface UserCredentials {
@@ -21,11 +22,11 @@ interface UserManagementReturn {
 }
 
 export const useUserManagement = (initialUsers: User[]): UserManagementReturn => {
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const { users, addUser, updateUser: authUpdateUser, removeUser, updateUserCredentials } = useAuth();
   const [userCredentials, setUserCredentials] = useState<Record<string, UserCredentials>>(() => {
     // Initialize with default credentials for existing users
     const credentials: Record<string, UserCredentials> = {};
-    initialUsers.forEach(user => {
+    users.forEach(user => {
       credentials[user.id] = {
         email: user.email,
         password: 'password', // Default password for all users
@@ -84,7 +85,12 @@ export const useUserManagement = (initialUsers: User[]): UserManagementReturn =>
       }
     }));
 
-    setUsers(prev => [newUser, ...prev]);
+    // Add user to auth context
+    addUser(newUser);
+    
+    // Update user credentials in auth context
+    updateUserCredentials(newUser.email, password);
+    
     notifyUserCreated(newUser, { additionalInfo: { showCredentials: true, password } });
     
     return newUser;
@@ -118,8 +124,16 @@ export const useUserManagement = (initialUsers: User[]): UserManagementReturn =>
       }));
     }
 
-    const updatedUser = { ...users[userIndex], ...userData };
-    setUsers(prev => prev.map(u => u.id === userId ? updatedUser : u));
+    const updatedUser = { ...users.find(u => u.id === userId)!, ...userData };
+    
+    // Update user in auth context
+    authUpdateUser(userId, updatedUser);
+    
+    // Update email in credentials if changed
+    if (userData.email && updatedUser.email !== userCredentials[userId]?.email) {
+      updateUserCredentials(updatedUser.email, userCredentials[userId]?.password || 'password');
+    }
+    
     notifyUserUpdated(updatedUser);
     
     return updatedUser;
@@ -140,7 +154,10 @@ export const useUserManagement = (initialUsers: User[]): UserManagementReturn =>
       throw new Error('Cannot delete the last admin user');
     }
 
-    setUsers(prev => prev.filter(u => u.id !== userId));
+    // Remove user from auth context
+    removeUser(userId);
+    
+    // Remove credentials
     setUserCredentials(prev => {
       const { [userId]: _, ...rest } = prev;
       return rest;
@@ -170,6 +187,9 @@ export const useUserManagement = (initialUsers: User[]): UserManagementReturn =>
         lastPasswordReset: new Date().toISOString()
       }
     }));
+
+    // Update password in auth context for login
+    updateUserCredentials(user.email, password);
 
     notifyPasswordReset(user.name, password);
     return password;

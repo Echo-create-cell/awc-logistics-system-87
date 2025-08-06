@@ -8,6 +8,11 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
+  users: User[];
+  addUser: (newUser: User) => void;
+  updateUser: (userId: string, updatedUser: User) => void;
+  removeUser: (userId: string) => void;
+  updateUserCredentials: (email: string, password: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -60,6 +65,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<User[]>(mockUsers);
+  const [userCredentials, setUserCredentials] = useState<Record<string, string>>(() => {
+    // Initialize with default credentials for all users
+    const credentials: Record<string, string> = {};
+    mockUsers.forEach(user => {
+      credentials[user.email] = 'password';
+    });
+    return credentials;
+  });
   const { notifyLoginSuccess, notifyLoginFailed, notifyLogout } = useNotifications();
 
   useEffect(() => {
@@ -77,9 +90,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Mock authentication - password is 'password' for all users
-    const foundUser = mockUsers.find(u => u.email === email);
-    if (foundUser && password === 'password') {
+    // Check against current users with their stored credentials
+    const foundUser = users.find(u => u.email === email && u.status === 'active');
+    const storedPassword = userCredentials[email] || 'password';
+    
+    if (foundUser && password === storedPassword) {
       setUser(foundUser);
       localStorage.setItem('awc_user', JSON.stringify(foundUser));
       notifyLoginSuccess(foundUser);
@@ -101,8 +116,59 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const addUser = (newUser: User) => {
+    setUsers(prev => [newUser, ...prev]);
+    setUserCredentials(prev => ({
+      ...prev,
+      [newUser.email]: 'password' // Default password for new users
+    }));
+  };
+
+  const updateUser = (userId: string, updatedUser: User) => {
+    setUsers(prev => prev.map(u => u.id === userId ? updatedUser : u));
+    
+    // If user is currently logged in and gets updated, update the session
+    if (user?.id === userId) {
+      setUser(updatedUser);
+      localStorage.setItem('awc_user', JSON.stringify(updatedUser));
+    }
+  };
+
+  const removeUser = (userId: string) => {
+    const userToRemove = users.find(u => u.id === userId);
+    if (userToRemove) {
+      setUsers(prev => prev.filter(u => u.id !== userId));
+      setUserCredentials(prev => {
+        const { [userToRemove.email]: _, ...rest } = prev;
+        return rest;
+      });
+      
+      // If the removed user is currently logged in, log them out
+      if (user?.id === userId) {
+        logout();
+      }
+    }
+  };
+
+  const updateUserCredentials = (email: string, password: string) => {
+    setUserCredentials(prev => ({
+      ...prev,
+      [email]: password
+    }));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      logout, 
+      isLoading, 
+      users, 
+      addUser, 
+      updateUser, 
+      removeUser, 
+      updateUserCredentials 
+    }}>
       {children}
     </AuthContext.Provider>
   );
