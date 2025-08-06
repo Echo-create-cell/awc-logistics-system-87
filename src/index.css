@@ -5,12 +5,12 @@
 
 :root {
   /* Professional Modern Color Palette */
-  --background: 248 250 252; /* slate-50 */
-  --foreground: 15 23 42; /* slate-800 */
-  --card: 255 255 255; /* white */
-  --card-foreground: 15 23 42; /* slate-800 */
-  --popover: 255 255 255;
-  --popover-foreground: 15 23 42;
+  --background: 248 250 252 1; /* slate-50 */
+  --foreground: 15 23 42 1; /* slate-800 */
+  --card: 255 255 255 1; /* white */
+  --card-foreground: 15 23 42 1; /* slate-800 */
+  --popover: 255 255 255 1;
+  --popover-foreground: 15 23 42 1;
   
   /* Professional Blue Primary */
   --primary: 217 91% 60%; /* Blue */
@@ -33,11 +33,11 @@
   
   /* Status colors */
   --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 248 250 252;
+  --destructive-foreground: 248 250 252 1;
   --success: 142.1 76.2% 36.3%;
-  --success-foreground: 248 250 252;
+  --success-foreground: 248 250 252 1;
   --warning: 32.4 95.6% 68.6%;
-  --warning-foreground: 15 23 42;
+  --warning-foreground: 15 23 42 1;
   
   /* Borders and inputs */
   --border: 214.3 31.8% 91.4%;
@@ -97,32 +97,32 @@
 
 .dark {
   /* Professional Dark Mode */
-  --background: 15 23 42; /* slate-800 */
-  --foreground: 248 250 252; /* slate-50 */
-  --card: 30 41 59; /* slate-700 */
-  --card-foreground: 248 250 252;
-  --popover: 30 41 59;
-  --popover-foreground: 248 250 252;
+  --background: 15 23 42 1; /* slate-800 */
+  --foreground: 248 250 252 1; /* slate-50 */
+  --card: 30 41 59 1; /* slate-700 */
+  --card-foreground: 248 250 252 1;
+  --popover: 30 41 59 1;
+  --popover-foreground: 248 250 252 1;
   --primary: 214 95% 93%; /* Light blue for dark mode */
   --primary-glow: 214 95% 85%;
   --primary-dark: 214 95% 80%;
-  --primary-foreground: 15 23 42;
+  --primary-foreground: 15 23 42 1;
   --secondary: 51 65% 7%; /* Dark gray */
-  --secondary-foreground: 248 250 252;
+  --secondary-foreground: 248 250 252 1;
   --muted: 51 65% 7%;
-  --muted-foreground: 148 163 184; /* slate-400 */
+  --muted-foreground: 148 163 184 1; /* slate-400 */
   --accent: 0 75% 30%;
   --accent-glow: 0 75% 35%;
-  --accent-foreground: 248 250 252;
+  --accent-foreground: 248 250 252 1;
   --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 248 250 252;
+  --destructive-foreground: 248 250 252 1;
   --border: 51 65% 7%;
   --input: 51 65% 7%;
   --ring: 214 95% 93%;
   --success: 142.1 70.6% 45.3%;
-  --success-foreground: 248 250 252;
+  --success-foreground: 248 250 252 1;
   --warning: 37.7 92.1% 50.2%;
-  --warning-foreground: 15 23 42;
+  --warning-foreground: 15 23 42 1;
 
   /* Dark mode gradients */
   --gradient-card: linear-gradient(135deg, hsl(30 41 59 / 1) 0%, hsl(30 41 59 / 0.9) 100%);
