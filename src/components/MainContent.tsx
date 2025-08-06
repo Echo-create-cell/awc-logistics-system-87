@@ -102,9 +102,6 @@ const MainContent = ({
         return (
           <UsersView
             users={users}
-            onEdit={onEditUser}
-            onDelete={onDeleteUser}
-            onCreate={onCreateUser}
           />
         );
       case 'reports':

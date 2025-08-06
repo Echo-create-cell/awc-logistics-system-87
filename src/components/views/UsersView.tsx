@@ -3,43 +3,61 @@ import React, { useState } from 'react';
 import EnhancedSearchableTable from '@/components/enhanced/EnhancedSearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Key, Shield } from 'lucide-react';
 import { User } from '@/types';
-import UserModal from '../modals/UserModal';
+import AdminUserModal from '../modals/AdminUserModal';
+import { useUserManagement } from '@/hooks/useUserManagement';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface UsersViewProps {
   users: User[];
-  onEdit?: (user: User) => void;
-  onDelete?: (id: string) => void;
-  onCreate?: (user: Omit<User, 'id' | 'createdAt'>) => void;
 }
 
-const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
+const UsersView = ({ users }: UsersViewProps) => {
+  const { user: currentUser } = useAuth();
   const [modalUser, setModalUser] = useState<User|null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  
+  const {
+    createUser,
+    updateUser,
+    deleteUser,
+    resetUserPassword,
+    getUserCredentials,
+    validateAdminAccess
+  } = useUserManagement(users);
+
+  const isAdmin = validateAdminAccess(currentUser);
 
   const handleEdit = (user: User) => {
+    if (!isAdmin) return;
     setModalUser(user);
     setModalOpen(true);
   };
   
   const handleAddNewUser = () => {
+    if (!isAdmin) return;
     setModalUser(null);
     setModalOpen(true);
   };
 
-  const handleSave = (userToSave: User | Partial<User>) => {
-    if ('id' in userToSave && userToSave.id) {
-      onEdit?.(userToSave as User);
-    } else {
-      onCreate?.(userToSave as Omit<User, 'id' | 'createdAt'>);
-    }
+  const handleSave = async (userData: Omit<User, 'id' | 'createdAt'>, password: string) => {
+    await createUser(userData, password);
     setModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    onDelete?.(id);
+  const handleUpdate = async (userId: string, userData: Partial<User>) => {
+    await updateUser(userId, userData);
     setModalOpen(false);
+  };
+
+  const handleDelete = async (userId: string) => {
+    await deleteUser(userId);
+    setModalOpen(false);
+  };
+
+  const handleResetPassword = async (userId: string, newPassword?: string): Promise<string> => {
+    return await resetUserPassword(userId, newPassword);
   };
 
   const handleExport = () => {
@@ -69,24 +87,42 @@ const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
       minWidth: '120px',
       render: (_: any, row: User) => (
         <div className="flex gap-2">
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={() => handleEdit(row)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-            title="Edit User"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={() => handleDelete(row.id)} 
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-            title="Delete User"
-          >
-            <Trash2 size={16} />
-          </Button>
+          {isAdmin ? (
+            <>
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                onClick={() => handleEdit(row)}
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                title="Edit User"
+              >
+                <Edit size={16} />
+              </Button>
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                onClick={() => handleResetPassword(row.id)}
+                className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                title="Reset Password"
+              >
+                <Key size={16} />
+              </Button>
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                onClick={() => handleDelete(row.id)} 
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                title="Delete User"
+              >
+                <Trash2 size={16} />
+              </Button>
+            </>
+          ) : (
+            <Badge variant="outline" className="text-xs">
+              <Shield size={12} className="mr-1" />
+              Admin Only
+            </Badge>
+          )}
         </div>
       ),
     },
@@ -149,10 +185,17 @@ const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
           <h2 className="text-2xl font-bold text-foreground">User Management</h2>
           <p className="text-muted-foreground mt-1">Manage system users and their permissions</p>
         </div>
-        <Button onClick={handleAddNewUser}>
-          <Plus size={16} className="mr-2" />
-          Add User
-        </Button>
+        {isAdmin ? (
+          <Button onClick={handleAddNewUser}>
+            <Plus size={16} className="mr-2" />
+            Add User
+          </Button>
+        ) : (
+          <Badge variant="outline" className="px-4 py-2">
+            <Shield size={16} className="mr-2" />
+            Admin Access Required
+          </Badge>
+        )}
       </div>
       
       <EnhancedSearchableTable
@@ -185,12 +228,15 @@ const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
         showRefresh={true}
       />
       
-      <UserModal
+      <AdminUserModal
         open={modalOpen}
         user={modalUser}
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
+        onUpdate={handleUpdate}
         onDelete={handleDelete}
+        onResetPassword={handleResetPassword}
+        getUserCredentials={getUserCredentials}
       />
     </div>
   );

@@ -117,6 +117,23 @@ export const useNotifications = () => {
     });
   };
 
+  const notifyPasswordReset = (userName: string, newPassword: string, context?: NotificationContext) => {
+    toast({
+      title: "🔑 Password Reset",
+      description: `Password for ${userName} has been reset. New password: ${newPassword}`,
+      variant: "success",
+      duration: 10000, // Longer duration for password info
+    });
+  };
+
+  const notifyError = (message: string, context?: NotificationContext) => {
+    toast({
+      title: "❌ Error",
+      description: message,
+      variant: "destructive",
+    });
+  };
+
   const notifyUserRoleChanged = (user: User, oldRole: string, newRole: string, context?: NotificationContext) => {
     toast({
       title: "🔑 Role Updated",
@@ -299,6 +316,10 @@ export const useNotifications = () => {
     // Validation notifications
     notifyValidationError,
     notifyFormSaved,
+    
+    // Password reset and error notifications
+    notifyPasswordReset,
+    notifyError,
     
     // Custom notification
     notifyCustom,
