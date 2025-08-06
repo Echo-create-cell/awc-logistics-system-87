@@ -6,6 +6,7 @@ import UserActivityMonitor from '@/components/admin/UserActivityMonitor';
 import UserLogsMonitor from '@/components/admin/UserLogsMonitor';
 import FinancialMetricsCards from '@/components/reports/FinancialMetricsCards';
 import ReportsCharts from '@/components/reports/ReportsCharts';
+import PartnerRecentActivity from '@/components/partner/PartnerRecentActivity';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Quotation } from '@/types';
@@ -202,6 +203,13 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
 
           {/* Analytics Charts */}
           <ReportsCharts reportData={reportData} />
+
+          {/* Recent Activity Section */}
+          <PartnerRecentActivity 
+            users={users}
+            quotations={quotations}
+            invoices={invoices}
+          />
 
           {/* Additional Partner Insights */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
