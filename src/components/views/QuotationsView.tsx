@@ -39,9 +39,12 @@ const QuotationsView = ({
     setModalOpen(false);
   };
 
-  const handleRequestReject = (quotation: Quotation) => {
-    setQuotationToReject(quotation);
-    setRejectionModalOpen(true);
+  const handleRequestReject = (id: string) => {
+    const quotation = quotations.find(q => q.id === id);
+    if (quotation) {
+      setQuotationToReject(quotation);
+      setRejectionModalOpen(true);
+    }
   };
 
   const handleConfirmReject = (reason: string) => {
@@ -52,9 +55,12 @@ const QuotationsView = ({
     setQuotationToReject(null);
   };
 
-  const handleViewQuotation = (quotation: Quotation) => {
-    setModalQuotation(quotation);
-    setModalOpen(true);
+  const handleViewQuotation = (id: string) => {
+    const quotation = quotations.find(q => q.id === id);
+    if (quotation) {
+      setModalQuotation(quotation);
+      setModalOpen(true);
+    }
   };
 
   const handleExport = () => {
@@ -71,10 +77,10 @@ const QuotationsView = ({
   const quotationColumns = getQuotationColumns({
     user,
     onApprove,
-    onReject: handleRequestReject,
+    onReject: (quotation: Quotation) => handleRequestReject(quotation.id),
     onInvoiceFromQuotation,
     onEdit: handleEdit,
-    onView: handleViewQuotation,
+    onView: (quotation: Quotation) => handleViewQuotation(quotation.id),
   });
 
   // Admins see only pending, partners and others see all

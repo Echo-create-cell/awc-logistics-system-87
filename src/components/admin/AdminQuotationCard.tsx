@@ -1,160 +1,149 @@
-
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, Eye, TrendingUp, TrendingDown } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle, XCircle, Eye, TrendingUp } from 'lucide-react';
 import { Quotation } from '@/types';
 
 interface AdminQuotationCardProps {
   quotation: Quotation;
   onApprove: (id: string) => void;
-  onReject: (quotation: Quotation) => void;
-  onView: (quotation: Quotation) => void;
+  onReject: (id: string) => void;
+  onView: (id: string) => void;
 }
 
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    case 'approved':
+      return 'bg-green-100 text-green-800 border-green-200';
+    case 'rejected':
+      return 'bg-red-100 text-red-800 border-red-200';
+    case 'won':
+      return 'bg-blue-100 text-blue-800 border-blue-200';
+    case 'lost':
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+    default:
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+  }
+};
+
+const formatVolume = (volume: string) => {
+  try {
+    const parsed = JSON.parse(volume);
+    const totalWeight = Array.isArray(parsed) 
+      ? parsed.reduce((sum, item) => sum + parseFloat(item.weight || 0), 0)
+      : parseFloat(parsed.weight || volume);
+    const itemCount = Array.isArray(parsed) ? parsed.length : 1;
+    return `${totalWeight} kg (${itemCount} items)`;
+  } catch {
+    return volume;
+  }
+};
+
 const AdminQuotationCard = ({ quotation, onApprove, onReject, onView }: AdminQuotationCardProps) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'won':
-        return 'bg-green-100 text-green-800 border-green-300';
-      case 'lost':
-        return 'bg-red-100 text-red-800 border-red-300';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
-    }
-  };
-
-  // Format volume display
-  const formatVolume = (volume: string) => {
-    try {
-      const parsed = JSON.parse(volume);
-      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].name) {
-        const totalQuantity = parsed.reduce((sum: number, c: any) => sum + (Number(c.quantityKg) || 0), 0);
-        return `${totalQuantity.toLocaleString()} kg (${parsed.length} items)`;
-      }
-    } catch (e) {
-      // Not a structured volume, treat as simple string
-    }
-    return !isNaN(Number(volume)) ? `${Number(volume).toLocaleString()} kg` : volume;
-  };
-
-  const profitMargin = ((quotation.profit / quotation.clientQuote) * 100).toFixed(1);
-  const isHighProfit = parseFloat(profitMargin) > 20;
+  const profit = quotation.clientQuote - quotation.buyRate;
+  const margin = quotation.clientQuote > 0 ? ((profit / quotation.clientQuote) * 100) : 0;
+  const volume = formatVolume(quotation.volume);
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-200 border-2">
-      <CardHeader className="pb-3">
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg font-bold text-gray-900">
-              {quotation.clientName}
-            </CardTitle>
-            <p className="text-sm text-gray-600 mt-1">{quotation.destination}</p>
+    <Card className="hover:shadow-lg transition-all duration-200 border-0 bg-white shadow-sm hover:shadow-md">
+      <CardContent className="p-6">
+        <div className="space-y-4">
+          {/* Header with company name and status */}
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 uppercase tracking-wide">
+                {quotation.clientName || quotation.clientId}
+              </h3>
+              <p className="text-sm text-gray-600 font-medium mt-1">
+                {quotation.destination}
+              </p>
+            </div>
+            <Badge 
+              variant="outline" 
+              className={`${getStatusColor(quotation.status)} font-medium uppercase text-xs px-3 py-1`}
+            >
+              {quotation.status}
+            </Badge>
           </div>
-          <Badge className={`${getStatusColor(quotation.status)} font-semibold`}>
-            {quotation.status.toUpperCase()}
-          </Badge>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Volume:</span>
-              <span className="font-medium">{formatVolume(quotation.volume)}</span>
+
+          {/* Volume and Profit Information */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-500">Volume:</p>
+              <p className="font-semibold text-gray-900">{volume}</p>
             </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Buy Rate:</span>
-              <span className="font-medium">{quotation.currency} {quotation.buyRate.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Client Quote:</span>
-              <span className="font-medium text-blue-600">{quotation.currency} {quotation.clientQuote.toLocaleString()}</span>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Profit:</span>
-              <div className="flex items-center space-x-1">
-                {isHighProfit ? <TrendingUp size={16} className="text-green-500" /> : <TrendingDown size={16} className="text-orange-500" />}
-                <span className={`font-bold ${isHighProfit ? 'text-green-600' : 'text-orange-600'}`}>
-                  {quotation.currency} {quotation.profit.toLocaleString()}
+            <div className="text-right">
+              <p className="text-sm text-gray-500">Profit:</p>
+              <div className="flex items-center justify-end gap-2">
+                <TrendingUp className="h-4 w-4 text-green-600" />
+                <span className="font-bold text-green-600 text-lg">
+                  $ {profit.toLocaleString()}
                 </span>
               </div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Margin:</span>
-              <span className={`font-semibold ${isHighProfit ? 'text-green-600' : 'text-orange-600'}`}>
-                {profitMargin}%
-              </span>
+          </div>
+
+          {/* Rates and Margin */}
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-gray-500">Buy Rate:</p>
+              <p className="font-semibold text-gray-900">$ {quotation.buyRate.toLocaleString()}</p>
             </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Sales Agent:</span>
-              <span className="font-medium text-purple-600">{quotation.quoteSentBy}</span>
+            <div className="text-right">
+              <p className="text-gray-500">Margin:</p>
+              <p className="font-bold text-green-600">{margin.toFixed(1)}%</p>
             </div>
           </div>
+
+          <div className="text-sm">
+            <p className="text-gray-500">Client Quote:</p>
+            <p className="font-semibold text-blue-600 text-lg">
+              $ {quotation.clientQuote.toLocaleString()}
+            </p>
+          </div>
+
+          {/* Sales Agent */}
+          <div className="text-sm">
+            <p className="text-gray-500">Sales Agent:</p>
+            <p className="font-semibold text-purple-600 uppercase tracking-wide">
+              {quotation.quoteSentBy}
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          {quotation.status === 'pending' && (
+            <div className="flex gap-2 pt-4">
+              <Button
+                onClick={() => onApprove(quotation.id)}
+                size="sm"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              >
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Approve
+              </Button>
+              <Button
+                onClick={() => onReject(quotation.id)}
+                variant="destructive"
+                size="sm"
+                className="flex-1"
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                Reject
+              </Button>
+              <Button
+                onClick={() => onView(quotation.id)}
+                variant="outline"
+                size="sm"
+                className="px-3"
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
-
-        {quotation.doorDelivery && (
-          <div className="bg-blue-50 p-2 rounded">
-            <span className="text-xs text-blue-700 font-medium">Door Delivery: {quotation.doorDelivery}</span>
-          </div>
-        )}
-
-        {quotation.status === 'pending' && (
-          <div className="flex space-x-2 pt-2">
-            <Button
-              size="sm"
-              onClick={() => onApprove(quotation.id)}
-              className="flex-1 bg-green-600 hover:bg-green-700"
-            >
-              <CheckCircle size={16} className="mr-1" />
-              Approve
-            </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={() => onReject(quotation)}
-              className="flex-1"
-            >
-              <XCircle size={16} className="mr-1" />
-              Reject
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => onView(quotation)}
-            >
-              <Eye size={16} />
-            </Button>
-          </div>
-        )}
-
-        {quotation.status !== 'pending' && (
-          <div className="flex justify-between items-center pt-2 border-t">
-            {quotation.approvedBy && (
-              <div className="text-xs text-gray-500">
-                <span className="font-medium">Approved by:</span> {quotation.approvedBy}
-                {quotation.approvedAt && (
-                  <div>{new Date(quotation.approvedAt).toLocaleDateString()}</div>
-                )}
-              </div>
-            )}
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => onView(quotation)}
-            >
-              <Eye size={16} className="mr-1" />
-              View Details
-            </Button>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
