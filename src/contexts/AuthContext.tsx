@@ -23,16 +23,16 @@ const mockUsers: User[] = [
   },
   {
     id: '2',
-    name: 'I. Arnold',
-    email: 'arnold@awclogistics.com',
+    name: 'JOHN NDAYAMBAJE',
+    email: 'john@awclogistics.com',
     role: 'sales_director',
     status: 'active',
     createdAt: '2024-02-01'
   },
   {
     id: '3',
-    name: 'Sarah Mutesi',
-    email: 'sarah@awclogistics.com',
+    name: 'RONNY TWAHIRWA',
+    email: 'ronny@awclogistics.com',
     role: 'sales_agent',
     status: 'active',
     createdAt: '2024-02-15'
@@ -47,7 +47,7 @@ const mockUsers: User[] = [
   },
   {
     id: '5',
-    name: 'Michel Tshikala',
+    name: 'Michel M. TSHIKALA',
     email: 'michel@awclogistics.com',
     role: 'partner',
     status: 'active',
