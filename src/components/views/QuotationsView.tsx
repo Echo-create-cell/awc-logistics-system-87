@@ -8,6 +8,7 @@ import { Quotation, User } from '@/types';
 import QuotationModal from '../modals/QuotationModal';
 import { getQuotationColumns } from '../quotations/quotationTableColumns';
 import RejectQuotationModal from '../modals/RejectQuotationModal';
+import QuotationApprovalCard from '../admin/QuotationApprovalCard';
 
 interface QuotationsViewProps {
   user: User;
@@ -38,12 +39,9 @@ const QuotationsView = ({
     setModalOpen(false);
   };
 
-  const handleRequestReject = (id: string) => {
-    const quotation = quotations.find(q => q.id === id);
-    if (quotation) {
-      setQuotationToReject(quotation);
-      setRejectionModalOpen(true);
-    }
+  const handleRequestReject = (quotation: Quotation) => {
+    setQuotationToReject(quotation);
+    setRejectionModalOpen(true);
   };
 
   const handleConfirmReject = (reason: string) => {
@@ -54,12 +52,9 @@ const QuotationsView = ({
     setQuotationToReject(null);
   };
 
-  const handleViewQuotation = (id: string) => {
-    const quotation = quotations.find(q => q.id === id);
-    if (quotation) {
-      setModalQuotation(quotation);
-      setModalOpen(true);
-    }
+  const handleViewQuotation = (quotation: Quotation) => {
+    setModalQuotation(quotation);
+    setModalOpen(true);
   };
 
   const handleExport = () => {
@@ -76,10 +71,10 @@ const QuotationsView = ({
   const quotationColumns = getQuotationColumns({
     user,
     onApprove,
-    onReject: (quotation: Quotation) => handleRequestReject(quotation.id),
+    onReject: (quotation: Quotation) => handleRequestReject(quotation),
     onInvoiceFromQuotation,
     onEdit: handleEdit,
-    onView: (quotation: Quotation) => handleViewQuotation(quotation.id),
+    onView: (quotation: Quotation) => handleViewQuotation(quotation),
   });
 
   // Admins see only pending, partners and others see all
@@ -156,8 +151,16 @@ const QuotationsView = ({
               {filteredQuotations.length} Pending Quotation{filteredQuotations.length === 1 ? '' : 's'}
             </h3>
           </div>
-          <div className="text-center text-muted-foreground">
-            Card view temporarily unavailable. Please use table view.
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredQuotations.map((quotation) => (
+              <QuotationApprovalCard
+                key={quotation.id}
+                quotation={quotation}
+                onApprove={onApprove!}
+                onReject={handleRequestReject}
+                onView={handleViewQuotation}
+              />
+            ))}
           </div>
         </div>
       ) : (
