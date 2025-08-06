@@ -1,4 +1,5 @@
 import React from 'react';
+import { ProfessionalLogo } from '@/components/ui/professional-logo';
 import { InvoiceData } from '@/types/invoice';
 import { Button } from '@/components/ui/button';
 import { Printer, X } from 'lucide-react';
@@ -81,7 +82,7 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 {/* Company Header */}
                 <div className="flex justify-between items-start mb-8 pb-6 border-b-2 border-red-600">
                     <div className="w-2/3 pr-6">
-                        <img src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" alt="AWC Logo" className="w-52 mb-3"/>
+                        <ProfessionalLogo size="xl" variant="invoice" className="mb-3" />
                         <h2 className="font-bold text-base text-gray-800 mb-2">Africa World Cargo Ltd</h2>
                         <p className="text-sm text-gray-600 mb-1">TIN: 112933303 RW</p>
                         <p className="text-sm text-gray-700 leading-relaxed mb-3">

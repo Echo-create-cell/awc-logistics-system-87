@@ -3,6 +3,7 @@ import React from 'react';
 import { Users, FileText, DollarSign, BarChart3, Home, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { ProfessionalLogo } from '@/components/ui/professional-logo';
 
 interface SidebarProps {
   userRole: string;
@@ -69,11 +70,12 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
   return (
     <div className="bg-sidebar text-sidebar-foreground w-64 min-h-screen p-6 flex flex-col shadow-large">
       <div className="mb-8 smooth-entrance">
-        <div className="flex items-center space-x-3 mb-4">
-          <img 
-            src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" 
-            alt="AWC Logo" 
-            className="h-10 w-auto brightness-0 invert"
+        <div className="flex items-center gap-3 mb-4 group">
+          <ProfessionalLogo 
+            size="lg"
+            variant="sidebar"
+            animated
+            showGlow
           />
           <div>
             <h1 className="text-lg font-bold text-sidebar-foreground">AWC Logistics</h1>

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { ProfessionalLogo } from '@/components/ui/professional-logo';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReportData } from '@/types/reports';
 import { format } from 'date-fns';
@@ -19,10 +20,11 @@ const PrintableReport = ({ reportData, userRole, userName }: PrintableReportProp
       {/* Header */}
       <div className="flex items-center justify-between mb-8 border-b pb-4">
         <div className="flex items-center space-x-4">
-          <img 
-            src="/lovable-uploads/42894000-b0f9-4208-a908-0ff700e4e3b3.png" 
-            alt="AWC Logo" 
-            className="h-12 w-auto opacity-90"
+          <ProfessionalLogo 
+            size="lg" 
+            variant="header" 
+            showGlow 
+            className="opacity-90" 
           />
           <div>
             <h1 className="text-2xl font-bold text-gray-900">AWC Logistics</h1>
