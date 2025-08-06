@@ -10,9 +10,10 @@ interface QuotationModalProps {
   onClose: () => void;
   onSave: (q: Quotation) => void;
   user: User;
+  viewOnly?: boolean;
 }
 
-const QuotationModal = ({ open, quotation, onClose, onSave, user }: QuotationModalProps) => {
+const QuotationModal = ({ open, quotation, onClose, onSave, user, viewOnly = false }: QuotationModalProps) => {
   const handleSaveForm = (updatedQuotation: Quotation) => {
     onSave(updatedQuotation);
     onClose();
@@ -22,9 +23,14 @@ const QuotationModal = ({ open, quotation, onClose, onSave, user }: QuotationMod
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
       <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Edit Quotation</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">
+            {viewOnly ? 'View Quotation Details' : 'Edit Quotation'}
+          </DialogTitle>
           <DialogDescription>
-            Update quotation details. Profit will be calculated automatically.
+            {viewOnly 
+              ? 'Review quotation details and information.' 
+              : 'Update quotation details. Profit will be calculated automatically.'
+            }
           </DialogDescription>
         </DialogHeader>
         
@@ -34,6 +40,7 @@ const QuotationModal = ({ open, quotation, onClose, onSave, user }: QuotationMod
             onSave={handleSaveForm}
             onClose={onClose}
             user={user}
+            viewOnly={viewOnly}
           />
         )}
       </DialogContent>

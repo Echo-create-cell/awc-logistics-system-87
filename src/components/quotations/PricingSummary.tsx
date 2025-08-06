@@ -14,6 +14,7 @@ interface PricingSummaryProps {
   onRemarksChange: (value: string) => void;
   followUpDate?: string;
   onFollowUpDateChange?: (value: string) => void;
+  viewOnly?: boolean;
 }
 
 const PricingSummary = ({
@@ -26,6 +27,7 @@ const PricingSummary = ({
   onRemarksChange,
   followUpDate,
   onFollowUpDateChange,
+  viewOnly = false,
 }: PricingSummaryProps) => {
   return (
     <Card>
@@ -61,6 +63,7 @@ const PricingSummary = ({
                     value={followUpDate} 
                     onChange={e => onFollowUpDateChange(e.target.value)}
                     className="mt-1"
+                    disabled={viewOnly}
                 />
             </div>
         )}
@@ -71,6 +74,7 @@ const PricingSummary = ({
             onChange={e => onRemarksChange(e.target.value)} 
             placeholder="Add any follow-up notes or remarks..."
             className="mt-1"
+            disabled={viewOnly}
           />
         </div>
       </CardContent>

@@ -11,9 +11,10 @@ interface QuotationFormProps {
   onSave: (quotation: Quotation) => void;
   onClose: () => void;
   user: User;
+  viewOnly?: boolean;
 }
 
-const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps) => {
+const QuotationForm = ({ quotation, onSave, onClose, user, viewOnly = false }: QuotationFormProps) => {
   const { toast } = useToast();
   const {
     clientName,
@@ -64,6 +65,7 @@ const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps)
           updateCommodity={updateCommodity}
           removeCommodity={removeCommodity}
           addCommodity={addCommodity}
+          viewOnly={viewOnly}
         />
         <QuotationFormSidebar
           currency={currency}
@@ -75,12 +77,20 @@ const QuotationForm = ({ quotation, onSave, onClose, user }: QuotationFormProps)
           onRemarksChange={setRemarks}
           followUpDate={followUpDate}
           onFollowUpDateChange={setFollowUpDate}
+          viewOnly={viewOnly}
         />
       </div>
-      <div className="flex justify-end gap-2 pt-4 border-t">
+      {!viewOnly && (
+        <div className="flex justify-end gap-2 pt-4 border-t">
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button onClick={handleSave}>Save Changes</Button>
-      </div>
+        </div>
+      )}
+      {viewOnly && (
+        <div className="flex justify-end gap-2 pt-4 border-t">
+          <Button onClick={onClose}>Close</Button>
+        </div>
+      )}
     </div>
   );
 };

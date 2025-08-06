@@ -32,26 +32,44 @@ const RejectQuotationModal = ({ open, quotation, onClose, onConfirm }: RejectQuo
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Reject Quotation</DialogTitle>
-          <DialogDescription>
-            Please provide a reason for rejecting the quotation for "{quotation.clientName}". This will be recorded in the remarks.
+          <DialogTitle className="text-xl font-semibold text-destructive">
+            Reject Quotation
+          </DialogTitle>
+          <DialogDescription className="text-base">
+            Please provide a detailed reason for rejecting the quotation for <strong>"{quotation.clientName}"</strong>. 
+            This information will be recorded and help improve future quotations.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <Label htmlFor="rejection-reason">Reason for Loss</Label>
+        <div className="py-6">
+          <Label htmlFor="rejection-reason" className="text-base font-medium">
+            Reason for Rejection <span className="text-destructive">*</span>
+          </Label>
           <Textarea
             id="rejection-reason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder="e.g., Price too high, client chose competitor, project cancelled..."
-            className="mt-2"
+            placeholder="Please provide a specific reason:&#10;• Price was too high compared to competitors&#10;• Client requirements changed&#10;• Lost to competitor due to timing&#10;• Project was cancelled or postponed&#10;• Service scope didn't match client needs&#10;• Other (please specify)..."
+            className="mt-3 min-h-[120px] text-base border-2 focus:border-destructive"
+            rows={6}
           />
+          <p className="text-sm text-muted-foreground mt-2">
+            Minimum 10 characters required for detailed feedback
+          </p>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button variant="destructive" onClick={handleConfirm} disabled={!reason.trim()}>Confirm Rejection</Button>
+        <DialogFooter className="gap-3">
+          <Button variant="outline" onClick={onClose} className="px-6">
+            Cancel
+          </Button>
+          <Button 
+            variant="destructive" 
+            onClick={handleConfirm} 
+            disabled={!reason.trim() || reason.trim().length < 10}
+            className="px-6"
+          >
+            Confirm Rejection
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

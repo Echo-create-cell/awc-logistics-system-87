@@ -74,6 +74,7 @@ const QuotationsView = ({
     onReject: handleRequestReject,
     onInvoiceFromQuotation,
     onEdit: handleEdit,
+    onView: handleViewQuotation,
   });
 
   // Admins see only pending, partners and others see all
@@ -181,6 +182,7 @@ const QuotationsView = ({
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
         user={user}
+        viewOnly={user.role === 'admin' || user.role === 'partner'}
       />
 
       <RejectQuotationModal

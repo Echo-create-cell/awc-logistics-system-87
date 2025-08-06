@@ -12,6 +12,7 @@ interface QuotationFormSidebarProps {
   onRemarksChange: (value: string) => void;
   followUpDate?: string;
   onFollowUpDateChange?: (value: string) => void;
+  viewOnly?: boolean;
 }
 
 const QuotationFormSidebar = ({
@@ -24,6 +25,7 @@ const QuotationFormSidebar = ({
   onRemarksChange,
   followUpDate,
   onFollowUpDateChange,
+  viewOnly = false,
 }: QuotationFormSidebarProps) => {
   return (
     <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-10">
@@ -37,6 +39,7 @@ const QuotationFormSidebar = ({
         onRemarksChange={onRemarksChange}
         followUpDate={followUpDate}
         onFollowUpDateChange={onFollowUpDateChange}
+        viewOnly={viewOnly}
       />
     </div>
   );

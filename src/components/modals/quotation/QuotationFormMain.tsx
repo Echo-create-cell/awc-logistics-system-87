@@ -30,6 +30,7 @@ interface QuotationFormMainProps {
   removeCommodity: (id: string) => void;
   addCommodity: () => void;
   users: User[];
+  viewOnly?: boolean;
 }
 
 const QuotationFormMain = ({
@@ -43,6 +44,7 @@ const QuotationFormMain = ({
   updateCommodity,
   removeCommodity,
   addCommodity,
+  viewOnly = false,
 }: Omit<QuotationFormMainProps, 'users'>) => {
   return (
     <div className="lg:col-span-2 space-y-6">
@@ -57,11 +59,12 @@ const QuotationFormMain = ({
                 placeholder="Enter client name"
                 value={clientName}
                 onChange={onClientNameChange}
+                disabled={viewOnly}
               />
             </div>
             <div>
               <Label htmlFor="freightMode">Freight Mode</Label>
-              <Select onValueChange={(value) => onSelectChange('freightMode', value)} value={quotationData.freightMode}>
+              <Select onValueChange={(value) => onSelectChange('freightMode', value)} value={quotationData.freightMode} disabled={viewOnly}>
                 <SelectTrigger id="freightMode"><SelectValue placeholder="Select mode" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Air Freight">Air Freight</SelectItem>
@@ -72,15 +75,15 @@ const QuotationFormMain = ({
             </div>
             <div>
               <Label htmlFor="destination">Destination</Label>
-              <Input id="destination" placeholder="e.g., Kigali, Rwanda" value={quotationData.destination} onChange={onQuotationChange} />
+              <Input id="destination" placeholder="e.g., Kigali, Rwanda" value={quotationData.destination} onChange={onQuotationChange} disabled={viewOnly} />
             </div>
             <div>
               <Label htmlFor="doorDelivery">Door Delivery</Label>
-              <Input id="doorDelivery" placeholder="e.g., To warehouse" value={quotationData.doorDelivery} onChange={onQuotationChange} />
+              <Input id="doorDelivery" placeholder="e.g., To warehouse" value={quotationData.doorDelivery} onChange={onQuotationChange} disabled={viewOnly} />
             </div>
             <div>
               <Label htmlFor="requestType">Request Type</Label>
-              <Select onValueChange={(value) => onSelectChange('requestType', value)} value={quotationData.requestType}>
+              <Select onValueChange={(value) => onSelectChange('requestType', value)} value={quotationData.requestType} disabled={viewOnly}>
                 <SelectTrigger id="requestType"><SelectValue placeholder="Select type" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Import">Import</SelectItem>
@@ -90,7 +93,7 @@ const QuotationFormMain = ({
             </div>
             <div>
               <Label htmlFor="countryOfOrigin">Country of Origin</Label>
-              <Input id="countryOfOrigin" placeholder="e.g., China" value={quotationData.countryOfOrigin} onChange={onQuotationChange} />
+              <Input id="countryOfOrigin" placeholder="e.g., China" value={quotationData.countryOfOrigin} onChange={onQuotationChange} disabled={viewOnly} />
             </div>
              <div>
               <Label htmlFor="quoteSentBy">Quote Sent By</Label>
@@ -99,11 +102,12 @@ const QuotationFormMain = ({
                 placeholder="Enter name"
                 value={quotationData.quoteSentBy}
                 onChange={onQuotationChange}
+                disabled={viewOnly}
               />
             </div>
             <div>
               <Label htmlFor="currency">Currency</Label>
-               <Select onValueChange={(value) => onSelectChange('currency', value)} value={quotationData.currency}>
+               <Select onValueChange={(value) => onSelectChange('currency', value)} value={quotationData.currency} disabled={viewOnly}>
                 <SelectTrigger id="currency"><SelectValue placeholder="Select currency" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="USD">USD</SelectItem>
@@ -116,7 +120,7 @@ const QuotationFormMain = ({
           </div>
            <div>
               <Label htmlFor="cargoDescription">Cargo Description</Label>
-              <Textarea id="cargoDescription" placeholder="Describe the cargo..." value={quotationData.cargoDescription} onChange={onQuotationChange} />
+              <Textarea id="cargoDescription" placeholder="Describe the cargo..." value={quotationData.cargoDescription} onChange={onQuotationChange} disabled={viewOnly} />
             </div>
         </CardContent>
       </Card>
@@ -129,10 +133,13 @@ const QuotationFormMain = ({
             onUpdateCommodity={updateCommodity}
             onRemoveCommodity={removeCommodity}
             currency={currency}
+            viewOnly={viewOnly}
           />
-          <Button onClick={addCommodity} variant="outline" className="mt-4">
-            Add Another Commodity
-          </Button>
+          {!viewOnly && (
+            <Button onClick={addCommodity} variant="outline" className="mt-4">
+              Add Another Commodity
+            </Button>
+          )}
         </CardContent>
       </Card>
     </div>

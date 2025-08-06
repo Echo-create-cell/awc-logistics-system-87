@@ -9,10 +9,11 @@ interface GetQuotationColumnsProps {
   onReject?: (quotation: Quotation) => void;
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
+  onView?: (quotation: Quotation) => void;
 }
 
 export const getQuotationColumns = ({
-  user, onApprove, onReject, onInvoiceFromQuotation, onEdit
+  user, onApprove, onReject, onInvoiceFromQuotation, onEdit, onView
 }: GetQuotationColumnsProps): TableColumn[] => [
   {
     key: 'createdAt',
@@ -155,6 +156,7 @@ export const getQuotationColumns = ({
         onReject={onReject}
         onInvoiceFromQuotation={onInvoiceFromQuotation}
         onEdit={onEdit}
+        onView={onView}
       />
     ),
   }
