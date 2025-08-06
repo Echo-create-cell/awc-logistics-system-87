@@ -148,8 +148,8 @@ const AdminUserModal = ({
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-white">
-        <DialogHeader className="pb-6 border-b border-gray-100">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="pb-6 border-b">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${isEditing ? 'bg-blue-100' : 'bg-green-100'}`}>
               {isEditing ? (
@@ -159,17 +159,15 @@ const AdminUserModal = ({
               )}
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <DialogTitle className="text-xl font-semibold text-gray-900">
-                  {isEditing ? 'Edit User' : 'Add New User'}
-                </DialogTitle>
+              <DialogTitle className="text-xl font-semibold flex items-center gap-2">
+                {isEditing ? 'Edit User' : 'Add New User'}
                 {isEditing && form.status && (
-                  <Badge variant={form.status === 'active' ? "default" : "secondary"} className={form.status === 'active' ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
+                  <Badge variant={form.status === 'active' ? "default" : "secondary"}>
                     {form.status}
                   </Badge>
                 )}
-              </div>
-              <DialogDescription className="text-gray-600 mt-1">
+              </DialogTitle>
+              <DialogDescription>
                 {isEditing ? 'Update user information and manage credentials.' : 'Create a new user account with credentials.'}
               </DialogDescription>
             </div>
@@ -177,37 +175,37 @@ const AdminUserModal = ({
         </DialogHeader>
         
         <div className="py-6 space-y-6">
-          {/* Personal Information Section */}
-          <Card className="border-gray-200">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <User className="h-4 w-4 text-gray-600" />
-                <h3 className="font-medium text-gray-900">Personal Information</h3>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Personal Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <User className="h-4 w-4" />
+                Personal Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name</Label>
+                  <Label htmlFor="name">Full Name *</Label>
                   <Input
                     id="name"
                     value={form.name || ''}
                     onChange={(e) => handleChange('name', e.target.value)}
                     placeholder="Enter full name"
-                    className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email Address</Label>
+                  <Label htmlFor="email">Email Address *</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="email"
                       type="email"
                       value={form.email || ''}
                       onChange={(e) => handleChange('email', e.target.value)}
                       placeholder="Enter email address"
-                      className="pl-10 bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="pl-10"
                     />
                   </div>
                 </div>
@@ -215,19 +213,20 @@ const AdminUserModal = ({
             </CardContent>
           </Card>
 
-          {/* Role & Permissions Section */}
-          <Card className="border-gray-200">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Shield className="h-4 w-4 text-gray-600" />
-                <h3 className="font-medium text-gray-900">Role & Permissions</h3>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Role & Permissions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Shield className="h-4 w-4" />
+                Role & Permissions
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="role" className="text-sm font-medium text-gray-700">User Role</Label>
+                  <Label htmlFor="role">User Role *</Label>
                   <Select value={form.role} onValueChange={(value) => handleChange('role', value)}>
-                    <SelectTrigger className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -266,9 +265,9 @@ const AdminUserModal = ({
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="status" className="text-sm font-medium text-gray-700">Account Status</Label>
+                  <Label htmlFor="status">Account Status *</Label>
                   <Select value={form.status} onValueChange={(value) => handleChange('status', value)}>
-                    <SelectTrigger className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -291,19 +290,20 @@ const AdminUserModal = ({
             </CardContent>
           </Card>
 
-          {/* Credentials Management Section */}
-          <Card className="border-gray-200">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Key className="h-4 w-4 text-gray-600" />
-                <h3 className="font-medium text-gray-900">Credentials Management</h3>
-              </div>
-              
+          {/* Credentials Management */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Key className="h-4 w-4" />
+                Credentials Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               {!isEditing ? (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="password" className="text-sm font-medium text-gray-700">Password</Label>
+                      <Label htmlFor="password">Password *</Label>
                       <div className="relative">
                         <Input
                           id="password"
@@ -311,7 +311,6 @@ const AdminUserModal = ({
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Enter password"
-                          className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-10"
                         />
                         <Button
                           type="button"
@@ -326,14 +325,13 @@ const AdminUserModal = ({
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">Confirm Password</Label>
+                      <Label htmlFor="confirmPassword">Confirm Password *</Label>
                       <Input
                         id="confirmPassword"
                         type={showPassword ? 'text' : 'password'}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Confirm password"
-                        className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                   </div>
@@ -342,7 +340,7 @@ const AdminUserModal = ({
                     type="button"
                     variant="outline"
                     onClick={handleGeneratePassword}
-                    className="w-full bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="w-full"
                   >
                     <Key className="h-4 w-4 mr-2" />
                     Generate Secure Password
@@ -351,14 +349,13 @@ const AdminUserModal = ({
               ) : (
                 <div className="space-y-4">
                   {userCredentials && (
-                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="p-4 bg-muted rounded-lg">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-gray-900 text-sm">Current Credentials</h4>
+                        <h4 className="font-medium">Current Credentials</h4>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => setShowCredentials(!showCredentials)}
-                          className="h-8 bg-white border-gray-300"
                         >
                           {showCredentials ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </Button>
@@ -367,29 +364,27 @@ const AdminUserModal = ({
                       {showCredentials && (
                         <div className="space-y-2 text-sm">
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600">Email: {userCredentials.email}</span>
+                            <span>Email: {userCredentials.email}</span>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => copyToClipboard(userCredentials.email)}
-                              className="h-6 w-6 p-0"
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600">Password: {userCredentials.password}</span>
+                            <span>Password: {userCredentials.password}</span>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => copyToClipboard(userCredentials.password)}
-                              className="h-6 w-6 p-0"
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
                           </div>
                           {userCredentials.temporaryPassword && (
-                            <Badge variant="destructive" className="text-xs bg-red-100 text-red-800">Temporary Password</Badge>
+                            <Badge variant="destructive" className="text-xs">Temporary Password</Badge>
                           )}
                         </div>
                       )}
@@ -401,7 +396,7 @@ const AdminUserModal = ({
                     variant="outline"
                     onClick={handleResetPassword}
                     disabled={isLoading}
-                    className="w-full bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="w-full"
                   >
                     <RotateCcw className="h-4 w-4 mr-2" />
                     Reset Password
@@ -412,12 +407,12 @@ const AdminUserModal = ({
           </Card>
         </div>
         
-        <DialogFooter className="pt-6 border-t border-gray-100 bg-gray-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
+        <DialogFooter className="pt-6 border-t">
           <div className="flex justify-between items-center w-full">
             {isEditing && user ? (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" disabled={isLoading} className="bg-red-600 hover:bg-red-700 text-white">
+                  <Button variant="destructive" disabled={isLoading}>
                     <AlertTriangle className="h-4 w-4 mr-2" />
                     Delete User
                   </Button>
@@ -425,7 +420,7 @@ const AdminUserModal = ({
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle className="flex items-center gap-2">
-                      <AlertTriangle className="h-5 w-5 text-red-600" />
+                      <AlertTriangle className="h-5 w-5 text-destructive" />
                       Delete User Account
                     </AlertDialogTitle>
                     <AlertDialogDescription>
@@ -435,7 +430,7 @@ const AdminUserModal = ({
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                    <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">
                       <AlertTriangle className="h-4 w-4 mr-2" />
                       Delete Permanently
                     </AlertDialogAction>
@@ -446,14 +441,13 @@ const AdminUserModal = ({
             
             <div className="flex gap-3">
               <DialogClose asChild>
-                <Button variant="outline" disabled={isLoading} className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
+                <Button variant="outline" disabled={isLoading}>
                   Cancel
                 </Button>
               </DialogClose>
               <Button 
                 onClick={handleSave} 
                 disabled={!form.name || !form.email || isLoading || (!isEditing && (!password || password !== confirmPassword))}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 {isLoading ? (
                   "Saving..."
