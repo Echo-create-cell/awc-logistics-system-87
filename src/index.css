@@ -12,24 +12,24 @@
   --popover: 255 255 255 1;
   --popover-foreground: 15 23 42 1;
   
-  /* Professional Red Primary - matching AWC logo */
-  --primary: 0 75% 25%; /* Dark heavy red #B91C1C */
-  --primary-glow: 0 75% 35%;
-  --primary-dark: 0 75% 20%;
-  --primary-foreground: 248 250 252 1;
+  /* Professional Blue Primary */
+  --primary: 217 91% 60%; /* Blue */
+  --primary-glow: 217 91% 70%;
+  --primary-dark: 217 91% 50%;
+  --primary-foreground: 210 40% 98%;
   
-  /* Professional Secondary - light blue/gray */
-  --secondary: 214 32% 91%; /* blue-gray-100 */
-  --secondary-foreground: 51 65% 12%;
+  /* Professional Secondary - neutral gray */
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
   
   /* Muted backgrounds */
-  --muted: 240 4.8% 95.9%; /* gray-50 */
-  --muted-foreground: 100 7% 23%; /* gray-600 */
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
   
   /* Accent colors - subtle blue */
-  --accent: 214 95% 93%; /* blue-50 */
-  --accent-glow: 214 95% 85%;
-  --accent-foreground: 0 75% 25%;
+  --accent: 210 40% 96%;
+  --accent-glow: 210 40% 90%;
+  --accent-foreground: 222.2 84% 4.9%;
   
   /* Status colors */
   --destructive: 0 84.2% 60.2%;
@@ -40,9 +40,9 @@
   --warning-foreground: 15 23 42 1;
   
   /* Borders and inputs */
-  --border: 214 32% 91%; /* blue-gray-100 */
-  --input: 214 32% 91%;
-  --ring: 0 75% 25%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 217 91% 60%;
   --radius: 0.5rem;
 
   /* Professional Spacing */
@@ -53,27 +53,27 @@
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
 
-  /* Professional Sidebar - Deep Red matching AWC logo */
-  --sidebar-background: 0 75% 25%; /* Dark heavy red */
-  --sidebar-foreground: 248 250 252 1; /* Light text */
-  --sidebar-primary: 248 250 252 1; /* White/light for active */
-  --sidebar-primary-foreground: 0 75% 25%;
-  --sidebar-accent: 0 75% 30%; /* Slightly lighter red for hover */
-  --sidebar-accent-foreground: 248 250 252 1;
-  --sidebar-border: 0 75% 20%; /* Darker border */
-  --sidebar-ring: 0 75% 35%;
+  /* Professional Sidebar */
+  --sidebar-background: 222.2 84% 4.9%;
+  --sidebar-foreground: 210 40% 98%;
+  --sidebar-primary: 210 40% 98%;
+  --sidebar-primary-foreground: 222.2 84% 4.9%;
+  --sidebar-accent: 217.2 32.6% 17.5%;
+  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-border: 217.2 32.6% 17.5%;
+  --sidebar-ring: 217 91% 60%;
 
   /* Professional Gradients */
-  --gradient-primary: linear-gradient(135deg, hsl(0 75% 25%), hsl(0 75% 30%));
-  --gradient-accent: linear-gradient(135deg, hsl(214 95% 93%), hsl(214 95% 85%));
-  --gradient-subtle: linear-gradient(135deg, hsl(248 250 252 / 1), hsl(240 4.8% 95.9%));
-  --gradient-card: linear-gradient(135deg, hsl(255 255 255 / 1) 0%, hsl(255 255 255 / 0.95) 100%);
+  --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 70%));
+  --gradient-accent: linear-gradient(135deg, hsl(210 40% 96%), hsl(210 40% 90%));
+  --gradient-subtle: linear-gradient(135deg, hsl(210 40% 98%), hsl(210 40% 96%));
+  --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 1) 0%, hsl(0 0% 100% / 0.95) 100%);
 
   /* Professional Shadows */
-  --shadow-soft: 0 1px 3px 0 hsl(15 23 42 / 0.1), 0 1px 2px 0 hsl(15 23 42 / 0.06);
-  --shadow-medium: 0 4px 6px -1px hsl(15 23 42 / 0.1), 0 2px 4px -1px hsl(15 23 42 / 0.06);
-  --shadow-large: 0 10px 15px -3px hsl(15 23 42 / 0.1), 0 4px 6px -2px hsl(15 23 42 / 0.05);
-  --shadow-glow: 0 0 20px hsl(0 75% 25% / 0.15);
+  --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
+  --shadow-medium: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+  --shadow-large: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -2px hsl(0 0% 0% / 0.05);
+  --shadow-glow: 0 0 20px hsl(217 91% 60% / 0.15);
   
   /* Professional Typography Enhancements */
   --font-weight-normal: 400;
@@ -177,7 +177,7 @@
   }
   
   .dashboard-card {
-    @apply bg-card border border-border/20 shadow-soft rounded-lg p-6 hover:shadow-large hover:-translate-y-1 transition-all duration-300 group;
+    @apply bg-card border border-border/20 shadow-soft rounded-lg p-6 hover:shadow-large hover:-translate-y-1 transition-all duration-300;
   }
   
   .sidebar-item {
