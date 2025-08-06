@@ -58,7 +58,7 @@ const ReportsView = ({ user, quotations, invoices, users: propUsers }: ReportsVi
   };
 
   const handlePrint = () => {
-    generatePrintReport(filteredData, summary, dateRange, reportType, user);
+    generatePrintReport(filteredData, summary, dateRange, reportType, user, reportData);
   };
 
   const handleExportCSV = () => {

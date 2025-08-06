@@ -77,9 +77,9 @@ const ReportFiltersCard = ({
                 <SelectContent>
                   <SelectItem value="financial">Financial</SelectItem>
                   <SelectItem value="quotations">Quotations</SelectItem>
-                  {(userRole === 'admin' || userRole === 'sales_director') && (
-                    <SelectItem value="users">User Activity</SelectItem>
-                  )}
+                   {(userRole === 'admin' || userRole === 'sales_director' || userRole === 'partner' || userRole === 'finance_officer') && (
+                     <SelectItem value="users">User Activity</SelectItem>
+                   )}
                 </SelectContent>
               </Select>
             </div>

@@ -8,7 +8,8 @@ export const generatePrintReport = (
   summary: any,
   dateRange: { from: string; to: string },
   reportType: string,
-  user: User
+  user: User,
+  reportData?: any
 ) => {
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;
@@ -104,6 +105,102 @@ export const generatePrintReport = (
             }).join('')}
           </tbody>
         </table>
+
+        ${reportData ? `
+        <h2>Analytics Summary</h2>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-title">Total Invoices</div>
+            <div class="metric-value">${summary.totalInvoices}</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Paid Invoices</div>
+            <div class="metric-value">${summary.paidInvoices}</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Pending Invoices</div>
+            <div class="metric-value">${summary.pendingInvoices}</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Overdue Invoices</div>
+            <div class="metric-value">${summary.overdueInvoices}</div>
+          </div>
+        </div>
+
+        ${reportData.topClients && reportData.topClients.length > 0 ? `
+        <h2>Top Clients by Revenue</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Client Name</th>
+              <th>Revenue</th>
+              <th>Quotations</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${reportData.topClients.slice(0, 10).map((client: any) => `
+              <tr>
+                <td>${client.name}</td>
+                <td>$${client.revenue.toLocaleString()}</td>
+                <td>${client.quotations}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        ` : ''}
+
+        ${reportData.monthlyTrends && reportData.monthlyTrends.length > 0 ? `
+        <h2>Monthly Performance Trends</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Revenue</th>
+              <th>Profit</th>
+              <th>Quotations</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${reportData.monthlyTrends.map((trend: any) => `
+              <tr>
+                <td>${trend.month}</td>
+                <td>$${trend.revenue.toLocaleString()}</td>
+                <td>$${trend.profit.toLocaleString()}</td>
+                <td>${trend.quotations}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        ` : ''}
+
+        ${(user.role === 'admin' || user.role === 'sales_director' || user.role === 'finance_officer' || user.role === 'partner') && reportData.userActivities && reportData.userActivities.length > 0 ? `
+        <h2>User Activity Summary</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Quotations Created</th>
+              <th>Quotations Won</th>
+              <th>Win Rate</th>
+              <th>Total Profit</th>
+              <th>Total Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${reportData.userActivities.map((activity: any) => `
+              <tr>
+                <td>${activity.userName}</td>
+                <td>${activity.quotationsCreated}</td>
+                <td>${activity.quotationsWon}</td>
+                <td>${activity.winRate.toFixed(1)}%</td>
+                <td>$${activity.totalProfit.toLocaleString()}</td>
+                <td>$${activity.totalRevenue.toLocaleString()}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        ` : ''}
+        ` : ''}
 
         <div class="footer">
           <p>This report was generated automatically by AWC Logistics Management System</p>
