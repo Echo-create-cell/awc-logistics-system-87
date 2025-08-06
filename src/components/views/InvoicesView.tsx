@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import InvoiceGenerator from '@/components/InvoiceGenerator';
 import SearchableTable from '@/components/SearchableTable';
+import PartnerDataFilter from '@/components/partner/PartnerDataFilter';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Edit, Printer, Grid, List } from 'lucide-react';
@@ -207,6 +208,16 @@ const InvoicesView = ({
 
   return (
     <div className="space-y-6">
+      {/* Partner Data Filter - Only for partners */}
+      {user.role === 'partner' && (
+        <PartnerDataFilter
+          user={user}
+          quotations={quotations}
+          invoices={invoices}
+          title="Invoices Data Analysis & Export"
+        />
+      )}
+      
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Invoices</h2>

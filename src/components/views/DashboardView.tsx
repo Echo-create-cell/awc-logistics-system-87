@@ -6,6 +6,7 @@ import UserActivityMonitor from '@/components/admin/UserActivityMonitor';
 import UserLogsMonitor from '@/components/admin/UserLogsMonitor';
 import FinancialMetricsCards from '@/components/reports/FinancialMetricsCards';
 import ReportsCharts from '@/components/reports/ReportsCharts';
+import PartnerDataFilter from '@/components/partner/PartnerDataFilter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Quotation } from '@/types';
@@ -207,6 +208,15 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
               </div>
             </div>
           </div>
+
+          {/* Partner Data Filter & Export */}
+          <PartnerDataFilter
+            user={user}
+            quotations={quotations}
+            invoices={invoices}
+            users={users}
+            title="Dashboard Data Analysis & Export"
+          />
 
           {/* Financial Metrics Overview */}
           <FinancialMetricsCards metrics={reportData.metrics} />

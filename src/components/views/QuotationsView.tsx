@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import EnhancedSearchableTable from '@/components/enhanced/EnhancedSearchableTable';
+import PartnerDataFilter from '@/components/partner/PartnerDataFilter';
 import { Button } from '@/components/ui/button';
 import { Plus, Grid, List } from 'lucide-react';
 import { Quotation, User } from '@/types';
@@ -82,6 +83,16 @@ const QuotationsView = ({
 
   return (
     <div className="space-y-6">
+      {/* Partner Data Filter - Only for partners */}
+      {user.role === 'partner' && (
+        <PartnerDataFilter
+          user={user}
+          quotations={quotations}
+          invoices={[]} // Pass empty array if invoices not available in this view
+          title="Quotations Data Analysis & Export"
+        />
+      )}
+      
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-foreground">
