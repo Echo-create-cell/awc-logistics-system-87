@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { Quotation, User } from '@/types';
 import { InvoiceData } from '@/types/invoice';
-import { mockQuotations, mockUsers } from '@/data/mockData';
+import { mockQuotations, mockUsers, mockInvoices } from '@/data/mockData';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useAuth } from '@/contexts/AuthContext';
-
-const mockInvoices: InvoiceData[] = [];
 
 export const useAppData = () => {
   const { user } = useAuth();
