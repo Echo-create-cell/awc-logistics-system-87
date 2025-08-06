@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/hooks/useAppData';
 import { Settings, Users, Bell, Shield, Database, Monitor, Trash2, AlertTriangle } from 'lucide-react';
@@ -17,7 +17,12 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 const SettingsView = () => {
   const { user } = useAuth();
   const { users, quotations, invoices } = useAppData();
-  const { toast } = useToast();
+  const { 
+    notifySystemBackup, 
+    notifyDataReset, 
+    notifySystemMaintenance,
+    notifyCustom 
+  } = useNotifications();
   
   const [systemSettings, setSystemSettings] = useState({
     companyName: 'AWC Logistics',
@@ -60,10 +65,7 @@ const SettingsView = () => {
       }));
     }
     
-    toast({
-      title: "Settings Saved",
-      description: "System settings have been updated successfully.",
-    });
+    notifyCustom("Settings Saved", "System settings have been updated successfully.", "default");
   };
 
   const handleDataReset = () => {
@@ -75,11 +77,7 @@ const SettingsView = () => {
     };
     
     // In a real system, this would make an API call to reset data
-    toast({
-      title: "Data Reset Complete",
-      description: "All operational data has been cleared. Storage optimized.",
-      variant: "destructive"
-    });
+    notifyDataReset();
   };
 
   const getStorageInfo = () => {
@@ -109,10 +107,7 @@ const SettingsView = () => {
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
 
-    toast({
-      title: "Backup Created",
-      description: "System backup has been downloaded successfully.",
-    });
+    notifySystemBackup(true, "Manual");
   };
 
   const systemStats = {

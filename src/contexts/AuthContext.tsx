@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
+import { useNotifications } from '@/hooks/useNotifications';
 
 interface AuthContextType {
   user: User | null;
@@ -58,6 +59,7 @@ const mockUsers: User[] = [
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { notifyLoginSuccess, notifyLoginFailed, notifyLogout } = useNotifications();
 
   useEffect(() => {
     // Check for stored user session
@@ -79,17 +81,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (foundUser && password === 'password') {
       setUser(foundUser);
       localStorage.setItem('awc_user', JSON.stringify(foundUser));
+      notifyLoginSuccess(foundUser);
       setIsLoading(false);
       return true;
     }
     
+    notifyLoginFailed("Invalid email or password. Please try again.");
     setIsLoading(false);
     return false;
   };
 
   const logout = () => {
+    const currentUser = user;
     setUser(null);
     localStorage.removeItem('awc_user');
+    if (currentUser) {
+      notifyLogout(currentUser.name);
+    }
   };
 
   return (

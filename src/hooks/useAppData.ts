@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Quotation, User } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 import { mockQuotations, mockUsers } from '@/data/mockData';
-import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
 import { useAuth } from '@/contexts/AuthContext';
 
 const mockInvoices: InvoiceData[] = [];
@@ -15,10 +15,25 @@ export const useAppData = () => {
   const [invoices, setInvoices] = useState<InvoiceData[]>(mockInvoices);
   const [printPreview, setPrintPreview] = useState<InvoiceData | null>(null);
   const [invoiceQuotation, setInvoiceQuotation] = useState<Quotation | null>(null);
-  const { toast } = useToast();
+  const {
+    notifyQuotationApproved,
+    notifyQuotationRejected,
+    notifyQuotationCreated,
+    notifyQuotationUpdated,
+    notifyInvoiceCreated,
+    notifyInvoiceUpdated,
+    notifyInvoiceGenerated,
+    notifyInvoicePrinted,
+    notifyUserCreated,
+    notifyUserUpdated,
+    notifyUserDeleted,
+  } = useNotifications();
 
   const handleApproveQuotation = (id: string) => {
     if (!user) return;
+    const quotation = quotations.find(q => q.id === id);
+    if (!quotation) return;
+    
     setQuotations(prev =>
       prev.map(q =>
         q.id === id
@@ -26,13 +41,13 @@ export const useAppData = () => {
           : q
       )
     );
-    toast({
-      title: "Quotation Approved",
-      description: "The quotation has been successfully approved.",
-    });
+    notifyQuotationApproved(quotation, { user });
   };
 
   const handleRejectQuotation = (id: string, reason: string) => {
+    const quotation = quotations.find(q => q.id === id);
+    if (!quotation) return;
+    
     setQuotations(prev =>
       prev.map(q => {
         if (q.id === id) {
@@ -42,31 +57,26 @@ export const useAppData = () => {
         return q;
       })
     );
-    toast({
-      title: "Quotation Rejected",
-      description: "The quotation has been marked as lost.",
-      variant: "destructive",
-    });
+    notifyQuotationRejected(quotation, reason, { user });
   };
 
   const handleQuotationCreated = (newQuotationData: Quotation) => {
     setQuotations(prev => [newQuotationData, ...prev]);
-    toast({
-      title: "Quotation Created",
-      description: `Quotation for ${newQuotationData.clientName} has been saved.`,
-    });
+    notifyQuotationCreated(newQuotationData, { user });
     setActiveTab('quotations');
   };
 
   const handleGenerateInvoiceFromQuotation = (quotation: Quotation) => {
     setInvoiceQuotation(quotation);
     setActiveTab('invoices');
+    // Notification will be sent when invoice is actually created
   };
 
   const handleSaveInvoice = (invoice: InvoiceData) => {
     setInvoices(prev => [invoice, ...prev]);
 
     if (invoice.quotationId) {
+      const quotation = quotations.find(q => q.id === invoice.quotationId);
       setQuotations((prev) => prev.map(q =>
         q.id === invoice.quotationId
           ? {
@@ -77,58 +87,50 @@ export const useAppData = () => {
             }
           : q
       ));
+      
+      if (quotation) {
+        notifyInvoiceGenerated(quotation, invoice, { user });
+      }
+    } else {
+      notifyInvoiceCreated(invoice, { user });
     }
     
     // Clear the invoice quotation after saving
     setInvoiceQuotation(null);
-    
-    toast({
-      title: "Invoice Saved",
-      description: `Invoice ${invoice.invoiceNumber} has been created successfully.`,
-    });
   };
 
   const handleEditInvoice = (updatedInvoice: InvoiceData) => {
     setInvoices(prev => prev.map(inv => 
       inv.id === updatedInvoice.id ? updatedInvoice : inv
     ));
-    toast({
-      title: "Invoice Updated",
-      description: `Invoice ${updatedInvoice.invoiceNumber} has been updated successfully.`,
-    });
+    notifyInvoiceUpdated(updatedInvoice, { user });
   };
 
   const handlePrintInvoice = (invoice: InvoiceData) => {
     setPrintPreview(invoice);
+    notifyInvoicePrinted(invoice, { user });
   };
 
   const handleEditQuotation = (updatedQuotation: Quotation) => {
     setQuotations(prev => prev.map(q => 
       q.id === updatedQuotation.id ? updatedQuotation : q
     ));
-    toast({
-      title: "Quotation Updated",
-      description: `Quotation for ${updatedQuotation.clientName} has been updated successfully.`,
-    });
+    notifyQuotationUpdated(updatedQuotation, { user });
   };
 
   const handleEditUser = (updatedUser: User) => {
     setUsers(prev => prev.map(u => 
       u.id === updatedUser.id ? updatedUser : u
     ));
-    toast({
-      title: "User Updated",
-      description: `User ${updatedUser.name} has been updated successfully.`,
-    });
+    notifyUserUpdated(updatedUser, { user });
   };
   
   const handleDeleteUser = (userId: string) => {
+    const userToDelete = users.find(u => u.id === userId);
     setUsers(prev => prev.filter(u => u.id !== userId));
-    toast({
-      title: "User Deleted",
-      description: "User has been successfully deleted.",
-      variant: "destructive",
-    });
+    if (userToDelete) {
+      notifyUserDeleted(userToDelete.name, { user });
+    }
   };
 
   const handleCreateUser = (newUser: Omit<User, 'id' | 'createdAt'>) => {
@@ -138,10 +140,7 @@ export const useAppData = () => {
       createdAt: new Date().toISOString(),
     } as User;
     setUsers(prev => [userWithId, ...prev]);
-    toast({
-      title: "User Created",
-      description: `User ${userWithId.name} has been created successfully.`,
-    });
+    notifyUserCreated(userWithId, { user });
   };
 
   const handleTabChange = (tab: string) => {
