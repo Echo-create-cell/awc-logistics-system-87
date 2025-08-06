@@ -15,70 +15,73 @@ interface GetQuotationColumnsProps {
 export const getQuotationColumns = ({
   user, onApprove, onReject, onInvoiceFromQuotation, onEdit, onView
 }: GetQuotationColumnsProps): TableColumn[] => [
+  // Actions column moved to first position for easy access
   {
-    key: 'createdAt',
-    label: 'Date',
-    minWidth: '85px',
+    key: 'actions', 
+    label: 'Actions',
+    minWidth: '120px',
     render: (_: any, row: Quotation) => (
-       <div className="text-xs font-medium">
-        <div className="whitespace-nowrap">{new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
-       </div>
-    )
+      <QuotationActions 
+        quotation={row}
+        user={user}
+        onApprove={onApprove}
+        onReject={onReject}
+        onInvoiceFromQuotation={onInvoiceFromQuotation}
+        onEdit={onEdit}
+        onView={onView}
+      />
+    ),
+  },
+  {
+    key: 'status', 
+    label: 'Status',
+    minWidth: '85px',
+    render: (_: any, row: Quotation) => <StatusCell row={row} />
   },
   { 
     key: 'clientName', 
     label: 'Client',
-    minWidth: '110px',
+    minWidth: '120px',
     render: (value: string) => (
-      <div className="font-medium text-gray-900 text-xs truncate" title={value}>
+      <div className="font-medium text-gray-900 text-sm truncate" title={value}>
         {value || 'N/A'}
-      </div>
-    )
-  },
-  {
-    key: 'freightMode',
-    label: 'Mode',
-    minWidth: '70px',
-    render: (value: string) => (
-      <div className="text-gray-700 text-xs truncate" title={value}>
-        {value?.slice(0, 8) || 'N/A'}
       </div>
     )
   },
   {
     key: 'cargoDescription',
     label: 'Cargo',
-    minWidth: '90px',
+    minWidth: '100px',
     render: (value: string) => (
-      <div className="text-gray-700 text-xs truncate" title={value}>
-        {value?.slice(0, 12) || 'N/A'}
+      <div className="text-gray-700 text-sm truncate" title={value}>
+        {value?.slice(0, 15) || 'N/A'}
       </div>
     )
   },
   {
     key: 'countryOfOrigin',
     label: 'Origin',
-    minWidth: '70px',
+    minWidth: '85px',
     render: (value: string) => (
-      <div className="text-gray-700 text-xs truncate" title={value}>
-        {value?.slice(0, 8) || 'N/A'}
+      <div className="text-gray-700 text-sm truncate" title={value}>
+        {value?.slice(0, 10) || 'N/A'}
       </div>
     )
   },
   { 
     key: 'destination', 
     label: 'Destination',
-    minWidth: '90px',
+    minWidth: '100px',
     render: (value: string) => (
-      <div className="text-gray-700 text-xs truncate" title={value}>
-        {value?.slice(0, 10) || 'N/A'}
+      <div className="text-gray-700 text-sm truncate" title={value}>
+        {value?.slice(0, 12) || 'N/A'}
       </div>
     )
   },
   { 
     key: 'volume', 
     label: 'Volume (kg)',
-    minWidth: '80px',
+    minWidth: '85px',
     render: (value: string, row: Quotation) => {
       let totalVolume = 0;
       try {
@@ -92,7 +95,7 @@ export const getQuotationColumns = ({
       }
       
       return (
-        <div className="text-gray-700 text-xs font-medium" title={`${totalVolume} kg`}>
+        <div className="text-gray-700 text-sm font-medium text-center" title={`${totalVolume} kg`}>
           {totalVolume.toLocaleString()}
         </div>
       );
@@ -101,9 +104,9 @@ export const getQuotationColumns = ({
   {
     key: 'buyRate', 
     label: 'Buy Rate',
-    minWidth: '80px',
+    minWidth: '90px',
     render: (value: number, row: Quotation) => (
-      <div className="font-medium text-xs whitespace-nowrap">
+      <div className="font-medium text-sm whitespace-nowrap text-right">
         {row.currency} {value.toLocaleString()}
       </div>
     )
@@ -111,9 +114,9 @@ export const getQuotationColumns = ({
   {
     key: 'clientQuote', 
     label: 'Sell Rate',
-    minWidth: '80px',
+    minWidth: '90px',
     render: (value: number, row: Quotation) => (
-      <div className="font-medium text-blue-600 text-xs whitespace-nowrap">
+      <div className="font-medium text-blue-600 text-sm whitespace-nowrap text-right">
         {row.currency} {value.toLocaleString()}
       </div>
     )
@@ -121,9 +124,9 @@ export const getQuotationColumns = ({
   {
     key: 'profit', 
     label: 'Profit',
-    minWidth: '70px',
+    minWidth: '85px',
     render: (value: number, row: Quotation) => (
-      <div className="font-medium text-green-600 text-xs whitespace-nowrap">
+      <div className="font-medium text-green-600 text-sm whitespace-nowrap text-right">
         {row.currency} {value.toLocaleString()}
       </div>
     )
@@ -131,33 +134,31 @@ export const getQuotationColumns = ({
   { 
     key: 'quoteSentBy', 
     label: 'Agent',
-    minWidth: '70px',
+    minWidth: '75px',
     render: (value: string) => (
-      <div className="text-gray-600 text-xs truncate" title={value}>
+      <div className="text-gray-600 text-sm truncate" title={value}>
         {value?.split(' ')[0] || 'N/A'}
       </div>
     )
   },
   {
-    key: 'status', 
-    label: 'Status',
-    minWidth: '70px',
-    render: (_: any, row: Quotation) => <StatusCell row={row} />
+    key: 'freightMode',
+    label: 'Mode',
+    minWidth: '80px',
+    render: (value: string) => (
+      <div className="text-gray-700 text-sm truncate" title={value}>
+        {value?.replace('Freight', '').trim() || 'N/A'}
+      </div>
+    )
   },
   {
-    key: 'actions', 
-    label: 'Actions',
-    minWidth: '90px',
+    key: 'createdAt',
+    label: 'Date',
+    minWidth: '85px',
     render: (_: any, row: Quotation) => (
-      <QuotationActions 
-        quotation={row}
-        user={user}
-        onApprove={onApprove}
-        onReject={onReject}
-        onInvoiceFromQuotation={onInvoiceFromQuotation}
-        onEdit={onEdit}
-        onView={onView}
-      />
-    ),
+       <div className="text-sm font-medium text-gray-600">
+        <div className="whitespace-nowrap">{new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+       </div>
+    )
   }
 ];
