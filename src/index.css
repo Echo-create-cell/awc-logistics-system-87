@@ -13,10 +13,10 @@
   --popover: 255 255 255 1;
   --popover-foreground: 15 23 42 1;
   
-  /* Professional Blue Primary - like reference dashboard */
-  --primary: 219 78% 20%; /* Deep blue #1e3a8a */
-  --primary-glow: 219 78% 30%;
-  --primary-dark: 219 78% 15%;
+  /* Professional Red Primary - matching AWC logo */
+  --primary: 0 75% 25%; /* Dark heavy red #B91C1C */
+  --primary-glow: 0 75% 35%;
+  --primary-dark: 0 75% 20%;
   --primary-foreground: 248 250 252 1;
   
   /* Professional Secondary - light blue/gray */
@@ -30,7 +30,7 @@
   /* Accent colors - subtle blue */
   --accent: 214 95% 93%; /* blue-50 */
   --accent-glow: 214 95% 85%;
-  --accent-foreground: 219 78% 20%;
+  --accent-foreground: 0 75% 25%;
   
   /* Status colors */
   --destructive: 0 84.2% 60.2%;
@@ -43,7 +43,7 @@
   /* Borders and inputs */
   --border: 214 32% 91%; /* blue-gray-100 */
   --input: 214 32% 91%;
-  --ring: 219 78% 20%;
+  --ring: 0 75% 25%;
   --radius: 0.5rem;
 
   /* Professional Spacing */
@@ -54,18 +54,18 @@
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
 
-  /* Professional Sidebar - Deep Blue like reference */
-  --sidebar-background: 219 78% 20%; /* Deep navy blue */
+  /* Professional Sidebar - Deep Red matching AWC logo */
+  --sidebar-background: 0 75% 25%; /* Dark heavy red */
   --sidebar-foreground: 248 250 252 1; /* Light text */
   --sidebar-primary: 248 250 252 1; /* White/light for active */
-  --sidebar-primary-foreground: 219 78% 20%;
-  --sidebar-accent: 219 78% 25%; /* Slightly lighter blue for hover */
+  --sidebar-primary-foreground: 0 75% 25%;
+  --sidebar-accent: 0 75% 30%; /* Slightly lighter red for hover */
   --sidebar-accent-foreground: 248 250 252 1;
-  --sidebar-border: 219 78% 15%; /* Darker border */
-  --sidebar-ring: 219 78% 30%;
+  --sidebar-border: 0 75% 20%; /* Darker border */
+  --sidebar-ring: 0 75% 35%;
 
   /* Professional Gradients */
-  --gradient-primary: linear-gradient(135deg, hsl(219 78% 20%), hsl(219 78% 25%));
+  --gradient-primary: linear-gradient(135deg, hsl(0 75% 25%), hsl(0 75% 30%));
   --gradient-accent: linear-gradient(135deg, hsl(214 95% 93%), hsl(214 95% 85%));
   --gradient-subtle: linear-gradient(135deg, hsl(248 250 252 / 1), hsl(240 4.8% 95.9%));
   --gradient-card: linear-gradient(135deg, hsl(255 255 255 / 1) 0%, hsl(255 255 255 / 0.95) 100%);
@@ -74,7 +74,7 @@
   --shadow-soft: 0 1px 3px 0 hsl(15 23 42 / 0.1), 0 1px 2px 0 hsl(15 23 42 / 0.06);
   --shadow-medium: 0 4px 6px -1px hsl(15 23 42 / 0.1), 0 2px 4px -1px hsl(15 23 42 / 0.06);
   --shadow-large: 0 10px 15px -3px hsl(15 23 42 / 0.1), 0 4px 6px -2px hsl(15 23 42 / 0.05);
-  --shadow-glow: 0 0 20px hsl(219 78% 20% / 0.15);
+  --shadow-glow: 0 0 20px hsl(0 75% 25% / 0.15);
   
   /* Professional Typography Enhancements */
   --font-weight-normal: 400;
@@ -112,8 +112,8 @@
   --secondary-foreground: 248 250 252 1;
   --muted: 51 65% 7%;
   --muted-foreground: 148 163 184 1; /* slate-400 */
-  --accent: 219 78% 25%;
-  --accent-glow: 219 78% 30%;
+  --accent: 0 75% 30%;
+  --accent-glow: 0 75% 35%;
   --accent-foreground: 248 250 252 1;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 248 250 252 1;
