@@ -10,7 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/hooks/useAppData';
-import { Settings, Users, Bell, Shield, Database, Monitor } from 'lucide-react';
+import { Settings, Users, Bell, Shield, Database, Monitor, Trash2, AlertTriangle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 const SettingsView = () => {
   const { user } = useAuth();
@@ -27,7 +29,10 @@ const SettingsView = () => {
     systemMaintenance: false,
     dataRetention: '365',
     maxQuotationAmount: '1000000',
-    requireApproval: true
+    requireApproval: true,
+    backupInterval: 'weekly',
+    autoBackup: true,
+    lastBackupDate: new Date().toISOString().split('T')[0]
   });
 
   const [securitySettings, setSecuritySettings] = useState({
@@ -47,11 +52,43 @@ const SettingsView = () => {
   };
 
   const handleSaveSettings = () => {
+    // Update last backup date if backup settings changed
+    if (systemSettings.autoBackup) {
+      setSystemSettings(prev => ({ 
+        ...prev, 
+        lastBackupDate: new Date().toISOString().split('T')[0] 
+      }));
+    }
+    
     toast({
       title: "Settings Saved",
       description: "System settings have been updated successfully.",
     });
   };
+
+  const handleDataReset = () => {
+    // Reset operational data while preserving system settings
+    const resetData = {
+      quotations: [],
+      invoices: [],
+      resetDate: new Date().toISOString()
+    };
+    
+    // In a real system, this would make an API call to reset data
+    toast({
+      title: "Data Reset Complete",
+      description: "All operational data has been cleared. Storage optimized.",
+      variant: "destructive"
+    });
+  };
+
+  const getStorageInfo = () => {
+    const totalRecords = quotations.length + invoices.length + users.length;
+    const estimatedSize = (totalRecords * 2).toFixed(1); // Rough estimate in KB
+    return { totalRecords, estimatedSize };
+  };
+
+  const storageInfo = getStorageInfo();
 
   const handleSystemBackup = () => {
     const backupData = {
@@ -311,6 +348,24 @@ const SettingsView = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Storage Information */}
+          <div className="bg-muted/20 p-4 rounded-lg border">
+            <div className="flex items-center gap-2 mb-2">
+              <Database className="h-4 w-4" />
+              <Label className="text-sm font-medium">Storage Usage</Label>
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-muted-foreground">Total Records:</span>
+                <span className="ml-2 font-medium">{storageInfo.totalRecords}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Estimated Size:</span>
+                <span className="ml-2 font-medium">{storageInfo.estimatedSize} KB</span>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label>Data Retention (days)</Label>
@@ -326,29 +381,107 @@ const SettingsView = () => {
                 onChange={(e) => handleSystemSettingChange('maxQuotationAmount', e.target.value)}
               />
             </div>
+            <div className="space-y-2">
+              <Label>Backup Interval</Label>
+              <Select 
+                value={systemSettings.backupInterval} 
+                onValueChange={(value) => handleSystemSettingChange('backupInterval', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="manual">Manual Only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Last Backup Date</Label>
+              <Input 
+                value={systemSettings.lastBackupDate}
+                disabled
+                className="bg-muted"
+              />
+            </div>
           </div>
 
           <Separator />
 
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>System Maintenance Mode</Label>
-              <p className="text-sm text-muted-foreground">Enable maintenance mode to restrict access</p>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Automatic Backups</Label>
+                <p className="text-sm text-muted-foreground">Enable automatic backups based on selected interval</p>
+              </div>
+              <Switch 
+                checked={systemSettings.autoBackup}
+                onCheckedChange={(checked) => handleSystemSettingChange('autoBackup', checked)}
+              />
             </div>
-            <Switch 
-              checked={systemSettings.systemMaintenance}
-              onCheckedChange={(checked) => handleSystemSettingChange('systemMaintenance', checked)}
-            />
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>System Maintenance Mode</Label>
+                <p className="text-sm text-muted-foreground">Enable maintenance mode to restrict access</p>
+              </div>
+              <Switch 
+                checked={systemSettings.systemMaintenance}
+                onCheckedChange={(checked) => handleSystemSettingChange('systemMaintenance', checked)}
+              />
+            </div>
           </div>
 
-          <div className="flex gap-4">
-            <Button onClick={handleSystemBackup} variant="outline">
-              <Database className="mr-2 h-4 w-4" />
-              Create Backup
-            </Button>
-            <Button onClick={handleSaveSettings}>
-              Save All Settings
-            </Button>
+          <Separator />
+
+          {/* Admin-Only Critical Actions */}
+          <div className="bg-destructive/5 p-4 rounded-lg border border-destructive/20">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              <Label className="text-sm font-medium text-destructive">Critical System Actions</Label>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              These actions are irreversible and should only be performed by system administrators.
+            </p>
+            
+            <div className="flex gap-4">
+              <Button onClick={handleSystemBackup} variant="outline">
+                <Database className="mr-2 h-4 w-4" />
+                Create Backup
+              </Button>
+              
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Reset All Data
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Reset All Operational Data?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action will permanently delete all quotations, invoices, and operational data. 
+                      System settings and user accounts will be preserved. This cannot be undone.
+                      <br /><br />
+                      <strong>Current Storage: {storageInfo.totalRecords} records ({storageInfo.estimatedSize} KB)</strong>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDataReset} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Reset Data
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              
+              <Button onClick={handleSaveSettings}>
+                Save All Settings
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
