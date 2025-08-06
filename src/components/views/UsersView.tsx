@@ -62,32 +62,38 @@ const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
   };
 
   const userColumns = [
-    { 
-      key: 'name', 
-      label: 'Name',
-      render: (value: string) => (
-        <div className="font-medium text-gray-900">{value}</div>
-      )
-    },
-    { 
-      key: 'email', 
-      label: 'Email',
-      render: (value: string) => (
-        <div className="text-gray-600">{value}</div>
-      )
-    },
+    // Actions column moved to first position for easy access
     {
-      key: 'role',
-      label: 'Role',
-      render: (value: string) => (
-        <Badge variant="outline" className="capitalize font-medium">
-          {value.replace('_', ' ')}
-        </Badge>
-      )
+      key: 'actions',
+      label: 'Actions',
+      minWidth: '120px',
+      render: (_: any, row: User) => (
+        <div className="flex gap-2">
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            onClick={() => handleEdit(row)}
+            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            title="Edit User"
+          >
+            <Edit size={16} />
+          </Button>
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            onClick={() => handleDelete(row.id)} 
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            title="Delete User"
+          >
+            <Trash2 size={16} />
+          </Button>
+        </div>
+      ),
     },
     {
       key: 'status',
       label: 'Status',
+      minWidth: '85px',
       render: (value: string) => (
         <Badge className={`${
           value === 'active' 
@@ -98,38 +104,41 @@ const UsersView = ({ users, onEdit, onDelete, onCreate }: UsersViewProps) => {
         </Badge>
       )
     },
-    {
-      key: 'createdAt',
-      label: 'Created',
+    { 
+      key: 'name', 
+      label: 'Name',
+      minWidth: '140px',
       render: (value: string) => (
-        <div className="text-gray-500 text-sm">
-          {new Date(value).toLocaleDateString()}
-        </div>
+        <div className="font-medium text-gray-900 text-sm">{value}</div>
+      )
+    },
+    { 
+      key: 'email', 
+      label: 'Email',
+      minWidth: '180px',
+      render: (value: string) => (
+        <div className="text-gray-600 text-sm truncate" title={value}>{value}</div>
       )
     },
     {
-      key: 'actions',
-      label: 'Actions',
-      render: (_: any, row: User) => (
-        <div className="flex gap-2">
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={() => handleEdit(row)}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          >
-            <Edit size={16} />
-          </Button>
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={() => handleDelete(row.id)} 
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-          </Button>
+      key: 'role',
+      label: 'Role',
+      minWidth: '120px',
+      render: (value: string) => (
+        <Badge variant="outline" className="capitalize font-medium">
+          {value.replace('_', ' ')}
+        </Badge>
+      )
+    },
+    {
+      key: 'createdAt',
+      label: 'Created',
+      minWidth: '90px',
+      render: (value: string) => (
+        <div className="text-gray-500 text-sm">
+          {new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })}
         </div>
-      ),
+      )
     }
   ];
 

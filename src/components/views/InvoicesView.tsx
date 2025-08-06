@@ -104,71 +104,11 @@ const InvoicesView = ({
   }
 
   const invoiceColumns = [
-    { 
-      key: 'invoiceNumber', 
-      label: 'Invoice #',
-      render: (value: string) => (
-        <div className="font-medium text-gray-900">{value}</div>
-      )
-    },
-    { 
-      key: 'clientName', 
-      label: 'Client',
-      render: (value: string) => (
-        <div className="font-medium text-gray-700">{value}</div>
-      )
-    },
-    {
-      key: 'volume',
-      label: 'Volume',
-      render: (_: any, row: InvoiceData) => (
-        <div className="font-medium text-blue-600">
-          {getQuotationVolume(row)}
-        </div>
-      )
-    },
-    {
-      key: 'totalAmount',
-      label: 'Amount',
-      render: (value: number, row: InvoiceData) => (
-        <div className="font-medium text-blue-600">
-          {row.currency} {value.toLocaleString()}
-        </div>
-      )
-    },
-    {
-      key: 'issueDate',
-      label: 'Issue Date',
-      render: (value: string) => (
-        <div className="text-gray-600">
-          {new Date(value).toLocaleDateString()}
-        </div>
-      )
-    },
-    {
-      key: 'dueDate',
-      label: 'Due Date',
-      render: (value: string) => (
-        <div className="text-gray-600">
-          {value ? new Date(value).toLocaleDateString() : 'N/A'}
-        </div>
-      )
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (value: string) => {
-        const colors: {[key: string]: string} = {
-          paid: 'bg-green-100 text-green-800 hover:bg-green-200',
-          pending: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-          overdue: 'bg-red-100 text-red-800 hover:bg-red-200'
-        };
-        return <Badge className={`${colors[value]} font-medium`}>{value}</Badge>;
-      }
-    },
+    // Actions column moved to first position for easy access
     {
       key: 'actions',
       label: 'Actions',
+      minWidth: '120px',
       render: (_: any, row: InvoiceData) => (
         <div className="flex gap-2">
           {row.status === 'paid' && (
@@ -177,6 +117,7 @@ const InvoicesView = ({
               variant="ghost"
               onClick={() => onPrint(row)}
               className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              title="Print Invoice"
             >
               <Printer size={16} />
             </Button>
@@ -187,6 +128,7 @@ const InvoicesView = ({
               variant="ghost"
               onClick={() => handleEdit(row)}
               className="text-green-600 hover:text-green-700 hover:bg-green-50"
+              title="Edit Invoice"
             >
               <Edit size={16} />
             </Button>
@@ -197,12 +139,82 @@ const InvoicesView = ({
               variant="ghost"
               onClick={() => onPrint(row)}
               className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              title="Print Invoice"
             >
               <Printer size={16} />
             </Button>
           )}
         </div>
       ),
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      minWidth: '90px',
+      render: (value: string) => {
+        const colors: {[key: string]: string} = {
+          paid: 'bg-green-100 text-green-800 hover:bg-green-200',
+          pending: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+          overdue: 'bg-red-100 text-red-800 hover:bg-red-200'
+        };
+        return <Badge className={`${colors[value]} font-medium`}>{value}</Badge>;
+      }
+    },
+    { 
+      key: 'invoiceNumber', 
+      label: 'Invoice #',
+      minWidth: '100px',
+      render: (value: string) => (
+        <div className="font-medium text-gray-900 text-sm">{value}</div>
+      )
+    },
+    { 
+      key: 'clientName', 
+      label: 'Client',
+      minWidth: '120px',
+      render: (value: string) => (
+        <div className="font-medium text-gray-700 text-sm truncate" title={value}>{value}</div>
+      )
+    },
+    {
+      key: 'volume',
+      label: 'Volume',
+      minWidth: '80px',
+      render: (_: any, row: InvoiceData) => (
+        <div className="font-medium text-blue-600 text-sm text-center">
+          {getQuotationVolume(row)}
+        </div>
+      )
+    },
+    {
+      key: 'totalAmount',
+      label: 'Amount',
+      minWidth: '100px',
+      render: (value: number, row: InvoiceData) => (
+        <div className="font-medium text-blue-600 text-sm text-right whitespace-nowrap">
+          {row.currency} {value.toLocaleString()}
+        </div>
+      )
+    },
+    {
+      key: 'issueDate',
+      label: 'Issue Date',
+      minWidth: '90px',
+      render: (value: string) => (
+        <div className="text-gray-600 text-sm">
+          {new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })}
+        </div>
+      )
+    },
+    {
+      key: 'dueDate',
+      label: 'Due Date',
+      minWidth: '90px',
+      render: (value: string) => (
+        <div className="text-gray-600 text-sm">
+          {value ? new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }) : 'N/A'}
+        </div>
+      )
     }
   ];
 
