@@ -72,10 +72,10 @@ const FinancialMetricsCards = ({ metrics }: FinancialMetricsCardsProps) => {
       <Card className="hover:shadow-lg transition-shadow duration-200">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">Pending Invoices</CardTitle>
-          <Clock className="h-4 w-4 text-amber-600" />
+          <Clock className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{metrics.pendingInvoices}</div>
+          <div className="text-2xl font-bold text-muted-foreground">{metrics.pendingInvoices}</div>
           <p className="text-xs text-muted-foreground">Awaiting payment</p>
         </CardContent>
       </Card>

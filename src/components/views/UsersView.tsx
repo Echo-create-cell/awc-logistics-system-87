@@ -102,7 +102,7 @@ const UsersView = ({ users }: UsersViewProps) => {
                 size="sm" 
                 variant="ghost" 
                 onClick={() => handleResetPassword(row.id)}
-                className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                className="text-warning hover:text-warning hover:bg-warning/10"
                 title="Reset Password"
               >
                 <Key size={16} />

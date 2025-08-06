@@ -99,7 +99,7 @@ const AdminInvoiceCard = ({ invoice, onView, onPrint }: AdminInvoiceCardProps) =
             {invoice.dueDate && (
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Due Date:</span>
-                <span className={`font-medium ${daysUntilDue && daysUntilDue < 0 ? 'text-red-600' : daysUntilDue && daysUntilDue < 7 ? 'text-orange-600' : 'text-gray-900'}`}>
+                <span className={`font-medium ${daysUntilDue && daysUntilDue < 0 ? 'text-destructive' : daysUntilDue && daysUntilDue < 7 ? 'text-warning' : 'text-foreground'}`}>
                   {new Date(invoice.dueDate).toLocaleDateString()}
                 </span>
               </div>
@@ -140,7 +140,7 @@ const AdminInvoiceCard = ({ invoice, onView, onPrint }: AdminInvoiceCardProps) =
             daysUntilDue < 0 
               ? 'bg-red-100 text-red-800' 
               : daysUntilDue < 7 
-                ? 'bg-orange-100 text-orange-800' 
+                ? 'bg-warning/10 text-warning border-warning/20' 
                 : 'bg-green-100 text-green-800'
           }`}>
             {daysUntilDue < 0 

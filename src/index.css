@@ -36,7 +36,7 @@
   --destructive-foreground: 248 250 252;
   --success: 142.1 76.2% 36.3%;
   --success-foreground: 248 250 252;
-  --warning: 37.7 92.1% 50.2%; /* Professional amber */
+  --warning: 210 40% 60%; /* Professional neutral blue-gray */
   --warning-foreground: 15 23 42;
   
   /* Borders and inputs */
@@ -121,7 +121,7 @@
   --ring: 214 95% 93%;
   --success: 142.1 70.6% 45.3%;
   --success-foreground: 248 250 252;
-  --warning: 37.7 92.1% 50.2%; /* Professional amber for dark mode */
+  --warning: 210 40% 70%; /* Professional neutral blue-gray for dark mode */
   --warning-foreground: 15 23 42;
 
   /* Dark mode gradients */

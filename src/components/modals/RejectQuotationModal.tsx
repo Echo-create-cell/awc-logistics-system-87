@@ -85,12 +85,12 @@ const RejectQuotationModal = ({ open, quotation, onClose, onConfirm }: RejectQuo
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="Please provide a specific reason:&#10;• Price was too high compared to competitors&#10;• Client requirements changed&#10;• Lost to competitor due to timing&#10;• Project was cancelled or postponed&#10;• Service scope didn't match client needs&#10;• Other (please specify)..."
-                  className="min-h-[140px] text-sm border-gray-300 focus:border-orange-500 focus:ring-orange-500 resize-none"
+                  className="min-h-[140px] text-sm border-border focus:border-ring focus:ring-ring resize-none"
                   rows={7}
                 />
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <span>Minimum 10 characters required for detailed feedback</span>
-                  <span className={reason.length >= 10 ? "text-green-600" : "text-orange-600"}>
+                  <span className={reason.length >= 10 ? "text-success" : "text-warning"}>
                     {reason.length}/10 characters
                   </span>
                 </div>

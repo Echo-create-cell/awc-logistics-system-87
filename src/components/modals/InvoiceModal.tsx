@@ -219,7 +219,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
                         onCheckedChange={setIsMarkedAsPaid}
                         aria-label="Mark as paid"
                       />
-                      <Label htmlFor="mark-as-paid" className="text-sm font-medium text-orange-800 cursor-pointer">
+                      <Label htmlFor="mark-as-paid" className="text-sm font-medium text-warning cursor-pointer">
                         Mark Invoice as Paid to Finalize
                       </Label>
                     </div>
