@@ -28,7 +28,7 @@ interface PartnerRecentActivityProps {
 const PartnerRecentActivity = ({ users, quotations, invoices }: PartnerRecentActivityProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 23; // Show all items as before
+  const itemsPerPage = 10; // Show fewer items per page with pagination
 
   // Generate activity data from all sources
   const activityData = useMemo(() => {
