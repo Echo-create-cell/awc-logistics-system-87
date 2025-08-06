@@ -27,6 +27,20 @@ const AdminQuotationCard = ({ quotation, onApprove, onReject, onView }: AdminQuo
     }
   };
 
+  // Format volume display
+  const formatVolume = (volume: string) => {
+    try {
+      const parsed = JSON.parse(volume);
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].name) {
+        const totalQuantity = parsed.reduce((sum: number, c: any) => sum + (Number(c.quantityKg) || 0), 0);
+        return `${totalQuantity.toLocaleString()} kg (${parsed.length} items)`;
+      }
+    } catch (e) {
+      // Not a structured volume, treat as simple string
+    }
+    return !isNaN(Number(volume)) ? `${Number(volume).toLocaleString()} kg` : volume;
+  };
+
   const profitMargin = ((quotation.profit / quotation.clientQuote) * 100).toFixed(1);
   const isHighProfit = parseFloat(profitMargin) > 20;
 
@@ -51,7 +65,7 @@ const AdminQuotationCard = ({ quotation, onApprove, onReject, onView }: AdminQuo
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Volume:</span>
-              <span className="font-medium">{quotation.volume}</span>
+              <span className="font-medium">{formatVolume(quotation.volume)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Buy Rate:</span>
