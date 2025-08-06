@@ -58,7 +58,7 @@ const QuotationTable = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border">
+    <div className="bg-card rounded-lg shadow-sm border">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-slate-50 border-b">
