@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight, FileText } from 'lucide-react';
 import { Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 
@@ -10,6 +11,9 @@ interface ReportDataTableProps {
 }
 
 const ReportDataTable = ({ filteredData }: ReportDataTableProps) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const formatVolume = (item: Quotation | InvoiceData) => {
     const isQuotation = 'clientQuote' in item;
     
@@ -42,6 +46,19 @@ const ReportDataTable = ({ filteredData }: ReportDataTableProps) => {
     }
   };
 
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredData.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredData, currentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -64,7 +81,7 @@ const ReportDataTable = ({ filteredData }: ReportDataTableProps) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredData.slice(0, 20).map((item, index) => {
+              {paginatedData.map((item, index) => {
                 const isQuotation = 'clientQuote' in item;
                 const amount = isQuotation ? (item as Quotation).clientQuote : (item as InvoiceData).totalAmount;
                 return (
@@ -101,6 +118,41 @@ const ReportDataTable = ({ filteredData }: ReportDataTableProps) => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between pt-4 border-t border-gray-200 mt-4">
+            <p className="text-sm text-gray-600">
+              Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredData.length)} to{' '}
+              {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} results
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="flex items-center gap-1"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              <span className="px-3 py-1 text-sm font-medium bg-gray-100 rounded-md">
+                {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-1"
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
