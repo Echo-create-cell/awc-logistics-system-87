@@ -27,13 +27,17 @@ export const useReportsData = (
       const createdDate = new Date(q.createdAt);
       const inDateRange = createdDate >= dateRange.from && createdDate <= dateRange.to;
       
-      // Role-based filtering
+      // Role-based filtering - Partners can see all data like admins
       if (user?.role === 'sales_agent') {
         return inDateRange && q.quoteSentBy === user.name;
       }
       if (user?.role === 'sales_director') {
         const salesAgents = users.filter(u => u.role === 'sales_agent').map(u => u.name);
         return inDateRange && (q.quoteSentBy === user.name || salesAgents.includes(q.quoteSentBy));
+      }
+      // Partners and admins see all data
+      if (user?.role === 'partner' || user?.role === 'admin' || user?.role === 'finance_officer') {
+        return inDateRange;
       }
       
       return inDateRange;
