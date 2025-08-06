@@ -13,8 +13,8 @@ export const useReportsData = (
   const { user } = useAuth();
   const [filters, setFilters] = useState<ReportFilters>({
     dateRange: {
-      from: new Date(),
-      to: new Date()
+      from: new Date(new Date().getFullYear(), 0, 1), // Start of current year
+      to: new Date() // Today
     },
     includeUserActivity: true
   });
@@ -137,9 +137,10 @@ export const useReportsData = (
       .map(([month, data]) => ({ month, ...data }))
       .sort((a, b) => a.month.localeCompare(b.month));
 
-    // Calculate top clients
+    // Calculate top clients from both invoices and quotations
     const clientMap = new Map<string, { revenue: number; quotations: number }>();
     
+    // Add invoice data
     filteredInvoices.forEach(inv => {
       const current = clientMap.get(inv.clientName) || { revenue: 0, quotations: 0 };
       clientMap.set(inv.clientName, {
@@ -148,8 +149,22 @@ export const useReportsData = (
       });
     });
 
+    // Add quotation data (for clients without invoices or additional quotations)
+    filteredQuotations.forEach(q => {
+      if (q.clientName) {
+        const current = clientMap.get(q.clientName) || { revenue: 0, quotations: 0 };
+        // Use clientQuote as revenue if no invoice exists for this client
+        const hasInvoice = filteredInvoices.some(inv => inv.clientName === q.clientName);
+        clientMap.set(q.clientName, {
+          revenue: hasInvoice ? current.revenue : current.revenue + (q.status === 'won' ? q.clientQuote : 0),
+          quotations: current.quotations + 1
+        });
+      }
+    });
+
     const topClients = Array.from(clientMap.entries())
       .map(([name, data]) => ({ name, ...data }))
+      .filter(client => client.revenue > 0) // Only show clients with revenue
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 10);
 

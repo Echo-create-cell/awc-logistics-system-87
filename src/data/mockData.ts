@@ -1,5 +1,6 @@
 
 import { Quotation, User, Invoice } from '@/types';
+import { InvoiceData } from '@/types/invoice';
 
 export const mockQuotations: Quotation[] = [
   {
@@ -425,4 +426,185 @@ export const mockUsers: User[] = [
   }
 ];
 
-export const mockInvoices: Invoice[] = [];
+export const mockInvoices: InvoiceData[] = [
+  {
+    id: 'INV-001',
+    quotationId: '1',
+    invoiceNumber: 'AWC-2025-001',
+    clientName: 'KALISIMBI MINING',
+    clientAddress: '123 Mining Street, Kigali, Rwanda',
+    clientContactPerson: 'John Mining',
+    clientTin: 'TIN123456789',
+    destination: 'RWANDA',
+    doorDelivery: 'Yes',
+    salesperson: 'ALINE UWIMANA',
+    deliverDate: '2025-01-20',
+    paymentConditions: 'Net 30',
+    validityDate: '2025-02-15',
+    awbNumber: 'AWB-001-2025',
+    totalAmount: 14885.00,
+    subTotal: 14885.00,
+    tva: 0,
+    currency: '$',
+    issueDate: '2025-01-15',
+    dueDate: '2025-02-15',
+    status: 'paid',
+    createdAt: '2025-01-15T00:00:00.000Z',
+    createdBy: 'ALINE UWIMANA',
+    items: [
+      {
+        id: '1',
+        quantityKg: 500,
+        commodity: 'Mining Equipment',
+        charges: [
+          { id: '1', description: 'Air Freight', rate: 14885.00 }
+        ],
+        total: 14885.00
+      }
+    ]
+  },
+  {
+    id: 'INV-002',
+    quotationId: '2',
+    invoiceNumber: 'AWC-2025-002',
+    clientName: 'CHARIS UGANDA',
+    clientAddress: '456 Business Ave, Kampala, Uganda',
+    clientContactPerson: 'Sarah Business',
+    clientTin: 'TIN987654321',
+    destination: 'UGANDA',
+    doorDelivery: 'No',
+    salesperson: 'ALINE UWIMANA',
+    deliverDate: '2025-01-25',
+    paymentConditions: 'Net 30',
+    validityDate: '2025-02-16',
+    awbNumber: 'AWB-002-2025',
+    totalAmount: 56450.00,
+    subTotal: 56450.00,
+    tva: 0,
+    currency: '$',
+    issueDate: '2025-01-16',
+    dueDate: '2025-02-16',
+    status: 'pending',
+    createdAt: '2025-01-16T00:00:00.000Z',
+    createdBy: 'ALINE UWIMANA',
+    items: [
+      {
+        id: '1',
+        quantityKg: 2800,
+        commodity: 'Industrial Equipment',
+        charges: [
+          { id: '1', description: 'Air Freight Services', rate: 56450.00 }
+        ],
+        total: 56450.00
+      }
+    ]
+  },
+  {
+    id: 'INV-003',
+    quotationId: '16',
+    invoiceNumber: 'AWC-2025-003',
+    clientName: 'Michel M. TSHIKALA',
+    clientAddress: '789 Transit Road, Kigali, Rwanda',
+    clientContactPerson: 'Michel Tshikala',
+    clientTin: 'TIN456789123',
+    destination: 'RWANDA',
+    doorDelivery: 'Yes',
+    salesperson: 'Michel M. TSHIKALA',
+    deliverDate: '2025-02-18',
+    paymentConditions: 'Net 30',
+    validityDate: '2025-03-13',
+    awbNumber: 'AWB-003-2025',
+    totalAmount: 1708.00,
+    subTotal: 1708.00,
+    tva: 0,
+    currency: '$',
+    issueDate: '2025-02-13',
+    dueDate: '2025-03-13',
+    status: 'paid',
+    createdAt: '2025-02-13T00:00:00.000Z',
+    createdBy: 'Michel M. TSHIKALA',
+    items: [
+      {
+        id: '1',
+        quantityKg: 1151,
+        commodity: 'Tent Kits and Masks',
+        charges: [
+          { id: '1', description: 'Air Freight Transit', rate: 1708.00 }
+        ],
+        total: 1708.00
+      }
+    ]
+  },
+  {
+    id: 'INV-004',
+    quotationId: '3',
+    invoiceNumber: 'AWC-2025-004',
+    clientName: 'AEROPORT',
+    clientAddress: 'Airport Road, Kigali, Rwanda',
+    clientContactPerson: 'Airport Manager',
+    clientTin: 'TIN789123456',
+    destination: 'RWANDA',
+    doorDelivery: 'No',
+    salesperson: 'ALINE UWIMANA',
+    deliverDate: '2025-01-22',
+    paymentConditions: 'Net 30',
+    validityDate: '2025-02-17',
+    awbNumber: 'AWB-004-2025',
+    totalAmount: 8750.00,
+    subTotal: 8750.00,
+    tva: 0,
+    currency: '$',
+    issueDate: '2025-01-17',
+    dueDate: '2025-02-17',
+    status: 'overdue',
+    createdAt: '2025-01-17T00:00:00.000Z',
+    createdBy: 'ALINE UWIMANA',
+    items: [
+      {
+        id: '1',
+        quantityKg: 350,
+        commodity: 'Equipment Transport',
+        charges: [
+          { id: '1', description: 'Road Freight Services', rate: 8750.00 }
+        ],
+        total: 8750.00
+      }
+    ]
+  },
+  {
+    id: 'INV-005',
+    quotationId: '12',
+    invoiceNumber: 'AWC-2025-005',
+    clientName: 'NGALI/LOCUS DYNAMICS',
+    clientAddress: 'Business Park, Kigali, Rwanda',
+    clientContactPerson: 'Operations Manager',
+    clientTin: 'TIN321654987',
+    destination: 'RWANDA',
+    doorDelivery: 'Yes',
+    salesperson: 'RONNY TWAHIRWA',
+    deliverDate: '2025-02-10',
+    paymentConditions: 'Net 30',
+    validityDate: '2025-03-04',
+    awbNumber: 'AWB-005-2025',
+    totalAmount: 2050.00,
+    subTotal: 2050.00,
+    tva: 0,
+    currency: '€',
+    issueDate: '2025-02-04',
+    dueDate: '2025-03-04',
+    status: 'pending',
+    createdAt: '2025-02-04T00:00:00.000Z',
+    createdBy: 'RONNY TWAHIRWA',
+    items: [
+      {
+        id: '1',
+        quantityKg: 81,
+        commodity: 'General Cargo and DG',
+        charges: [
+          { id: '1', description: 'Air Freight', rate: 2050.00 }
+        ],
+        total: 2050.00
+      }
+    ]
+  }
+];
