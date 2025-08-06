@@ -193,8 +193,19 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
               Business Analytics & Reports
             </h2>
             <p className="text-muted-foreground">
-              Comprehensive overview of company performance and key metrics
+              Full access to comprehensive business intelligence, data analysis, and PDF reporting with date interval filtering
             </p>
+            <div className="flex gap-2 mt-4">
+              <div className="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full border border-primary/20">
+                ✓ Complete Data Analysis
+              </div>
+              <div className="px-3 py-1 bg-success/10 text-success text-sm rounded-full border border-success/20">
+                ✓ PDF Export Reports
+              </div>
+              <div className="px-3 py-1 bg-accent/10 text-accent text-sm rounded-full border border-accent/20">
+                ✓ Date Range Filtering
+              </div>
+            </div>
           </div>
 
           {/* Financial Metrics Overview */}

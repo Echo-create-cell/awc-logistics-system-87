@@ -36,13 +36,16 @@ const ReportFiltersCard = ({
         <div>
           <h2 className="text-2xl font-bold text-foreground">
             {userRole === 'finance_officer' ? 'Financial Reports' : 
-             userRole === 'sales_director' ? 'Sales Reports' : 'Comprehensive Reports'}
+             userRole === 'sales_director' ? 'Sales Reports' : 
+             userRole === 'partner' ? 'Partner Analytics & Reports' : 'Comprehensive Reports'}
           </h2>
           <p className="text-muted-foreground mt-1">
             {userRole === 'finance_officer' 
               ? 'Comprehensive financial analysis and reporting dashboard'
               : userRole === 'sales_director'
               ? 'Sales performance and team analytics'
+              : userRole === 'partner'
+              ? 'Full business intelligence with PDF export and date filtering capabilities'
               : 'Complete business intelligence and analytics'
             }
           </p>
