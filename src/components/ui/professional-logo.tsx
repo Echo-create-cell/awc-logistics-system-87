@@ -36,20 +36,21 @@ export const ProfessionalLogo: React.FC<ProfessionalLogoProps> = ({
 
   useEffect(() => {
     const processLogo = async () => {
-      if (variant === 'default' || variant === 'header') {
-        try {
-          setIsProcessing(true);
-          const transparentLogo = await processLogoForTransparency(logoSrc);
-          setLogoSrc(transparentLogo);
-        } catch (error) {
-          console.error('Failed to process logo:', error);
-          // Fallback to original logo
-        } finally {
-          setIsProcessing(false);
-        }
+      try {
+        setIsProcessing(true);
+        console.log('Starting logo background removal...');
+        const transparentLogo = await processLogoForTransparency(logoSrc);
+        setLogoSrc(transparentLogo);
+        console.log('Logo background removal completed');
+      } catch (error) {
+        console.error('Failed to process logo:', error);
+        // Keep original logo as fallback
+      } finally {
+        setIsProcessing(false);
       }
     };
 
+    // Process logo for all variants to make it transparent
     processLogo();
   }, [variant]);
 

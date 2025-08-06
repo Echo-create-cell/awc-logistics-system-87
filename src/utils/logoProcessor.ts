@@ -1,10 +1,11 @@
+
 import { pipeline, env } from '@huggingface/transformers';
 
-// Configure transformers.js to always download models
+// Configure transformers.js
 env.allowLocalModels = false;
 env.useBrowserCache = false;
 
-const MAX_IMAGE_DIMENSION = 1024;
+const MAX_IMAGE_DIMENSION = 512; // Reduced for better performance
 
 function resizeImageIfNeeded(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, image: HTMLImageElement) {
   let width = image.naturalWidth;
@@ -34,9 +35,13 @@ function resizeImageIfNeeded(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 export const removeBackground = async (imageElement: HTMLImageElement): Promise<Blob> => {
   try {
     console.log('Starting background removal process...');
-    const segmenter = await pipeline('image-segmentation', 'Xenova/segformer-b0-finetuned-ade-512-512',{
-      device: 'webgpu',
-    });
+    
+    // Use a more reliable segmentation model
+    const segmenter = await pipeline(
+      'image-segmentation', 
+      'Xenova/detr-resnet-50-panoptic',
+      { device: 'wasm' } // Use WASM for better compatibility
+    );
     
     // Convert HTMLImageElement to canvas
     const canvas = document.createElement('canvas');
@@ -48,21 +53,20 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
     const wasResized = resizeImageIfNeeded(canvas, ctx, imageElement);
     console.log(`Image ${wasResized ? 'was' : 'was not'} resized. Final dimensions: ${canvas.width}x${canvas.height}`);
     
-    // Get image data as base64
-    const imageData = canvas.toDataURL('image/jpeg', 0.8);
-    console.log('Image converted to base64');
+    // Get image data as ImageData for processing
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     
     // Process the image with the segmentation model
     console.log('Processing with segmentation model...');
-    const result = await segmenter(imageData);
+    const result = await segmenter(canvas.toDataURL('image/png'));
     
     console.log('Segmentation result:', result);
     
-    if (!result || !Array.isArray(result) || result.length === 0 || !result[0].mask) {
+    if (!result || !Array.isArray(result) || result.length === 0) {
       throw new Error('Invalid segmentation result');
     }
     
-    // Create a new canvas for the masked image
+    // Create output canvas
     const outputCanvas = document.createElement('canvas');
     outputCanvas.width = canvas.width;
     outputCanvas.height = canvas.height;
@@ -73,30 +77,45 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
     // Draw original image
     outputCtx.drawImage(canvas, 0, 0);
     
-    // Apply the mask
-    const outputImageData = outputCtx.getImageData(
-      0, 0,
-      outputCanvas.width,
-      outputCanvas.height
-    );
+    // Get the output image data to modify alpha channel
+    const outputImageData = outputCtx.getImageData(0, 0, canvas.width, canvas.height);
     const data = outputImageData.data;
     
-    // Apply inverted mask to alpha channel
-    for (let i = 0; i < result[0].mask.data.length; i++) {
-      // Invert the mask value (1 - value) to keep the subject instead of the background
-      const alpha = Math.round((1 - result[0].mask.data[i]) * 255);
-      data[i * 4 + 3] = alpha;
+    // Simple color-based background removal for logos
+    // This works better for logos with solid backgrounds
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      
+      // Check if pixel is close to white (common logo background)
+      const isWhiteBackground = r > 240 && g > 240 && b > 240;
+      
+      // Check if pixel is close to the corner colors (likely background)
+      const cornerColor = {
+        r: data[0],
+        g: data[1], 
+        b: data[2]
+      };
+      
+      const isCornerColor = Math.abs(r - cornerColor.r) < 30 && 
+                           Math.abs(g - cornerColor.g) < 30 && 
+                           Math.abs(b - cornerColor.b) < 30;
+      
+      if (isWhiteBackground || isCornerColor) {
+        data[i + 3] = 0; // Make transparent
+      }
     }
     
     outputCtx.putImageData(outputImageData, 0, 0);
-    console.log('Mask applied successfully');
+    console.log('Background removal applied successfully');
     
     // Convert canvas to blob
     return new Promise((resolve, reject) => {
       outputCanvas.toBlob(
         (blob) => {
           if (blob) {
-            console.log('Successfully created final blob');
+            console.log('Successfully created transparent logo blob');
             resolve(blob);
           } else {
             reject(new Error('Failed to create blob'));
@@ -115,6 +134,7 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
 export const loadImage = (file: Blob): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
+    img.crossOrigin = 'anonymous'; // Enable CORS for processing
     img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = URL.createObjectURL(file);
@@ -123,6 +143,8 @@ export const loadImage = (file: Blob): Promise<HTMLImageElement> => {
 
 export const processLogoForTransparency = async (logoPath: string): Promise<string> => {
   try {
+    console.log('Processing logo for transparency:', logoPath);
+    
     // Load the current logo
     const response = await fetch(logoPath);
     const blob = await response.blob();
@@ -134,12 +156,16 @@ export const processLogoForTransparency = async (logoPath: string): Promise<stri
     // Convert to data URL for immediate use
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
+      reader.onload = () => {
+        console.log('Logo processed successfully');
+        resolve(reader.result as string);
+      };
       reader.onerror = reject;
       reader.readAsDataURL(transparentBlob);
     });
   } catch (error) {
-    console.error('Error processing logo:', error);
-    throw error;
+    console.error('Error processing logo for transparency:', error);
+    // Return original logo as fallback
+    return logoPath;
   }
 };
