@@ -18,9 +18,9 @@ const TableHeader = ({ title }: TableHeaderProps) => {
             Browse and filter through the records.
           </p>
         </div>
-        <Button variant="outline" size="sm">
-          <Download size={16} className="mr-2" />
-          Export
+        <Button variant="outline" size="sm" className="gap-2">
+          <Download size={14} />
+          <span className="font-medium">Export Data</span>
         </Button>
       </div>
     </CardHeader>

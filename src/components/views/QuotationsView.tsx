@@ -118,22 +118,32 @@ const QuotationsView = ({
                 size="sm"
                 variant={viewMode === 'table' ? 'default' : 'ghost'}
                 onClick={() => setViewMode('table')}
+                className="gap-1.5"
+                title="Table View"
               >
-                <List size={16} />
+                <List size={14} />
+                <span className="text-xs font-medium">Table</span>
               </Button>
               <Button
                 size="sm"
                 variant={viewMode === 'cards' ? 'default' : 'ghost'}
                 onClick={() => setViewMode('cards')}
+                className="gap-1.5"
+                title="Card View"
               >
-                <Grid size={16} />
+                <Grid size={14} />
+                <span className="text-xs font-medium">Cards</span>
               </Button>
             </div>
           )}
           {(user.role === 'sales_director' || user.role === 'sales_agent') && (
-            <Button className="bg-fuchsia-700 px-4 py-2 rounded text-white hover:bg-fuchsia-900" onClick={() => setActiveTab('create')}>
-              <Plus size={16} className="mr-2" />
-              Create Quotation
+            <Button 
+              className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md font-medium gap-2" 
+              onClick={() => setActiveTab('create')}
+              title="Create New Quotation"
+            >
+              <Plus size={16} />
+              <span>Create Quotation</span>
             </Button>
           )}
         </div>

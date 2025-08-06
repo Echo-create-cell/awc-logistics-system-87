@@ -33,19 +33,21 @@ const QuotationActions = ({
             size="sm"
             variant="ghost"
             onClick={() => onApprove?.(row.id)}
-            className="text-green-600 hover:text-green-700 hover:bg-green-50 p-1"
-            title="Approve"
+            className="text-green-600 hover:text-green-700 hover:bg-green-50 px-3 py-1.5 gap-1.5"
+            title="Approve Quotation"
           >
-            <CheckCircle size={16} />
+            <CheckCircle size={14} />
+            <span className="text-xs font-medium">Approve</span>
           </Button>
           <Button
             size="sm"
             variant="ghost"
             onClick={() => onReject?.(row)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1"
-            title="Reject"
+            className="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 gap-1.5"
+            title="Reject Quotation"
           >
-            <XCircle size={16} />
+            <XCircle size={14} />
+            <span className="text-xs font-medium">Reject</span>
           </Button>
         </>
       )}
@@ -56,10 +58,11 @@ const QuotationActions = ({
           size="sm" 
           variant="ghost" 
           onClick={() => onView(row)}
-          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          title="View Details"
+          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 gap-1.5"
+          title="View Quotation Details"
         >
-          <Eye size={16} />
+          <Eye size={14} />
+          <span className="text-xs font-medium">View</span>
         </Button>
       )}
       
@@ -68,13 +71,14 @@ const QuotationActions = ({
         (!row.linkedInvoiceIds || row.linkedInvoiceIds.length === 0) ? (
           <Button
             size="sm"
-            className="px-2 py-1 text-white bg-fuchsia-700 rounded hover:bg-fuchsia-900 text-xs"
+            className="px-3 py-1.5 text-white bg-primary hover:bg-primary/90 text-xs font-medium gap-1.5"
             onClick={() => onInvoiceFromQuotation?.(row)}
+            title="Generate Invoice from Quotation"
           >
-            Generate Invoice
+            <span>Generate Invoice</span>
           </Button>
         ) : (
-          <Badge variant="secondary">Invoice Generated</Badge>
+          <Badge variant="secondary" className="text-xs px-2 py-1">✓ Invoice Generated</Badge>
         )
       )}
       
@@ -84,10 +88,11 @@ const QuotationActions = ({
           size="sm" 
           variant="ghost" 
           onClick={() => onEdit(row)}
-          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-          title="Edit"
+          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 gap-1.5"
+          title="Edit Quotation"
         >
-          <Edit size={16} />
+          <Edit size={14} />
+          <span className="text-xs font-medium">Edit</span>
         </Button>
       )}
     </div>
