@@ -78,6 +78,10 @@ export const useAppData = () => {
           : q
       ));
     }
+    
+    // Clear the invoice quotation after saving
+    setInvoiceQuotation(null);
+    
     toast({
       title: "Invoice Saved",
       description: `Invoice ${invoice.invoiceNumber} has been created successfully.`,
