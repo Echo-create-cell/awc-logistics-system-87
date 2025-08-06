@@ -15,43 +15,43 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const mockUsers: User[] = [
   {
     id: '1',
-    name: 'Admin User',
+    name: 'System Administrator',
     email: 'admin@awclogistics.com',
     role: 'admin',
     status: 'active',
-    createdAt: '2024-01-01'
+    createdAt: '2024-01-15'
   },
   {
     id: '2',
-    name: 'John Sales Director',
-    email: 'john@awclogistics.com',
+    name: 'I. Arnold',
+    email: 'arnold@awclogistics.com',
     role: 'sales_director',
     status: 'active',
-    createdAt: '2024-01-01'
+    createdAt: '2024-02-01'
   },
   {
     id: '3',
-    name: 'Mike Sales Agent',
-    email: 'mike@awclogistics.com',
+    name: 'Sarah Mutesi',
+    email: 'sarah@awclogistics.com',
     role: 'sales_agent',
     status: 'active',
-    createdAt: '2024-01-01'
+    createdAt: '2024-02-15'
   },
   {
     id: '4',
-    name: 'Lisa Finance',
-    email: 'lisa@awclogistics.com',
+    name: 'Finance Controller',
+    email: 'finance@awclogistics.com',
     role: 'finance_officer',
     status: 'active',
-    createdAt: '2024-01-01'
+    createdAt: '2024-03-01'
   },
   {
     id: '5',
-    name: 'Alex Partner',
-    email: 'alex@awclogistics.com',
+    name: 'Michel Tshikala',
+    email: 'michel@awclogistics.com',
     role: 'partner',
     status: 'active',
-    createdAt: '2024-01-01'
+    createdAt: '2024-03-10'
   }
 ];
 
