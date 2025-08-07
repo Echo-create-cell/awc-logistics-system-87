@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import { showPersistentToast } from '@/components/ui/persistent-toast'
 import type { NotificationItem } from '@/components/system/NotificationCenter'
 import { Quotation, User } from '@/types'
 import { InvoiceData } from '@/types/invoice'
@@ -58,11 +59,28 @@ export const useSystemNotifications = () => {
 
     setNotifications(prev => [newNotification, ...prev])
 
-    // Also show toast for immediate feedback
-    toast({
+    // Show persistent toast notification using sonner
+    showPersistentToast({
       title,
       description,
-      variant: variant === 'error' ? 'destructive' : 'default'
+      variant,
+      priority: context?.priority || 'medium',
+      category,
+      persistent: context?.priority === 'critical' || context?.actionRequired,
+      actionRequired: context?.actionRequired,
+      onAction: () => {
+        // Navigate to related item based on type
+        if (context?.relatedType && context?.relatedId) {
+          console.log(`Navigate to ${context.relatedType}: ${context.relatedId}`)
+        }
+      }
+    })
+
+    // Also show regular toast for fallback
+    toast({
+      title: `${category}: ${title}`,
+      description,
+      variant: variant === 'error' || variant === 'critical' ? 'destructive' : 'default'
     })
 
     return newNotification.id

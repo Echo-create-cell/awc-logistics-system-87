@@ -64,7 +64,7 @@ export interface SystemNotificationProps
   hideAfter?: number
 }
 
-const SystemNotification = React.forwardRef<HTMLDivElement, SystemNotificationProps>(
+  const SystemNotification = React.forwardRef<HTMLDivElement, SystemNotificationProps>(
   ({ 
     className, 
     variant, 
@@ -80,21 +80,23 @@ const SystemNotification = React.forwardRef<HTMLDivElement, SystemNotificationPr
     category,
     dismissible = true,
     autoHide = false,
-    hideAfter = 5000,
+    hideAfter = 0, // Default to 0 (no auto-hide) for persistent notifications
     ...props 
   }, ref) => {
     const [isVisible, setIsVisible] = React.useState(true)
+    const [isHovered, setIsHovered] = React.useState(false)
     const Icon = iconMap[variant || 'default']
 
     React.useEffect(() => {
-      if (autoHide && hideAfter > 0) {
+      // Only auto-hide if specifically enabled and not hovered
+      if (autoHide && hideAfter > 0 && !isHovered) {
         const timer = setTimeout(() => {
           setIsVisible(false)
           setTimeout(() => onClose?.(), 300) // Wait for animation
         }, hideAfter)
         return () => clearTimeout(timer)
       }
-    }, [autoHide, hideAfter, onClose])
+    }, [autoHide, hideAfter, onClose, isHovered])
 
     const handleClose = () => {
       setIsVisible(false)
@@ -106,12 +108,17 @@ const SystemNotification = React.forwardRef<HTMLDivElement, SystemNotificationPr
     return (
       <div
         ref={ref}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         className={cn(
           systemNotificationVariants({ variant, size, position }),
-          "animate-in slide-in-from-top-1 fade-in duration-300",
+          "animate-in slide-in-from-top-1 fade-in duration-300 cursor-pointer",
           !isVisible && "animate-out slide-out-to-top-1 fade-out duration-300",
+          "hover:shadow-lg transition-all duration-200",
+          priority === 'critical' && "ring-2 ring-red-500/50 ring-opacity-75",
           className
         )}
+        onClick={() => !dismissible || handleClose()}
         {...props}
       >
         <div className="flex items-start gap-3">
