@@ -29,7 +29,7 @@ export const useUserManagement = (initialUsers: User[]): UserManagementReturn =>
     users.forEach(user => {
       credentials[user.id] = {
         email: user.email,
-        password: 'password', // Default password for all users
+        password: user.email === 'admin@awclogistics.com' ? 'admin123' : 'password', // Admin gets proper password
         temporaryPassword: false,
         lastPasswordReset: undefined
       };
