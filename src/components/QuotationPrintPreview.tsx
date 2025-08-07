@@ -305,11 +305,11 @@ const QuotationPrintPreview = ({ quotation, onClose, onPrint }: QuotationPrintPr
                 <tbody>
                   {commodities.map((commodity, index) => (
                     <tr key={index}>
-                      <td>{commodity.name}</td>
-                      <td>{commodity.quantityKg.toLocaleString()}</td>
-                      <td>{quotation.currency} {commodity.rate.toLocaleString()}</td>
-                      <td>{quotation.currency} {commodity.clientRate.toLocaleString()}</td>
-                      <td>{quotation.currency} {(commodity.quantityKg * commodity.clientRate).toLocaleString()}</td>
+                      <td>{commodity.name || 'N/A'}</td>
+                      <td>{commodity.quantityKg?.toLocaleString() || '0'}</td>
+                      <td>{quotation.currency} {commodity.rate?.toLocaleString() || '0'}</td>
+                      <td>{quotation.currency} {commodity.clientRate?.toLocaleString() || '0'}</td>
+                      <td>{quotation.currency} {((commodity.quantityKg || 0) * (commodity.clientRate || 0)).toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
