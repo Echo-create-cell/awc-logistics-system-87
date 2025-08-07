@@ -120,17 +120,17 @@ const EnhancedSearchableTable = ({
       <CardContent className="pt-0">
         {/* Enhanced Search and Filter Bar */}
         <div className="space-y-4 pt-6 mt-6 border-t border-gray-100">
-          <div className="bg-gradient-to-r from-primary/5 to-primary/10 p-4 rounded-xl border border-primary/20">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100">
             <div className="flex flex-wrap gap-4 items-center">
               {/* Global Search */}
               {globalSearch && (
                 <div className="relative flex-1 min-w-[300px]">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary" size={18} />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500" size={18} />
                   <Input
                     placeholder="Search across all fields..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-background border-border focus:border-primary focus:ring-primary shadow-sm"
+                    className="pl-10 bg-white border-blue-200 focus:border-blue-400 focus:ring-blue-200 shadow-sm"
                   />
                 </div>
               )}
@@ -142,7 +142,7 @@ const EnhancedSearchableTable = ({
                   value={filters[filter.key] || '__all__'}
                   onValueChange={(value) => handleFilterChange(filter.key, value)}
                 >
-                  <SelectTrigger className="w-full sm:w-[200px] bg-background border-border focus:border-primary shadow-sm">
+                  <SelectTrigger className="w-full sm:w-[200px] bg-white border-blue-200 focus:border-blue-400 shadow-sm">
                     <SelectValue placeholder={filter.label} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
@@ -158,16 +158,16 @@ const EnhancedSearchableTable = ({
             </div>
 
             {/* Action Buttons Row */}
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-blue-200">
               <div className="flex items-center space-x-3">
                 {activeFiltersCount > 0 && (
-                  <Badge variant="secondary" className="bg-primary/10 text-primary font-medium">
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800 font-medium">
                     {activeFiltersCount} filter{activeFiltersCount > 1 ? 's' : ''} applied
                   </Badge>
                 )}
                 
                 {sortConfig && (
-                  <Badge variant="outline" className="bg-background border-border text-foreground">
+                  <Badge variant="outline" className="bg-white border-blue-200 text-blue-700">
                     {sortConfig.direction === 'asc' ? <SortAsc className="h-3 w-3 mr-1" /> : <SortDesc className="h-3 w-3 mr-1" />}
                     Sorted by {sortConfig.key}
                   </Badge>
@@ -188,7 +188,7 @@ const EnhancedSearchableTable = ({
                 )}
                 
                 {showExport && onExport && (
-                  <Button size="sm" onClick={onExport} className="bg-primary hover:bg-primary/90">
+                  <Button size="sm" onClick={onExport} className="bg-blue-600 hover:bg-blue-700">
                     <Download className="mr-2 h-4 w-4" />
                     Export Data
                   </Button>
@@ -210,7 +210,7 @@ const EnhancedSearchableTable = ({
             </span>
             <span> results shown</span>
             {filteredAndSortedData.length !== data.length && (
-              <span className="text-primary ml-1">
+              <span className="text-blue-600 ml-1">
                 (filtered from {data.length} total)
               </span>
             )}

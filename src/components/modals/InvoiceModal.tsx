@@ -59,13 +59,13 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader className="pb-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${isPaid ? 'bg-success/10' : 'bg-primary/10'}`}>
-              <FileText className={`h-5 w-5 ${isPaid ? 'text-success' : 'text-primary'}`} />
+            <div className={`p-2 rounded-lg ${isPaid ? 'bg-green-100' : 'bg-blue-100'}`}>
+              <FileText className={`h-5 w-5 ${isPaid ? 'text-green-600' : 'text-blue-600'}`} />
             </div>
             <div className="flex-1">
               <DialogTitle className="text-xl font-semibold text-gray-900 flex items-center gap-2">
                 {isPaid ? "View Invoice" : "Edit Invoice"}
-                <Badge variant={isPaid ? "default" : "secondary"} className={isPaid ? "bg-success/10 text-success-foreground" : "bg-primary/10 text-primary-foreground"}>
+                <Badge variant={isPaid ? "default" : "secondary"} className={isPaid ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}>
                   {form.status}
                 </Badge>
               </DialogTitle>
@@ -96,7 +96,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
                     onChange={(e) => handleChange('invoiceNumber', e.target.value)}
                     placeholder="AWC-YYYYMM-XXX"
                     disabled={isPaid}
-                    className={`${isPaid ? 'bg-muted' : 'bg-background'} border-border focus:border-primary focus:ring-primary`}
+                    className={`${isPaid ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:border-blue-500 focus:ring-blue-500`}
                   />
                 </div>
                 <div className="space-y-2">
@@ -109,7 +109,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
                     onChange={(e) => handleChange('clientName', e.target.value)}
                     placeholder="Enter client name"
                     disabled={isPaid}
-                    className={`${isPaid ? 'bg-muted' : 'bg-background'} border-border focus:border-primary focus:ring-primary`}
+                    className={`${isPaid ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:border-blue-500 focus:ring-blue-500`}
                   />
                 </div>
               </div>
@@ -260,7 +260,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
             {!isPaid && (
               <Button 
                 onClick={handleSave} 
-                className={`${isMarkedAsPaid ? 'bg-success hover:bg-success/90' : 'bg-primary hover:bg-primary/90'} text-white`}
+                className={`${isMarkedAsPaid ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
               >
                 {isMarkedAsPaid ? (
                   <>

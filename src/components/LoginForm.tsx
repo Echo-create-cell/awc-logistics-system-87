@@ -37,7 +37,7 @@ const LoginForm = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
       <div className="w-full max-w-lg">
-        <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+        <Card className="shadow-2xl border-0 bg-card/95 backdrop-blur-sm">
           <CardHeader className="text-center pb-8 pt-8">
             <div className="flex justify-center mb-6">
               <ProfessionalLogo 
@@ -70,7 +70,7 @@ const LoginForm = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
                   required
-                  className="h-12 border-border focus:border-primary focus:ring-primary pl-4"
+                  className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pl-4"
                 />
               </div>
 
@@ -88,7 +88,7 @@ const LoginForm = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
                     required
-                    className="h-12 border-border focus:border-primary focus:ring-primary pl-4 pr-12"
+                    className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pl-4 pr-12"
                   />
                   <button
                     type="button"
@@ -117,8 +117,8 @@ const LoginForm = () => {
                   </div>
                 </div>
                 <div className="absolute top-4 right-4">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 animate-pulse">
-                    <Building2 className="h-5 w-5 text-white" />
+                   <div className="bg-primary/20 backdrop-blur-sm rounded-full p-2 animate-pulse">
+                     <Building2 className="h-5 w-5 text-primary-foreground" />
                   </div>
                 </div>
               </div>
@@ -126,7 +126,7 @@ const LoginForm = () => {
               {/* Submit Button */}
               <Button 
                 type="submit" 
-                className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-medium transition-all duration-200" 
+                className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200" 
                 disabled={isLoading}
               >
                 {isLoading ? (

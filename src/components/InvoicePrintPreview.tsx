@@ -152,8 +152,8 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
 
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-card rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto border shadow-large">
         <div className="flex justify-between items-center p-4 border-b">
           <h3 className="text-lg font-bold">Invoice Preview</h3>
           <div className="flex space-x-2">
@@ -194,8 +194,8 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                             <p className="font-semibold"><strong>Invoice #:</strong> {invoice.invoiceNumber}</p>
                             <p><strong>Date:</strong> {new Date(invoice.issueDate).toLocaleDateString('en-GB')}</p>
                             {invoice.awbNumber && (
-                                <div className="bg-primary/10 border border-primary/20 p-1 rounded">
-                                    <p className="font-medium text-primary"><strong>AWB:</strong> {invoice.awbNumber}</p>
+                                <div className="bg-blue-100 border border-blue-200 p-1 rounded">
+                                    <p className="font-medium text-blue-800"><strong>AWB:</strong> {invoice.awbNumber}</p>
                                 </div>
                             )}
                             {invoice.destination && <p><strong>Destination:</strong> {invoice.destination}</p>}
