@@ -132,27 +132,34 @@ export const showPersistentToast = ({
     duration,
     className: `bg-white border border-gray-200 shadow-lg [&_button[data-close-button]]:bg-pink-500 [&_button[data-close-button]]:text-white [&_button[data-close-button]]:hover:bg-pink-600 [&_button[data-close-button]]:rounded-full [&_button[data-close-button]]:shadow-lg [&_button[data-close-button]]:shadow-pink-500/50`,
     closeButton: true,
-    position: 'top-center', // Fixed position at top center for consistent stacking
+    position: 'top-center',
+    style: {
+      zIndex: 9999,
+    }
   })
 }
 
 export const PersistentToaster = () => {
   return (
-    <Toaster 
-      position="top-center"
-      toastOptions={{
-        style: {
-          background: 'white',
-          color: 'hsl(var(--foreground))',
-          border: '1px solid hsl(var(--border))',
-        },
-        className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg',
-      }}
-      richColors
-      expand
-      visibleToasts={15}
-      gap={4}
-      offset={20}
-    />
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] pointer-events-none">
+      <Toaster 
+        position="top-center"
+        toastOptions={{
+          style: {
+            background: 'white',
+            color: 'hsl(var(--foreground))',
+            border: '1px solid hsl(var(--border))',
+            position: 'relative',
+            pointerEvents: 'auto',
+          },
+          className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg mb-2',
+        }}
+        richColors
+        expand={false}
+        visibleToasts={10}
+        gap={8}
+        offset={0}
+      />
+    </div>
   )
 }

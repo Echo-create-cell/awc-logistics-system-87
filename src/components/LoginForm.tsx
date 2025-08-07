@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, Lock, Eye, EyeOff, Building2, Shield } from 'lucide-react';
 import { ProfessionalLogo } from '@/components/ui/professional-logo';
 
@@ -13,25 +12,10 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading } = useAuth();
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const success = await login(email, password);
-    
-    if (success) {
-      toast({
-        title: "Login Successful",
-        description: "Welcome to AWC Logistics",
-      });
-    } else {
-      toast({
-        title: "Login Failed",
-        description: "Invalid credentials. Use 'password' for all demo accounts.",
-        variant: "destructive",
-      });
-    }
+    await login(email, password);
   };
 
   return (
