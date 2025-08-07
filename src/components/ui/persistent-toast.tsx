@@ -90,15 +90,7 @@ export const showPersistentToast = ({
 
   return sonnerToast(toastContent, {
     duration,
-    className: `${
-      variant === 'success' ? 'border-emerald-200 bg-emerald-50' :
-      variant === 'warning' ? 'border-amber-200 bg-amber-50' :
-      variant === 'error' ? 'border-red-200 bg-red-50' :
-      variant === 'critical' ? 'border-red-300 bg-red-100 ring-2 ring-red-500/50' :
-      variant === 'info' ? 'border-blue-200 bg-blue-50' :
-      variant === 'pending' ? 'border-orange-200 bg-orange-50' :
-      'border'
-    } [&_button[data-close-button]]:bg-pink-500 [&_button[data-close-button]]:text-white [&_button[data-close-button]]:hover:bg-pink-600 [&_button[data-close-button]]:rounded-full [&_button[data-close-button]]:shadow-lg [&_button[data-close-button]]:shadow-pink-500/50`,
+    className: `bg-white border border-gray-200 shadow-lg [&_button[data-close-button]]:bg-pink-500 [&_button[data-close-button]]:text-white [&_button[data-close-button]]:hover:bg-pink-600 [&_button[data-close-button]]:rounded-full [&_button[data-close-button]]:shadow-lg [&_button[data-close-button]]:shadow-pink-500/50`,
     closeButton: true, // Always show close button for better UX
     position: priority === 'critical' ? 'top-center' : 'top-right',
   })
@@ -110,15 +102,17 @@ export const PersistentToaster = () => {
       position="top-right"
       toastOptions={{
         style: {
-          background: 'hsl(var(--background))',
+          background: 'white',
           color: 'hsl(var(--foreground))',
           border: '1px solid hsl(var(--border))',
         },
-        className: 'group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg',
+        className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg',
       }}
       richColors
       expand
-      visibleToasts={5}
+      visibleToasts={10}
+      gap={8}
+      offset={16}
     />
   )
 }

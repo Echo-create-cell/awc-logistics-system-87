@@ -4,17 +4,17 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { X, CheckCircle, AlertCircle, XCircle, Info, Clock, Zap, AlertTriangle } from "lucide-react"
 
 const systemNotificationVariants = cva(
-  "relative w-full rounded-lg border p-4 shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out",
+  "relative w-full rounded-lg border p-4 shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out bg-white text-foreground",
   {
     variants: {
       variant: {
-        default: "bg-background/95 text-foreground border-border shadow-md",
-        success: "bg-emerald-50/95 text-emerald-900 border-emerald-200 shadow-emerald-100/50 dark:bg-emerald-950/95 dark:text-emerald-100 dark:border-emerald-800",
-        warning: "bg-amber-50/95 text-amber-900 border-amber-200 shadow-amber-100/50 dark:bg-amber-950/95 dark:text-amber-100 dark:border-amber-800",
-        error: "bg-red-50/95 text-red-900 border-red-200 shadow-red-100/50 dark:bg-red-950/95 dark:text-red-100 dark:border-red-800",
-        info: "bg-blue-50/95 text-blue-900 border-blue-200 shadow-blue-100/50 dark:bg-blue-950/95 dark:text-blue-100 dark:border-blue-800",
-        pending: "bg-orange-50/95 text-orange-900 border-orange-200 shadow-orange-100/50 dark:bg-orange-950/95 dark:text-orange-100 dark:border-orange-800",
-        critical: "bg-red-100/95 text-red-950 border-red-300 shadow-red-200/50 dark:bg-red-900/95 dark:text-red-50 dark:border-red-700",
+        default: "border-gray-200 shadow-md",
+        success: "border-emerald-200 shadow-emerald-100/50",
+        warning: "border-amber-200 shadow-amber-100/50",
+        error: "border-red-200 shadow-red-100/50",
+        info: "border-blue-200 shadow-blue-100/50",
+        pending: "border-orange-200 shadow-orange-100/50",
+        critical: "border-red-300 shadow-red-200/50 ring-2 ring-red-500/50",
       },
       size: {
         default: "p-4",
@@ -22,11 +22,11 @@ const systemNotificationVariants = cva(
         lg: "p-6",
       },
       position: {
-        "top-right": "fixed top-4 right-4 z-50 max-w-sm",
-        "top-left": "fixed top-4 left-4 z-50 max-w-sm",
-        "bottom-right": "fixed bottom-4 right-4 z-50 max-w-sm",
-        "bottom-left": "fixed bottom-4 left-4 z-50 max-w-sm",
-        "top-center": "fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-sm",
+        "top-right": "fixed z-50 max-w-sm",
+        "top-left": "fixed z-50 max-w-sm",
+        "bottom-right": "fixed z-50 max-w-sm",
+        "bottom-left": "fixed z-50 max-w-sm",
+        "top-center": "fixed left-1/2 transform -translate-x-1/2 z-50 max-w-sm",
         inline: "relative w-full",
       },
     },
