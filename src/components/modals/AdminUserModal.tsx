@@ -148,19 +148,19 @@ const AdminUserModal = ({
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-card">
-        <DialogHeader className="pb-4 border-b border-border/20">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-white">
+        <DialogHeader className="pb-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <div className={`p-3 rounded-lg ${isEditing ? 'bg-primary/10' : 'bg-success/10'}`}>
+            <div className={`p-2 rounded-lg ${isEditing ? 'bg-blue-100' : 'bg-green-100'}`}>
               {isEditing ? (
-                <User className="h-5 w-5 text-primary" />
+                <User className="h-5 w-5 text-blue-600" />
               ) : (
-                <UserPlus className="h-5 w-5 text-success" />
+                <UserPlus className="h-5 w-5 text-green-600" />
               )}
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <DialogTitle className="text-xl font-semibold text-card-foreground">
+                <DialogTitle className="text-xl font-semibold text-gray-900">
                   {isEditing ? 'Edit User' : 'Add New User'}
                 </DialogTitle>
                 {isEditing && form.status && (
@@ -169,7 +169,7 @@ const AdminUserModal = ({
                   </Badge>
                 )}
               </div>
-              <DialogDescription className="text-muted-foreground text-sm mt-1">
+              <DialogDescription className="text-gray-600 mt-1">
                 {isEditing ? 'Update user information and manage credentials.' : 'Create a new user account with credentials.'}
               </DialogDescription>
             </div>
@@ -403,7 +403,7 @@ const AdminUserModal = ({
           </div>
         </div>
         
-        <DialogFooter className="pt-4 border-t border-border/20">
+        <DialogFooter className="pt-6 border-t border-gray-100 bg-gray-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
           <div className="flex justify-between items-center w-full">
             {isEditing && user ? (
               <AlertDialog>
