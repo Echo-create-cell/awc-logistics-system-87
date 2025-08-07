@@ -242,7 +242,7 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Average Deal Value</span>
-                  <span className="text-lg font-bold text-accent">${reportData.metrics.avgDealSize.toLocaleString()}</span>
+                  <span className="text-lg font-bold text-primary">${reportData.metrics.avgDealSize.toLocaleString()}</span>
                 </div>
               </CardContent>
             </Card>
@@ -264,7 +264,7 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Profit Margin</span>
-                  <span className="text-lg font-bold text-accent">
+                  <span className="text-lg font-bold text-primary">
                     {reportData.metrics.totalRevenue > 0 
                       ? ((reportData.metrics.totalProfit / reportData.metrics.totalRevenue) * 100).toFixed(1)
                       : '0'
