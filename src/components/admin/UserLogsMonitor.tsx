@@ -162,22 +162,23 @@ const UserLogsMonitor = ({ users, quotations, invoices }: UserLogsMonitorProps) 
   };
 
   const handleExport = () => {
-    const exportData = filteredLogs.map(log => ({
-      timestamp: log.timestamp,
-      user: log.userName,
-      role: log.userRole,
-      action: log.action,
-      details: log.details
-    }));
+    // Generate CSV content
+    let csvContent = 'Timestamp,User,Role,Action,Details\n';
+    filteredLogs.forEach(log => {
+      csvContent += `"${log.timestamp}","${log.userName}","${log.userRole}","${log.action}","${log.details}"\n`;
+    });
     
-    const dataStr = JSON.stringify(exportData, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const exportFileDefaultName = `user-logs-${new Date().toISOString().split('T')[0]}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `user-logs-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   return (

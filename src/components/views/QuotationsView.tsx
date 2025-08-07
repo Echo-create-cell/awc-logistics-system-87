@@ -58,14 +58,23 @@ const QuotationsView = ({
   };
 
   const handleExport = () => {
-    const dataStr = JSON.stringify(filteredQuotations, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const exportFileDefaultName = `quotations-${new Date().toISOString().split('T')[0]}.json`;
+    // Generate CSV content
+    let csvContent = 'Date,Client,Destination,Status,Amount,Sent By,Approved By\n';
+    filteredQuotations.forEach(q => {
+      csvContent += `${new Date(q.createdAt).toLocaleDateString()},"${q.clientName}","${q.destination}","${q.status}","${q.clientQuote || 0}","${q.quoteSentBy}","${q.approvedBy || 'N/A'}"\n`;
+    });
     
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `quotations-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   const quotationColumns = getQuotationColumns({

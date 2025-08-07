@@ -6,9 +6,10 @@ import { CardHeader, CardTitle } from '@/components/ui/card';
 
 interface TableHeaderProps {
   title: string;
+  onExport?: () => void;
 }
 
-const TableHeader = ({ title }: TableHeaderProps) => {
+const TableHeader = ({ title, onExport }: TableHeaderProps) => {
   return (
     <CardHeader className="pb-4">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
@@ -18,9 +19,15 @@ const TableHeader = ({ title }: TableHeaderProps) => {
             Browse and filter through the records.
           </p>
         </div>
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="gap-2" 
+          onClick={onExport}
+          disabled={!onExport}
+        >
           <Download size={14} />
-          <span className="font-medium">Export Data</span>
+          <span className="font-medium">Export CSV</span>
         </Button>
       </div>
     </CardHeader>

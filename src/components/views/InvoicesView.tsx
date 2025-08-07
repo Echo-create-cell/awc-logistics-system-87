@@ -45,6 +45,26 @@ const InvoicesView = ({
     setModalOpen(true);
   };
 
+  const handleExport = (data: InvoiceData[] = displayedInvoices) => {
+    // Generate CSV content
+    let csvContent = 'Invoice Number,Client,Amount,Status,Due Date,Created Date\n';
+    data.forEach(invoice => {
+      csvContent += `"${invoice.invoiceNumber}","${invoice.clientName}","${invoice.totalAmount}","${invoice.status}","${invoice.dueDate}","${new Date(invoice.createdAt).toLocaleDateString()}"\n`;
+    });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `invoices-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   const displayedInvoices = invoices;
 
   // Helper function to get quotation volume for an invoice
@@ -279,6 +299,7 @@ const InvoicesView = ({
           data={displayedInvoices}
           columns={invoiceColumns}
           searchFields={['invoiceNumber', 'clientName', 'status']}
+          onDownload={handleExport}
           filterOptions={[
             {
               key: 'status',

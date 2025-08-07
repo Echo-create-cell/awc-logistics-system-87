@@ -278,9 +278,9 @@ export const generateCSVExport = (
 
   if (reportType === 'quotations') {
     filename = `quotations-${new Date().toISOString().split('T')[0]}.csv`;
-    csvContent = 'Date,Client,Destination,Status,Amount,Sent By\n';
+    csvContent = 'Date,Client,Destination,Status,Amount,Sent By,Approved By\n';
     quotations.forEach(q => {
-      csvContent += `${new Date(q.createdAt).toLocaleDateString()},"${q.clientName}","${q.destination}","${q.status}","${q.clientQuote}","${q.quoteSentBy}"\n`;
+      csvContent += `${new Date(q.createdAt).toLocaleDateString()},"${q.clientName}","${q.destination}","${q.status}","${q.clientQuote || 0}","${q.quoteSentBy}","${q.approvedBy || 'N/A'}"\n`;
     });
   } else {
     filename = `report-${new Date().toISOString().split('T')[0]}.csv`;
@@ -288,7 +288,7 @@ export const generateCSVExport = (
     filteredData.forEach(item => {
       const isQuotation = 'clientQuote' in item;
       const amount = isQuotation ? (item as Quotation).clientQuote : (item as InvoiceData).totalAmount;
-      csvContent += `${new Date(item.createdAt).toLocaleDateString()},"${isQuotation ? 'Quotation' : 'Invoice'}","${item.clientName}","${amount}","${item.status}"\n`;
+      csvContent += `${new Date(item.createdAt).toLocaleDateString()},"${isQuotation ? 'Quotation' : 'Invoice'}","${item.clientName}","${amount || 0}","${item.status}"\n`;
     });
   }
 
@@ -298,6 +298,42 @@ export const generateCSVExport = (
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
     link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+};
+
+// Enhanced CSV export for generic data arrays
+export const generateGenericCSVExport = (
+  data: any[],
+  columns: string[],
+  filename: string
+) => {
+  if (!data.length) return;
+  
+  // Create CSV headers
+  let csvContent = columns.join(',') + '\n';
+  
+  // Add data rows
+  data.forEach(row => {
+    const values = columns.map(col => {
+      const value = row[col];
+      // Handle null/undefined values and escape quotes
+      if (value === null || value === undefined) return '';
+      const stringValue = String(value).replace(/"/g, '""');
+      return `"${stringValue}"`;
+    });
+    csvContent += values.join(',') + '\n';
+  });
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${filename}-${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();

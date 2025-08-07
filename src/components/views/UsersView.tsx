@@ -61,22 +61,23 @@ const UsersView = ({ users }: UsersViewProps) => {
   };
 
   const handleExport = () => {
-    const exportData = users.map(user => ({
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      status: user.status,
-      createdAt: user.createdAt
-    }));
+    // Generate CSV content
+    let csvContent = 'Name,Email,Role,Status,Created Date\n';
+    users.forEach(user => {
+      csvContent += `"${user.name}","${user.email}","${user.role.replace('_', ' ')}","${user.status}","${new Date(user.createdAt).toLocaleDateString()}"\n`;
+    });
     
-    const dataStr = JSON.stringify(exportData, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const exportFileDefaultName = `users-${new Date().toISOString().split('T')[0]}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `users-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   const userColumns = [

@@ -14,6 +14,7 @@ const SearchableTable = ({
   searchFields,
   filterOptions = [],
   itemsPerPage = 10,
+  onDownload,
 }: SearchableTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<Record<string, string>>({});
@@ -61,9 +62,16 @@ const SearchableTable = ({
     }));
   };
 
+  const handleExportClick = () => {
+    if (onDownload) {
+      // Export all filtered data
+      onDownload(filteredData);
+    }
+  };
+
   return (
     <Card className="w-full">
-      <TableHeader title={title} />
+      <TableHeader title={title} onExport={handleExportClick} />
       
       <CardContent className="pt-0">
         <TableFilters
