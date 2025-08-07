@@ -28,6 +28,7 @@ interface MainContentProps {
   onEditUser: (user: User) => void;
   onDeleteUser: (id: string) => void;
   onCreateUser: (user: Omit<User, 'id' | 'createdAt'>) => void;
+  onPrintQuotation?: (quotation: Quotation) => void;
   invoiceQuotation: Quotation | null;
   onInvoiceQuotationClear: () => void;
 }
@@ -50,6 +51,7 @@ const MainContent = ({
   onEditUser,
   onDeleteUser,
   onCreateUser,
+  onPrintQuotation,
   invoiceQuotation,
   onInvoiceQuotationClear,
 }: MainContentProps) => {
@@ -75,6 +77,7 @@ const MainContent = ({
             onEdit={user.role === 'admin' || user.role === 'partner' ? undefined : onEditQuotation}
             onApprove={user.role === 'admin' ? onApproveQuotation : undefined}
             onReject={user.role === 'admin' ? onRejectQuotation : undefined}
+            onPrint={onPrintQuotation}
           />
         );
       case 'create':

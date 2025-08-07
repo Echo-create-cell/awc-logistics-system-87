@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { Edit, CheckCircle, XCircle, Eye, Printer } from 'lucide-react';
 import { Quotation, User } from '@/types';
 
 interface QuotationActionsProps {
@@ -13,6 +13,7 @@ interface QuotationActionsProps {
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
   onView?: (quotation: Quotation) => void;
+  onPrint?: (quotation: Quotation) => void;
 }
 
 const QuotationActions = ({
@@ -23,6 +24,7 @@ const QuotationActions = ({
   onInvoiceFromQuotation,
   onEdit,
   onView,
+  onPrint,
 }: QuotationActionsProps) => {
   return (
     <div className="flex gap-2 items-center">
@@ -65,6 +67,21 @@ const QuotationActions = ({
           <span className="text-xs font-medium">View</span>
         </Button>
       )}
+      
+      {/* Print button for all users */}
+      {onPrint && (
+        <Button 
+          size="sm" 
+          variant="ghost" 
+          onClick={() => onPrint(row)}
+          className="text-gray-600 hover:text-gray-700 hover:bg-gray-50 px-3 py-1.5 gap-1.5"
+          title="Print Quotation"
+        >
+          <Printer size={14} />
+          <span className="text-xs font-medium">Print</span>
+        </Button>
+      )}
+      
       
       {/* Invoice generation for sales roles */}
       {(user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won' && (
