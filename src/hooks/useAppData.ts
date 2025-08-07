@@ -3,6 +3,8 @@ import { Quotation, User } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 import { mockQuotations, mockUsers, mockInvoices } from '@/data/mockData';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useSystemNotifications } from '@/hooks/useSystemNotifications';
+import { useOverdueNotifications } from '@/components/hooks/useOverdueNotifications';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const useAppData = () => {
@@ -26,6 +28,11 @@ export const useAppData = () => {
     notifyUserUpdated,
     notifyUserDeleted,
   } = useNotifications();
+  
+  const systemNotifications = useSystemNotifications();
+  
+  // Set up overdue notifications
+  useOverdueNotifications({ quotations, invoices });
 
   const handleApproveQuotation = (id: string) => {
     if (!user) return;
@@ -40,6 +47,7 @@ export const useAppData = () => {
       )
     );
     notifyQuotationApproved(quotation, { user });
+    systemNotifications.notifyQuotationApproved(quotation, { user });
   };
 
   const handleRejectQuotation = (id: string, reason: string) => {
@@ -56,11 +64,13 @@ export const useAppData = () => {
       })
     );
     notifyQuotationRejected(quotation, reason, { user });
+    systemNotifications.notifyQuotationRejected(quotation, reason, { user });
   };
 
   const handleQuotationCreated = (newQuotationData: Quotation) => {
     setQuotations(prev => [newQuotationData, ...prev]);
     notifyQuotationCreated(newQuotationData, { user });
+    systemNotifications.notifyQuotationCreated(newQuotationData, { user });
     setActiveTab('quotations');
   };
 
@@ -91,6 +101,7 @@ export const useAppData = () => {
       }
     } else {
       notifyInvoiceCreated(invoice, { user });
+      systemNotifications.notifyInvoiceCreated(invoice, { user });
     }
     
     // Clear the invoice quotation after saving
@@ -139,6 +150,7 @@ export const useAppData = () => {
     } as User;
     setUsers(prev => [userWithId, ...prev]);
     notifyUserCreated(userWithId, { user });
+    systemNotifications.notifyUserCreated(userWithId, { user });
   };
 
   const handleTabChange = (tab: string) => {
@@ -170,5 +182,6 @@ export const useAppData = () => {
     setPrintPreview,
     setActiveTab,
     setInvoiceQuotation,
+    systemNotifications,
   };
 };
