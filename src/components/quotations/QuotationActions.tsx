@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { Edit, CheckCircle, XCircle, Eye, Printer } from 'lucide-react';
 import { Quotation, User } from '@/types';
 
 interface QuotationActionsProps {
@@ -13,6 +13,7 @@ interface QuotationActionsProps {
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
   onView?: (quotation: Quotation) => void;
+  onPrint?: (quotation: Quotation) => void;
 }
 
 const QuotationActions = ({
@@ -23,6 +24,7 @@ const QuotationActions = ({
   onInvoiceFromQuotation,
   onEdit,
   onView,
+  onPrint,
 }: QuotationActionsProps) => {
   return (
     <div className="flex gap-2 items-center">
@@ -52,6 +54,20 @@ const QuotationActions = ({
         </>
       )}
       
+      {/* Print button for all users */}
+      {onPrint && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => onPrint(row)}
+          className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 px-3 py-1.5 gap-1.5"
+          title="Print Quotation"
+        >
+          <Printer size={14} />
+          <span className="text-xs font-medium">Print</span>
+        </Button>
+      )}
+
       {/* Admin and Partner view-only for quotations */}
       {(user.role === 'admin' || user.role === 'partner') && onView && (
         <Button 
