@@ -26,6 +26,38 @@ const mockUsers: User[] = [
     role: 'admin',
     status: 'active',
     createdAt: '2024-01-15'
+  },
+  {
+    id: '2',
+    name: 'JOHN NDAYAMBAJE',
+    email: 'john@awclogistics.com',
+    role: 'sales_director',
+    status: 'active',
+    createdAt: '2024-02-01'
+  },
+  {
+    id: '3',
+    name: 'RONNY TWAHIRWA',
+    email: 'ronny@awclogistics.com',
+    role: 'sales_agent',
+    status: 'active',
+    createdAt: '2024-02-15'
+  },
+  {
+    id: '4',
+    name: 'Finance Controller',
+    email: 'finance@awclogistics.com',
+    role: 'finance_officer',
+    status: 'active',
+    createdAt: '2024-03-01'
+  },
+  {
+    id: '5',
+    name: 'Michel M. TSHIKALA',
+    email: 'michel@awclogistics.com',
+    role: 'partner',
+    status: 'active',
+    createdAt: '2024-03-10'
   }
 ];
 
@@ -34,10 +66,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [userCredentials, setUserCredentials] = useState<Record<string, string>>(() => {
-    // Initialize with only admin credentials
-    return {
-      'admin@awclogistics.com': 'admin123'
-    };
+    // Initialize with default credentials for all users
+    const credentials: Record<string, string> = {};
+    mockUsers.forEach(user => {
+      credentials[user.email] = 'password';
+    });
+    return credentials;
   });
   const { notifyLoginSuccess, notifyLoginFailed, notifyLogout } = useNotifications();
 
