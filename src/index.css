@@ -12,24 +12,24 @@
   --popover: 255 255 255 1;
   --popover-foreground: 15 23 42 1;
   
-  /* Neon Pink Primary */
-  --primary: 328 85% 70%; /* Neon Pink */
-  --primary-glow: 328 85% 80%;
-  --primary-dark: 328 85% 60%;
+  /* Professional Deep Blue Primary */
+  --primary: 215 84% 28%; /* Professional Deep Blue */
+  --primary-glow: 215 84% 35%;
+  --primary-dark: 215 84% 22%;
   --primary-foreground: 255 255 255;
   
-  /* Professional Secondary - neutral gray */
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222.2 84% 4.9%;
+  /* Professional Secondary - sophisticated gray */
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 215 25% 27%;
   
   /* Muted backgrounds */
   --muted: 210 40% 96%;
   --muted-foreground: 215.4 16.3% 46.9%;
   
-  /* Accent colors - subtle blue */
-  --accent: 210 40% 96%;
-  --accent-glow: 210 40% 90%;
-  --accent-foreground: 222.2 84% 4.9%;
+  /* Accent colors - professional teal */
+  --accent: 195 24% 95%;
+  --accent-glow: 195 24% 88%;
+  --accent-foreground: 215 25% 27%;
   
   /* Status colors */
   --destructive: 0 84.2% 60.2%;
@@ -42,7 +42,7 @@
   /* Borders and inputs */
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
-  --ring: 328 85% 70%;
+  --ring: 215 84% 28%;
   --radius: 0.5rem;
 
   /* Professional Spacing */
@@ -61,19 +61,19 @@
   --sidebar-accent: 217.2 32.6% 17.5%;
   --sidebar-accent-foreground: 210 40% 98%;
   --sidebar-border: 217.2 32.6% 17.5%;
-  --sidebar-ring: 328 85% 70%;
+  --sidebar-ring: 215 84% 28%;
 
-  /* Neon Pink Gradients */
-  --gradient-primary: linear-gradient(135deg, hsl(328 85% 70%), hsl(328 85% 80%));
-  --gradient-accent: linear-gradient(135deg, hsl(210 40% 96%), hsl(210 40% 90%));
-  --gradient-subtle: linear-gradient(135deg, hsl(210 40% 98%), hsl(210 40% 96%));
+  /* Professional Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(215 84% 28%), hsl(215 84% 35%));
+  --gradient-accent: linear-gradient(135deg, hsl(195 24% 95%), hsl(195 24% 88%));
+  --gradient-subtle: linear-gradient(135deg, hsl(220 14% 98%), hsl(220 14% 96%));
   --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 1) 0%, hsl(0 0% 100% / 0.95) 100%);
 
   /* Professional Shadows */
   --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
   --shadow-medium: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
   --shadow-large: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -2px hsl(0 0% 0% / 0.05);
-  --shadow-glow: 0 0 20px hsl(328 85% 70% / 0.15);
+  --shadow-glow: 0 0 20px hsl(215 84% 28% / 0.15);
   
   /* Professional Typography Enhancements */
   --font-weight-normal: 400;
@@ -103,9 +103,9 @@
   --card-foreground: 248 250 252 1;
   --popover: 30 41 59 1;
   --popover-foreground: 248 250 252 1;
-  --primary: 328 85% 85%; /* Light neon pink for dark mode */
-  --primary-glow: 328 85% 90%;
-  --primary-dark: 328 85% 75%;
+  --primary: 215 84% 45%; /* Professional blue for dark mode */
+  --primary-glow: 215 84% 52%;
+  --primary-dark: 215 84% 38%;
   --primary-foreground: 15 23 42 1;
   --secondary: 51 65% 7%; /* Dark gray */
   --secondary-foreground: 248 250 252 1;
@@ -118,7 +118,7 @@
   --destructive-foreground: 248 250 252 1;
   --border: 51 65% 7%;
   --input: 51 65% 7%;
-  --ring: 328 85% 85%;
+  --ring: 215 84% 45%;
   --success: 142.1 70.6% 45.3%;
   --success-foreground: 248 250 252 1;
   --warning: 37.7 92.1% 50.2%;
@@ -126,7 +126,7 @@
 
   /* Dark mode gradients */
   --gradient-card: linear-gradient(135deg, hsl(30 41 59 / 1) 0%, hsl(30 41 59 / 0.9) 100%);
-  --shadow-glow: 0 0 20px hsl(328 85% 85% / 0.2);
+  --shadow-glow: 0 0 20px hsl(215 84% 45% / 0.2);
 }
 
 @layer base {
