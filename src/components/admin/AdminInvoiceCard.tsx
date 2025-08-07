@@ -52,7 +52,7 @@ const AdminInvoiceCard = ({ invoice, onView, onPrint }: AdminInvoiceCardProps) =
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-lg font-bold text-gray-900 flex items-center">
-              <DollarSign size={20} className="mr-2 text-blue-600" />
+              <DollarSign size={20} className="mr-2 text-primary" />
               {invoice.invoiceNumber}
             </CardTitle>
             <div className="flex items-center mt-1 text-sm text-gray-600">
@@ -71,7 +71,7 @@ const AdminInvoiceCard = ({ invoice, onView, onPrint }: AdminInvoiceCardProps) =
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Total Amount:</span>
-              <span className="font-bold text-lg text-blue-600">
+              <span className="font-bold text-lg text-primary">
                 {invoice.currency} {invoice.totalAmount.toLocaleString()}
               </span>
             </div>
@@ -165,7 +165,7 @@ const AdminInvoiceCard = ({ invoice, onView, onPrint }: AdminInvoiceCardProps) =
           <Button
             size="sm"
             onClick={() => onPrint(invoice)}
-            className="flex-1 bg-blue-600 hover:bg-blue-700"
+            className="flex-1 bg-primary hover:bg-primary/90"
           >
             <Printer size={16} className="mr-1" />
             Print

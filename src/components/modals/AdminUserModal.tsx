@@ -151,9 +151,9 @@ const AdminUserModal = ({
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader className="pb-6 border-b">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${isEditing ? 'bg-blue-100' : 'bg-green-100'}`}>
+            <div className={`p-2 rounded-lg ${isEditing ? 'bg-primary/10' : 'bg-success/10'}`}>
               {isEditing ? (
-                <User className="h-5 w-5 text-blue-600" />
+                <User className="h-5 w-5 text-primary" />
               ) : (
                 <UserPlus className="h-5 w-5 text-green-600" />
               )}
@@ -238,7 +238,7 @@ const AdminUserModal = ({
                       </SelectItem>
                       <SelectItem value="sales_director">
                         <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-primary rounded-full"></div>
                           Sales Director
                         </div>
                       </SelectItem>

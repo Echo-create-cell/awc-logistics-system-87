@@ -98,7 +98,7 @@ const QuotationApprovalCard = ({ quotation, onApprove, onReject, onView }: Quota
 
           <div className="text-sm">
             <p className="text-gray-500">Client Quote:</p>
-            <p className="font-semibold text-blue-600 text-lg">
+            <p className="font-semibold text-primary text-lg">
               $ {quotation.clientQuote.toLocaleString()}
             </p>
           </div>

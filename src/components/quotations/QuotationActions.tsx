@@ -58,7 +58,7 @@ const QuotationActions = ({
           size="sm" 
           variant="ghost" 
           onClick={() => onView(row)}
-          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 gap-1.5"
+          className="text-primary hover:text-primary-dark hover:bg-primary/10 px-3 py-1.5 gap-1.5"
           title="View Quotation Details"
         >
           <Eye size={14} />
@@ -88,7 +88,7 @@ const QuotationActions = ({
           size="sm" 
           variant="ghost" 
           onClick={() => onEdit(row)}
-          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 gap-1.5"
+          className="text-primary hover:text-primary-dark hover:bg-primary/10 px-3 py-1.5 gap-1.5"
           title="Edit Quotation"
         >
           <Edit size={14} />

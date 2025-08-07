@@ -70,7 +70,7 @@ const LoginForm = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
                   required
-                  className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pl-4"
+                  className="h-12 border-border focus:border-primary focus:ring-primary pl-4"
                 />
               </div>
 
@@ -88,7 +88,7 @@ const LoginForm = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
                     required
-                    className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pl-4 pr-12"
+                    className="h-12 border-border focus:border-primary focus:ring-primary pl-4 pr-12"
                   />
                   <button
                     type="button"
@@ -126,7 +126,7 @@ const LoginForm = () => {
               {/* Submit Button */}
               <Button 
                 type="submit" 
-                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200" 
+                className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-medium transition-all duration-200" 
                 disabled={isLoading}
               >
                 {isLoading ? (
