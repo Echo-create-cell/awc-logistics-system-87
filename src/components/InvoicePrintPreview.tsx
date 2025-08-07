@@ -153,11 +153,19 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-card rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto border shadow-large">
-        <div className="flex justify-between items-center p-4 border-b">
-          <h3 className="text-lg font-bold">Invoice Preview</h3>
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[95vh] overflow-auto border shadow-large">
+        <div className="flex justify-between items-center p-4 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-blue-100">
+              <Printer className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900">Invoice Preview</h3>
+              <p className="text-gray-600 text-sm">Review and print your invoice</p>
+            </div>
+          </div>
           <div className="flex space-x-2">
-            <Button onClick={handlePrint}>
+            <Button onClick={handlePrint} className="bg-blue-600 hover:bg-blue-700">
               <Printer size={16} className="mr-2" />
               Print
             </Button>
@@ -167,7 +175,7 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
           </div>
         </div>
         
-        <div className="p-8">
+        <div className="p-8 bg-gray-50">
             <div id="invoice-print-area" className="print:text-xs print:leading-tight">
                 {/* Company Header */}
                 <div className="company-header flex justify-between items-start mb-4 pb-3 border-b border-red-600">
