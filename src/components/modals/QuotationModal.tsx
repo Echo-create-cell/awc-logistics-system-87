@@ -1,10 +1,12 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Quotation, User } from "@/types";
 import QuotationForm from "./quotation/QuotationForm";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Eye, Edit } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { FileText, Eye, Edit, Printer } from "lucide-react";
+import QuotationPrintPreview from "../QuotationPrintPreview";
 
 interface QuotationModalProps {
   open: boolean;
@@ -16,9 +18,19 @@ interface QuotationModalProps {
 }
 
 const QuotationModal = ({ open, quotation, onClose, onSave, user, viewOnly = false }: QuotationModalProps) => {
+  const [showPrintPreview, setShowPrintPreview] = useState(false);
+  
   const handleSaveForm = (updatedQuotation: Quotation) => {
     onSave(updatedQuotation);
     onClose();
+  };
+
+  const handlePrint = () => {
+    setShowPrintPreview(true);
+  };
+
+  const handlePrintComplete = () => {
+    setShowPrintPreview(false);
   };
 
   return (
@@ -62,6 +74,17 @@ const QuotationModal = ({ open, quotation, onClose, onSave, user, viewOnly = fal
                 )}
               </DialogDescription>
             </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handlePrint}
+                className="gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              >
+                <Printer size={16} />
+                Print
+              </Button>
+            </div>
           </div>
         </DialogHeader>
         
@@ -75,6 +98,14 @@ const QuotationModal = ({ open, quotation, onClose, onSave, user, viewOnly = fal
           />
         )}
       </DialogContent>
+      
+      {showPrintPreview && quotation && (
+        <QuotationPrintPreview
+          quotation={quotation}
+          onClose={() => setShowPrintPreview(false)}
+          onPrint={handlePrintComplete}
+        />
+      )}
     </Dialog>
   );
 };
