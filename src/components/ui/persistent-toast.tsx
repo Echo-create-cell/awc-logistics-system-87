@@ -98,7 +98,7 @@ export const showPersistentToast = ({
       variant === 'info' ? 'border-blue-200 bg-blue-50' :
       variant === 'pending' ? 'border-orange-200 bg-orange-50' :
       'border'
-    }`,
+    } [&_button[data-close-button]]:text-red-600 [&_button[data-close-button]]:hover:text-red-700 [&_button[data-close-button]]:hover:bg-red-50`,
     closeButton: true, // Always show close button for better UX
     position: priority === 'critical' ? 'top-center' : 'top-right',
   })
