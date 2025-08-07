@@ -35,6 +35,33 @@ export const useSystemNotifications = () => {
     return `notification_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   }
 
+  // Show detailed notification
+  const showDetailedNotification = useCallback((notification: NotificationItem, context?: SystemNotificationContext) => {
+    const detailsContent = `
+📋 **Notification Details**
+
+**Title:** ${notification.title}
+**Category:** ${notification.category}
+**Priority:** ${notification.priority}
+**Time:** ${notification.timestamp}
+${notification.relatedId ? `**Reference ID:** ${notification.relatedId}` : ''}
+${notification.relatedType ? `**Type:** ${notification.relatedType}` : ''}
+
+**Description:** ${notification.description}
+
+${context?.additionalInfo ? `**Additional Info:** ${JSON.stringify(context.additionalInfo, null, 2)}` : ''}
+    `.trim()
+
+    showPersistentToast({
+      title: "📄 Notification Details",
+      description: detailsContent,
+      variant: 'info',
+      priority: 'medium',
+      category: 'Details',
+      persistent: false
+    })
+  }, [])
+
   // Add notification to center
   const addNotification = useCallback((
     title: string,
@@ -69,9 +96,9 @@ export const useSystemNotifications = () => {
       persistent: context?.priority === 'critical' || context?.actionRequired,
       actionRequired: context?.actionRequired,
       onAction: () => {
-        // Navigate to related item based on type
+        // Show detailed notification information
         if (context?.relatedType && context?.relatedId) {
-          console.log(`Navigate to ${context.relatedType}: ${context.relatedId}`)
+          showDetailedNotification(newNotification, context)
         }
       }
     })

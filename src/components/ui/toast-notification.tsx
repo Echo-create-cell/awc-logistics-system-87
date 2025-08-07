@@ -146,7 +146,8 @@ const ToastNotification = React.forwardRef<HTMLDivElement, ToastNotificationProp
           variant="ghost"
           size="sm"
           onClick={handleClose}
-          className="absolute right-2 top-2 h-6 w-6 p-0 hover:bg-black/10 dark:hover:bg-white/10"
+          className="absolute right-2 top-2 h-6 w-6 p-0 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+          aria-label="Close notification"
         >
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>

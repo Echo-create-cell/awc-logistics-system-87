@@ -75,12 +75,14 @@ export const showPersistentToast = ({
         )}
         
         {actionRequired && (
-          <button 
-            onClick={onAction}
-            className="text-sm text-primary hover:underline font-medium"
-          >
-            View Details →
-          </button>
+          <div className="flex gap-2 pt-2">
+            <button 
+              onClick={onAction}
+              className="text-sm bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-md font-medium transition-colors"
+            >
+              View Details →
+            </button>
+          </div>
         )}
       </div>
     </div>
@@ -97,7 +99,7 @@ export const showPersistentToast = ({
       variant === 'pending' ? 'border-orange-200 bg-orange-50' :
       'border'
     }`,
-    closeButton: !persistent,
+    closeButton: true, // Always show close button for better UX
     position: priority === 'critical' ? 'top-center' : 'top-right',
   })
 }

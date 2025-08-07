@@ -167,8 +167,11 @@ export interface SystemNotificationProps
               
               {dismissible && (
                 <button
-                  onClick={handleClose}
-                  className="flex-shrink-0 p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleClose()
+                  }}
+                  className="flex-shrink-0 p-1.5 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                   aria-label="Close notification"
                 >
                   <X className="h-4 w-4" />
