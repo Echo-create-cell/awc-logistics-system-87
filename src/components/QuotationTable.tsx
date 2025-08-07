@@ -58,82 +58,82 @@ const QuotationTable = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border">
+    <div className="bg-card rounded-lg shadow-soft border">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-slate-50 border-b">
+          <thead className="bg-muted border-b">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Client
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Volume
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Destination
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Door Delivery
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Buy Rate
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Client Quote
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Profit
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Quote Sent By
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Approved By
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-slate-200">
+          <tbody className="bg-card divide-y divide-border">
             {quotations.map((quotation) => (
-              <tr key={quotation.id} className="hover:bg-slate-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+              <tr key={quotation.id} className="hover:bg-muted/50">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                   {quotation.clientName || 'N/A'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                   {formatVolume(quotation)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                   {quotation.destination || 'N/A'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                   {quotation.doorDelivery || 'N/A'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                   {quotation.currency} {quotation.buyRate.toLocaleString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                   {quotation.currency} {quotation.clientQuote.toLocaleString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                   {quotation.currency} {quotation.profit.toLocaleString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                   {quotation.quoteSentBy}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {getStatusBadge(quotation.status)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                   {quotation.approvedBy ? (
                     <div>
                       <div>{quotation.approvedBy}</div>
                       {quotation.approvedAt && (
-                        <div className="text-xs text-slate-400">
+                        <div className="text-xs text-muted-foreground/70">
                           {new Date(quotation.approvedAt).toLocaleDateString()}
                         </div>
                       )}

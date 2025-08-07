@@ -7,9 +7,9 @@
   /* Professional Modern Color Palette */
   --background: 0 0% 100%; /* pure white */
   --foreground: 15 23 42; /* slate-800 */
-  --card: 255 255 255; /* white */
+  --card: 0 0% 100%; /* pure white */
   --card-foreground: 15 23 42; /* slate-800 */
-  --popover: 255 255 255;
+  --popover: 0 0% 100%;
   --popover-foreground: 15 23 42;
   
   /* Professional Blue Primary */
