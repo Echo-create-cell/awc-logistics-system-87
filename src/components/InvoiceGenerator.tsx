@@ -196,7 +196,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
             Quotation Volume: <span className="font-medium">{getTotalVolume().toLocaleString()} kg</span>
           </p>
           {validationErrors.length > 0 && (
-            <div className="flex items-center gap-2 mt-2 text-sm text-destructive">
+            <div className="flex items-center gap-2 mt-2 text-sm text-red-600">
               <AlertCircle size={16} />
               <span>{validationErrors.length} required field{validationErrors.length > 1 ? 's' : ''} missing</span>
             </div>
@@ -205,7 +205,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
         <div className="flex space-x-2">
           <Button 
             onClick={handleSave} 
-            className="bg-success text-success-foreground hover:bg-success/90"
+            className="bg-green-600 hover:bg-green-700"
             disabled={validationErrors.length > 0}
           >
             <Save size={16} className="mr-2" />

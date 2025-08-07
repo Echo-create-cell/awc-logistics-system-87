@@ -89,8 +89,8 @@ const PrintableReport = ({ reportData, userRole, userName }: PrintableReportProp
               <p className="text-lg font-semibold text-green-600">{reportData.metrics.paidInvoices}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Pending Invoices</p>
-              <p className="text-lg font-semibold text-warning">{reportData.metrics.pendingInvoices}</p>
+              <p className="text-sm text-gray-600">Pending Invoices</p>
+              <p className="text-lg font-semibold text-yellow-600">{reportData.metrics.pendingInvoices}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Overdue Invoices</p>

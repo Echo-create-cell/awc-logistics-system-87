@@ -35,9 +35,9 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
       <div className="w-full max-w-lg">
-        <Card className="shadow-large border-0 bg-card backdrop-blur-sm">
+        <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
           <CardHeader className="text-center pb-8 pt-8">
             <div className="flex justify-center mb-6">
               <ProfessionalLogo 
@@ -46,10 +46,10 @@ const LoginForm = () => {
                 className="drop-shadow-lg"
               />
             </div>
-            <CardTitle className="text-2xl font-bold text-foreground mb-2">
+            <CardTitle className="text-2xl font-bold text-gray-900 mb-2">
               AWC Logistics System
             </CardTitle>
-            <p className="text-muted-foreground flex items-center justify-center gap-2">
+            <p className="text-gray-600 flex items-center justify-center gap-2">
               <Shield className="h-4 w-4" />
               Secure Access Portal
             </p>
@@ -59,7 +59,7 @@ const LoginForm = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Label htmlFor="email" className="text-sm font-medium text-gray-700 flex items-center gap-2">
                   <Mail className="h-4 w-4" />
                   Email Address
                 </Label>
@@ -70,13 +70,13 @@ const LoginForm = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
                   required
-                  className="h-12 border-input focus:border-ring focus:ring-ring pl-4"
+                  className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pl-4"
                 />
               </div>
 
               {/* Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Label htmlFor="password" className="text-sm font-medium text-gray-700 flex items-center gap-2">
                   <Lock className="h-4 w-4" />
                   Password
                 </Label>
@@ -88,12 +88,12 @@ const LoginForm = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
                     required
-                    className="h-12 border-input focus:border-ring focus:ring-ring pl-4 pr-12"
+                    className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pl-4 pr-12"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -107,11 +107,11 @@ const LoginForm = () => {
                   alt="AWC Logistics Air Cargo Operations"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/40 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-4">
                   <div className="text-white animate-fade-in">
                     <h3 className="text-lg font-semibold mb-1">Global Air Cargo Solutions</h3>
-                    <p className="text-primary-foreground/90 text-sm opacity-90">
+                    <p className="text-blue-100 text-sm opacity-90">
                       Professional logistics management at your fingertips
                     </p>
                   </div>
@@ -126,7 +126,7 @@ const LoginForm = () => {
               {/* Submit Button */}
               <Button 
                 type="submit" 
-                className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200" 
+                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200" 
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -144,11 +144,11 @@ const LoginForm = () => {
             </form>
 
             {/* Footer */}
-            <div className="mt-8 pt-6 border-t border-border text-center">
-              <p className="text-xs text-muted-foreground">
+            <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+              <p className="text-xs text-gray-500">
                 Powered by AWC Logistics Management System
               </p>
-              <p className="text-xs text-muted-foreground/70 mt-1">
+              <p className="text-xs text-gray-400 mt-1">
                 Secure • Reliable • Professional
               </p>
             </div>

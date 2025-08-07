@@ -72,10 +72,10 @@ const FinancialMetricsCards = ({ metrics }: FinancialMetricsCardsProps) => {
       <Card className="hover:shadow-lg transition-shadow duration-200">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">Pending Invoices</CardTitle>
-          <Clock className="h-4 w-4 text-muted-foreground" />
+          <Clock className="h-4 w-4 text-amber-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-muted-foreground">{metrics.pendingInvoices}</div>
+          <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{metrics.pendingInvoices}</div>
           <p className="text-xs text-muted-foreground">Awaiting payment</p>
         </CardContent>
       </Card>
@@ -91,14 +91,14 @@ const FinancialMetricsCards = ({ metrics }: FinancialMetricsCardsProps) => {
         </CardContent>
       </Card>
 
-      <Card className="hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-card to-muted border-border">
+      <Card className="hover:shadow-lg transition-shadow duration-200 bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium text-foreground">Win Rate</CardTitle>
-          <Users className="h-4 w-4 text-primary" />
+          <CardTitle className="text-sm font-medium text-orange-700">Win Rate</CardTitle>
+          <Users className="h-4 w-4 text-orange-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-primary">{formatPercentage(metrics.winRate)}</div>
-          <p className="text-xs text-muted-foreground">Success rate</p>
+          <div className="text-2xl font-bold text-orange-600">{formatPercentage(metrics.winRate)}</div>
+          <p className="text-xs text-orange-600/70">Success rate</p>
         </CardContent>
       </Card>
     </div>

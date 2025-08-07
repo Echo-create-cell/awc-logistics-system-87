@@ -256,7 +256,7 @@ const AdminUserModal = ({
                       </SelectItem>
                       <SelectItem value="partner">
                         <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-warning rounded-full"></div>
+                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                           Partner
                         </div>
                       </SelectItem>

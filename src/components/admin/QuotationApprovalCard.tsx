@@ -15,7 +15,7 @@ interface QuotationApprovalCardProps {
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'pending':
-      return 'bg-warning/10 text-warning border-warning/20';
+      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
     case 'approved':
     case 'won':
       return 'bg-green-100 text-green-800 border-green-200';

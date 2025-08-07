@@ -25,11 +25,11 @@ const QuotationTable = ({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'won':
-        return <Badge className="bg-success/10 text-success border-success/20">Won</Badge>;
+        return <Badge className="bg-green-100 text-green-800">Won</Badge>;
       case 'pending':
-        return <Badge className="bg-warning/10 text-warning border-warning/20">Pending</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
       case 'lost':
-        return <Badge className="bg-destructive/10 text-destructive border-destructive/20">Lost</Badge>;
+        return <Badge className="bg-red-100 text-red-800">Lost</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -58,82 +58,82 @@ const QuotationTable = ({
   };
 
   return (
-    <div className="bg-card rounded-lg shadow-soft border">
+    <div className="bg-white rounded-lg shadow-sm border">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-muted border-b">
+          <thead className="bg-slate-50 border-b">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Client
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Volume
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Destination
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Door Delivery
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Buy Rate
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Client Quote
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Profit
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Quote Sent By
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Approved By
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-card divide-y divide-border">
+          <tbody className="bg-white divide-y divide-slate-200">
             {quotations.map((quotation) => (
-              <tr key={quotation.id} className="hover:bg-muted/50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+              <tr key={quotation.id} className="hover:bg-slate-50">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {quotation.clientName || 'N/A'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
                   {formatVolume(quotation)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {quotation.destination || 'N/A'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {quotation.doorDelivery || 'N/A'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {quotation.currency} {quotation.buyRate.toLocaleString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {quotation.currency} {quotation.clientQuote.toLocaleString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {quotation.currency} {quotation.profit.toLocaleString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {quotation.quoteSentBy}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {getStatusBadge(quotation.status)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {quotation.approvedBy ? (
                     <div>
                       <div>{quotation.approvedBy}</div>
                       {quotation.approvedAt && (
-                        <div className="text-xs text-muted-foreground/70">
+                        <div className="text-xs text-slate-400">
                           {new Date(quotation.approvedAt).toLocaleDateString()}
                         </div>
                       )}

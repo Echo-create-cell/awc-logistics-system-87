@@ -58,7 +58,7 @@ const UserActivityTable = ({ userActivities, canViewAllUsers }: UserActivityTabl
                   <TableCell>
                     <Badge 
                       variant={activity.winRate >= 50 ? "default" : "secondary"}
-                      className={activity.winRate >= 50 ? "bg-success/10 text-success border-success/20" : "bg-warning/10 text-warning border-warning/20"}
+                      className={activity.winRate >= 50 ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}
                     >
                       {formatPercentage(activity.winRate)}
                     </Badge>

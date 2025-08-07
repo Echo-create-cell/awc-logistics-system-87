@@ -79,17 +79,17 @@ const InvoicesView = ({
   if ((user.role === 'sales_director' || user.role === 'sales_agent') && invoiceQuotation) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center space-x-3 p-4 bg-muted rounded-lg border">
+        <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
           <Button 
             variant="outline"
-            className="bg-card hover:bg-muted"
+            className="bg-white hover:bg-gray-50"
             onClick={onInvoiceQuotationClear}
           >
             ← Back to Invoices
           </Button>
           <div>
-            <h3 className="font-medium text-foreground">Generating Invoice</h3>
-            <p className="text-muted-foreground text-sm">
+            <h3 className="font-medium text-blue-900">Generating Invoice</h3>
+            <p className="text-blue-700 text-sm">
               Creating invoice from Quotation <strong>{invoiceQuotation.id}</strong> for <strong>{invoiceQuotation.clientName}</strong>
             </p>
           </div>
@@ -116,7 +116,7 @@ const InvoicesView = ({
               size="sm"
               variant="ghost"
               onClick={() => onPrint(row)}
-              className="text-primary hover:text-primary hover:bg-primary/10"
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
               title="Print Invoice"
             >
               <Printer size={16} />
@@ -127,7 +127,7 @@ const InvoicesView = ({
               size="sm"
               variant="ghost"
               onClick={() => handleEdit(row)}
-              className="text-success hover:text-success hover:bg-success/10"
+              className="text-green-600 hover:text-green-700 hover:bg-green-50"
               title="Edit Invoice"
             >
               <Edit size={16} />
@@ -138,7 +138,7 @@ const InvoicesView = ({
               size="sm"
               variant="ghost"
               onClick={() => onPrint(row)}
-              className="text-primary hover:text-primary hover:bg-primary/10"
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
               title="Print Invoice"
             >
               <Printer size={16} />
@@ -153,9 +153,9 @@ const InvoicesView = ({
       minWidth: '90px',
       render: (value: string) => {
         const colors: {[key: string]: string} = {
-          paid: 'bg-success/10 text-success hover:bg-success/20 border-success/20',
-          pending: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 border-border',
-          overdue: 'bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/20'
+          paid: 'bg-green-100 text-green-800 hover:bg-green-200',
+          pending: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+          overdue: 'bg-red-100 text-red-800 hover:bg-red-200'
         };
         return <Badge className={`${colors[value]} font-medium`}>{value}</Badge>;
       }
@@ -165,7 +165,7 @@ const InvoicesView = ({
       label: 'Invoice #',
       minWidth: '100px',
       render: (value: string) => (
-        <div className="font-medium text-foreground text-sm">{value}</div>
+        <div className="font-medium text-gray-900 text-sm">{value}</div>
       )
     },
     { 
@@ -173,7 +173,7 @@ const InvoicesView = ({
       label: 'Client',
       minWidth: '120px',
       render: (value: string) => (
-        <div className="font-medium text-muted-foreground text-sm truncate" title={value}>{value}</div>
+        <div className="font-medium text-gray-700 text-sm truncate" title={value}>{value}</div>
       )
     },
     {
@@ -181,7 +181,7 @@ const InvoicesView = ({
       label: 'Volume',
       minWidth: '80px',
       render: (_: any, row: InvoiceData) => (
-        <div className="font-medium text-primary text-sm text-center">
+        <div className="font-medium text-blue-600 text-sm text-center">
           {getQuotationVolume(row)}
         </div>
       )
@@ -191,7 +191,7 @@ const InvoicesView = ({
       label: 'Amount',
       minWidth: '100px',
       render: (value: number, row: InvoiceData) => (
-        <div className="font-medium text-primary text-sm text-right whitespace-nowrap">
+        <div className="font-medium text-blue-600 text-sm text-right whitespace-nowrap">
           {row.currency} {value.toLocaleString()}
         </div>
       )
@@ -201,7 +201,7 @@ const InvoicesView = ({
       label: 'Issue Date',
       minWidth: '90px',
       render: (value: string) => (
-        <div className="text-muted-foreground text-sm">
+        <div className="text-gray-600 text-sm">
           {new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })}
         </div>
       )
@@ -211,7 +211,7 @@ const InvoicesView = ({
       label: 'Due Date',
       minWidth: '90px',
       render: (value: string) => (
-        <div className="text-muted-foreground text-sm">
+        <div className="text-gray-600 text-sm">
           {value ? new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }) : 'N/A'}
         </div>
       )
@@ -236,7 +236,7 @@ const InvoicesView = ({
           <p className="text-muted-foreground mt-1">Manage and track all generated invoices</p>
         </div>
         {user.role === 'admin' && (
-          <div className="flex items-center space-x-1 bg-muted rounded-lg p-1">
+          <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
             <Button
               size="sm"
               variant={viewMode === 'table' ? 'default' : 'ghost'}

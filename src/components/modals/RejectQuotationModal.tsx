@@ -69,10 +69,10 @@ const RejectQuotationModal = ({ open, quotation, onClose, onConfirm }: RejectQuo
           </Card>
 
           {/* Rejection Reason */}
-          <Card className="border-warning/20">
+          <Card className="border-orange-200">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle className="h-4 w-4 text-warning" />
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
                 <h3 className="font-medium text-gray-900">Reason for Rejection</h3>
               </div>
               
@@ -85,12 +85,12 @@ const RejectQuotationModal = ({ open, quotation, onClose, onConfirm }: RejectQuo
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="Please provide a specific reason:&#10;• Price was too high compared to competitors&#10;• Client requirements changed&#10;• Lost to competitor due to timing&#10;• Project was cancelled or postponed&#10;• Service scope didn't match client needs&#10;• Other (please specify)..."
-                  className="min-h-[140px] text-sm border-border focus:border-ring focus:ring-ring resize-none"
+                  className="min-h-[140px] text-sm border-gray-300 focus:border-orange-500 focus:ring-orange-500 resize-none"
                   rows={7}
                 />
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <span>Minimum 10 characters required for detailed feedback</span>
-                  <span className={reason.length >= 10 ? "text-success" : "text-warning"}>
+                  <span className={reason.length >= 10 ? "text-green-600" : "text-orange-600"}>
                     {reason.length}/10 characters
                   </span>
                 </div>

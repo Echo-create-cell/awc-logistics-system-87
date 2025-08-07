@@ -102,7 +102,7 @@ const UsersView = ({ users }: UsersViewProps) => {
                 size="sm" 
                 variant="ghost" 
                 onClick={() => handleResetPassword(row.id)}
-                className="text-warning hover:text-warning hover:bg-warning/10"
+                className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
                 title="Reset Password"
               >
                 <Key size={16} />
@@ -111,7 +111,7 @@ const UsersView = ({ users }: UsersViewProps) => {
                 size="sm" 
                 variant="ghost" 
                 onClick={() => handleDelete(row.id)} 
-                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 title="Delete User"
               >
                 <Trash2 size={16} />
@@ -133,8 +133,8 @@ const UsersView = ({ users }: UsersViewProps) => {
       render: (value: string) => (
         <Badge className={`${
           value === 'active' 
-            ? 'bg-success/10 text-success hover:bg-success/20' 
-            : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+            ? 'bg-green-100 text-green-800 hover:bg-green-200' 
+            : 'bg-red-100 text-red-800 hover:bg-red-200'
         } font-medium`}>
           {value}
         </Badge>

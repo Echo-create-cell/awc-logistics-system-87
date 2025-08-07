@@ -16,11 +16,11 @@ const AdminInvoiceCard = ({ invoice, onView, onPrint }: AdminInvoiceCardProps) =
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'paid':
-        return 'bg-success/10 text-success border-success/20';
+        return 'bg-green-100 text-green-800 border-green-300';
       case 'pending':
-        return 'bg-warning/10 text-warning border-warning/20';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
       case 'overdue':
-        return 'bg-destructive/10 text-destructive border-destructive/20';
+        return 'bg-red-100 text-red-800 border-red-300';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-300';
     }
@@ -99,7 +99,7 @@ const AdminInvoiceCard = ({ invoice, onView, onPrint }: AdminInvoiceCardProps) =
             {invoice.dueDate && (
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Due Date:</span>
-                <span className={`font-medium ${daysUntilDue && daysUntilDue < 0 ? 'text-destructive' : daysUntilDue && daysUntilDue < 7 ? 'text-warning' : 'text-foreground'}`}>
+                <span className={`font-medium ${daysUntilDue && daysUntilDue < 0 ? 'text-red-600' : daysUntilDue && daysUntilDue < 7 ? 'text-orange-600' : 'text-gray-900'}`}>
                   {new Date(invoice.dueDate).toLocaleDateString()}
                 </span>
               </div>
@@ -140,7 +140,7 @@ const AdminInvoiceCard = ({ invoice, onView, onPrint }: AdminInvoiceCardProps) =
             daysUntilDue < 0 
               ? 'bg-red-100 text-red-800' 
               : daysUntilDue < 7 
-                ? 'bg-warning/10 text-warning border-warning/20' 
+                ? 'bg-orange-100 text-orange-800' 
                 : 'bg-green-100 text-green-800'
           }`}>
             {daysUntilDue < 0 

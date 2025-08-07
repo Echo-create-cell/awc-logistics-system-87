@@ -104,10 +104,10 @@ const UserActivityMonitor = ({ users, quotations, invoices }: UserActivityMonito
                       <Badge 
                         variant={activity.winRate >= 50 ? "default" : "secondary"}
                         className={`mb-1 px-3 py-1 text-sm font-bold ${
-                          activity.winRate >= 75 ? "bg-success hover:bg-success/90 text-success-foreground" :
-                          activity.winRate >= 50 ? "bg-primary hover:bg-primary/90 text-primary-foreground" :
-                          activity.winRate >= 25 ? "bg-warning hover:bg-warning/90 text-warning-foreground" :
-                          "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                          activity.winRate >= 75 ? "bg-green-500 hover:bg-green-600" :
+                          activity.winRate >= 50 ? "bg-blue-500 hover:bg-blue-600" :
+                          activity.winRate >= 25 ? "bg-yellow-500 hover:bg-yellow-600 text-yellow-900" :
+                          "bg-red-100 text-red-800 hover:bg-red-200"
                         }`}
                       >
                         {activity.winRate.toFixed(1)}%

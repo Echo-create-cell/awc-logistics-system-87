@@ -167,17 +167,17 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
             </CardContent>
           </Card>
 
-          <Card className="hover-lift bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20">
+          <Card className="hover-lift bg-gradient-to-br from-warning/5 to-warning/10 border-warning/20">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-display font-semibold text-accent">
+              <CardTitle className="text-lg font-display font-semibold text-warning">
                 Overdue Invoices
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold font-display text-accent">
+              <div className="text-3xl font-bold font-display text-warning">
                 {invoices.filter(inv => inv.status === 'overdue').length}
               </div>
-              <p className="text-sm text-accent/70 mt-2">
+              <p className="text-sm text-warning/70 mt-2">
                 Require attention
               </p>
             </CardContent>
@@ -238,7 +238,7 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Conversion Rate</span>
-                  <span className="text-lg font-bold text-accent">{reportData.metrics.winRate.toFixed(1)}%</span>
+                  <span className="text-lg font-bold text-orange-600">{reportData.metrics.winRate.toFixed(1)}%</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Average Deal Value</span>

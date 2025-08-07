@@ -104,10 +104,10 @@ const ReportDataTable = ({ filteredData }: ReportDataTableProps) => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         item.status === 'won' || item.status === 'paid' 
-                          ? 'bg-success/10 text-success border-success/20'
+                          ? 'bg-green-100 text-green-800'
                           : item.status === 'pending'
-                          ? 'bg-warning/10 text-warning border-warning/20'
-                          : 'bg-destructive/10 text-destructive border-destructive/20'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
                       }`}>
                         {item.status}
                       </span>

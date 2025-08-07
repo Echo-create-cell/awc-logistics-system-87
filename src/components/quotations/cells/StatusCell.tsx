@@ -10,9 +10,9 @@ interface StatusCellProps {
 const StatusCell = ({ row }: StatusCellProps) => {
   const value = row.status;
   const colors = {
-    won: 'bg-success/10 text-success hover:bg-success/20 border-success/20',
-    pending: 'bg-warning/10 text-warning hover:bg-warning/20 border-warning/20',
-    lost: 'bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/20'
+    won: 'bg-green-100 text-green-800 hover:bg-green-200',
+    pending: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+    lost: 'bg-red-100 text-red-800 hover:bg-red-200'
   };
   const statusText = {
     won: 'Approved',

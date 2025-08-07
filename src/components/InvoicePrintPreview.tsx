@@ -152,8 +152,8 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
 
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-card rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto border shadow-lg">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
         <div className="flex justify-between items-center p-4 border-b">
           <h3 className="text-lg font-bold">Invoice Preview</h3>
           <div className="flex space-x-2">
@@ -170,18 +170,18 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
         <div className="p-8">
             <div id="invoice-print-area" className="print:text-xs print:leading-tight">
                 {/* Company Header */}
-                <div className="company-header flex justify-between items-start mb-4 pb-3 border-b border-primary">
+                <div className="company-header flex justify-between items-start mb-4 pb-3 border-b border-red-600">
                     <div className="w-2/3 pr-4">
                         <ProfessionalLogo size="lg" variant="invoice" className="mb-2" />
-                        <h2 className="font-bold text-sm text-foreground mb-1">Africa World Cargo Ltd</h2>
-                        <p className="text-xs text-muted-foreground mb-1">TIN: 112933303 RW</p>
-                        <p className="text-xs text-foreground leading-tight mb-2">
+                        <h2 className="font-bold text-sm text-gray-800 mb-1">Africa World Cargo Ltd</h2>
+                        <p className="text-xs text-gray-600 mb-1">TIN: 112933303 RW</p>
+                        <p className="text-xs text-gray-700 leading-tight mb-2">
                             KN 5 rd, Av18, 30 Remera, Kigali, Rwanda
                         </p>
-                        <div className="banking-details border-t border-border pt-2">
-                            <p className="text-xs font-semibold text-foreground mb-1">Banking Details</p>
-                            <p className="text-xs text-foreground mb-1"><strong>Bank of Kigali</strong></p>
-                            <div className="text-xs text-muted-foreground leading-tight">
+                        <div className="banking-details border-t border-gray-200 pt-2">
+                            <p className="text-xs font-semibold text-gray-800 mb-1">Banking Details</p>
+                            <p className="text-xs text-gray-700 mb-1"><strong>Bank of Kigali</strong></p>
+                            <div className="text-xs text-gray-600 leading-tight">
                                 <p>RWF: 00265 07771361 40 | EUR: 00265-07771427-09</p>
                                 <p>USD: 00265-07771426-08 | Swift: BKIGRWRW</p>
                                 <p><strong>Phone:</strong> +250 784 445 373</p>
@@ -189,13 +189,13 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                         </div>
                     </div>
                     <div className="text-right w-1/3">
-                        <h1 className="text-2xl font-bold text-primary mb-2">INVOICE</h1>
-                        <div className="bg-muted p-2 rounded text-xs space-y-1">
+                        <h1 className="text-2xl font-bold text-red-600 mb-2">INVOICE</h1>
+                        <div className="bg-gray-50 p-2 rounded text-xs space-y-1">
                             <p className="font-semibold"><strong>Invoice #:</strong> {invoice.invoiceNumber}</p>
                             <p><strong>Date:</strong> {new Date(invoice.issueDate).toLocaleDateString('en-GB')}</p>
                             {invoice.awbNumber && (
-                                <div className="bg-accent border border-accent-foreground/20 p-1 rounded">
-                                    <p className="font-medium text-accent-foreground"><strong>AWB:</strong> {invoice.awbNumber}</p>
+                                <div className="bg-blue-100 border border-blue-200 p-1 rounded">
+                                    <p className="font-medium text-blue-800"><strong>AWB:</strong> {invoice.awbNumber}</p>
                                 </div>
                             )}
                             {invoice.destination && <p><strong>Destination:</strong> {invoice.destination}</p>}
@@ -206,31 +206,31 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
 
                 {/* Client Information */}
                 {(invoice.clientName || invoice.clientContactPerson || invoice.clientAddress || invoice.clientTin) && (
-                    <div className="client-info mb-3 bg-muted p-2 rounded">
-                        <h3 className="font-semibold text-sm text-foreground mb-2 border-b border-border pb-1">Client Information</h3>
+                    <div className="client-info mb-3 bg-gray-50 p-2 rounded">
+                        <h3 className="font-semibold text-sm text-gray-800 mb-2 border-b border-gray-300 pb-1">Client Information</h3>
                         <div className="grid grid-cols-2 gap-2 text-xs">
                             {invoice.clientName && (
                                 <div>
-                                    <span className="font-medium text-muted-foreground">Customer:</span>
-                                    <p className="text-foreground">{invoice.clientName}</p>
+                                    <span className="font-medium text-gray-700">Customer:</span>
+                                    <p className="text-gray-900">{invoice.clientName}</p>
                                 </div>
                             )}
                             {invoice.clientContactPerson && (
                                 <div>
-                                    <span className="font-medium text-muted-foreground">Contact Person:</span>
-                                    <p className="text-foreground">{invoice.clientContactPerson}</p>
+                                    <span className="font-medium text-gray-700">Contact Person:</span>
+                                    <p className="text-gray-900">{invoice.clientContactPerson}</p>
                                 </div>
                             )}
                             {invoice.clientAddress && (
                                 <div>
-                                    <span className="font-medium text-muted-foreground">Address:</span>
-                                    <p className="text-foreground">{invoice.clientAddress}</p>
+                                    <span className="font-medium text-gray-700">Address:</span>
+                                    <p className="text-gray-900">{invoice.clientAddress}</p>
                                 </div>
                             )}
                             {invoice.clientTin && (
                                 <div>
-                                    <span className="font-medium text-muted-foreground">TIN:</span>
-                                    <p className="text-foreground">{invoice.clientTin}</p>
+                                    <span className="font-medium text-gray-700">TIN:</span>
+                                    <p className="text-gray-900">{invoice.clientTin}</p>
                                 </div>
                             )}
                         </div>
@@ -240,30 +240,30 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 {/* Details Table - Only show if at least one field has data */}
                 {(invoice.salesperson || invoice.deliverDate || invoice.paymentConditions || invoice.validityDate) && (
                     <div className="service-details mb-3">
-                        <h3 className="font-semibold text-sm text-foreground mb-2">Service Details</h3>
-                        <div className="grid grid-cols-4 gap-2 bg-muted p-2 rounded text-xs">
+                        <h3 className="font-semibold text-sm text-gray-800 mb-2">Service Details</h3>
+                        <div className="grid grid-cols-4 gap-2 bg-gray-50 p-2 rounded text-xs">
                             {invoice.salesperson && (
                                 <div>
-                                    <span className="font-medium text-muted-foreground block">Salesperson</span>
-                                    <p className="text-foreground">{invoice.salesperson}</p>
+                                    <span className="font-medium text-gray-700 block">Salesperson</span>
+                                    <p className="text-gray-900">{invoice.salesperson}</p>
                                 </div>
                             )}
                             {invoice.deliverDate && (
                                 <div>
-                                    <span className="font-medium text-muted-foreground block">Delivery Date</span>
-                                    <p className="text-foreground">{new Date(invoice.deliverDate).toLocaleDateString('en-GB')}</p>
+                                    <span className="font-medium text-gray-700 block">Delivery Date</span>
+                                    <p className="text-gray-900">{new Date(invoice.deliverDate).toLocaleDateString('en-GB')}</p>
                                 </div>
                             )}
                             {invoice.paymentConditions && (
                                 <div>
-                                    <span className="font-medium text-muted-foreground block">Payment Terms</span>
-                                    <p className="text-foreground">{invoice.paymentConditions}</p>
+                                    <span className="font-medium text-gray-700 block">Payment Terms</span>
+                                    <p className="text-gray-900">{invoice.paymentConditions}</p>
                                 </div>
                             )}
                             {invoice.validityDate && (
                                 <div>
-                                    <span className="font-medium text-muted-foreground block">Valid Until</span>
-                                    <p className="text-foreground">{new Date(invoice.validityDate).toLocaleDateString('en-GB')}</p>
+                                    <span className="font-medium text-gray-700 block">Valid Until</span>
+                                    <p className="text-gray-900">{new Date(invoice.validityDate).toLocaleDateString('en-GB')}</p>
                                 </div>
                             )}
                         </div>
@@ -273,12 +273,12 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 {/* Items Table */}
                 <table className="w-full border-collapse mb-3 text-xs">
                     <thead>
-                        <tr className="bg-primary text-primary-foreground">
-                            <th className="border border-foreground px-1 py-1 text-left font-normal text-xs">Qty (kg)</th>
-                            <th className="border border-foreground px-1 py-1 text-left font-normal text-xs">Commodity</th>
-                            <th className="border border-foreground px-1 py-1 text-left font-normal text-xs">Description</th>
-                            <th className="border border-foreground px-1 py-1 text-right font-normal text-xs">Price</th>
-                            <th className="border border-foreground px-1 py-1 text-right font-normal text-xs">Total ({invoice.currency})</th>
+                        <tr className="bg-gray-800 text-white">
+                            <th className="border border-black px-1 py-1 text-left font-normal text-xs">Qty (kg)</th>
+                            <th className="border border-black px-1 py-1 text-left font-normal text-xs">Commodity</th>
+                            <th className="border border-black px-1 py-1 text-left font-normal text-xs">Description</th>
+                            <th className="border border-black px-1 py-1 text-right font-normal text-xs">Price</th>
+                            <th className="border border-black px-1 py-1 text-right font-normal text-xs">Total ({invoice.currency})</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -286,31 +286,31 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                             if (item.charges.length === 1) {
                                 const charge = item.charges[0];
                                 return (
-                                    <tr key={item.id} className="even:bg-muted">
-                                        <td className="border border-border px-1 py-1 text-center text-xs">{item.quantityKg || 0}</td>
-                                        <td className="border border-border px-1 py-1 text-xs">{item.commodity || ''}</td>
-                                        <td className="border border-border px-1 py-1 text-xs">{charge.description || ''}</td>
-                                        <td className="border border-border px-1 py-1 text-right text-xs">{(charge.rate || 0).toFixed(2)}</td>
-                                        <td className="border border-border px-1 py-1 text-right text-xs">{(item.total || 0).toFixed(2)}</td>
+                                    <tr key={item.id} className="even:bg-gray-100">
+                                        <td className="border border-black px-1 py-1 text-center text-xs">{item.quantityKg || 0}</td>
+                                        <td className="border border-black px-1 py-1 text-xs">{item.commodity || ''}</td>
+                                        <td className="border border-black px-1 py-1 text-xs">{charge.description || ''}</td>
+                                        <td className="border border-black px-1 py-1 text-right text-xs">{(charge.rate || 0).toFixed(2)}</td>
+                                        <td className="border border-black px-1 py-1 text-right text-xs">{(item.total || 0).toFixed(2)}</td>
                                     </tr>
                                 );
                             } else {
                                 return (
                                     <React.Fragment key={item.id}>
-                                        <tr className="bg-muted/60 font-bold">
-                                            <td className="border border-border px-1 py-1 text-center text-xs">{item.quantityKg || 0}</td>
-                                            <td className="border border-border px-1 py-1 text-xs" colSpan={2}>{item.commodity || ''}</td>
-                                            <td className="border border-border px-1 py-1 text-right text-xs">
+                                        <tr className="bg-gray-200/60 font-bold">
+                                            <td className="border border-black px-1 py-1 text-center text-xs">{item.quantityKg || 0}</td>
+                                            <td className="border border-black px-1 py-1 text-xs" colSpan={2}>{item.commodity || ''}</td>
+                                            <td className="border border-black px-1 py-1 text-right text-xs">
                                                 {(item.charges.reduce((sum, c) => sum + (c.rate || 0), 0)).toFixed(2)}
                                             </td>
-                                            <td className="border border-border px-1 py-1 text-right text-xs">{(item.total || 0).toFixed(2)}</td>
+                                            <td className="border border-black px-1 py-1 text-right text-xs">{(item.total || 0).toFixed(2)}</td>
                                         </tr>
                                         {item.charges.map(charge => (
-                                            <tr key={charge.id} className="even:bg-muted">
-                                                <td className="border border-border px-1 py-1"></td>
-                                                <td className="border border-border px-1 py-1 italic text-xs" colSpan={2}>- {charge.description || ''}</td>
-                                                <td className="border border-border px-1 py-1 text-right text-xs">{(charge.rate || 0).toFixed(2)}</td>
-                                                <td className="border border-border px-1 py-1 text-right text-xs">{((item.quantityKg || 0) * (charge.rate || 0)).toFixed(2)}</td>
+                                            <tr key={charge.id} className="even:bg-gray-100">
+                                                <td className="border border-black px-1 py-1"></td>
+                                                <td className="border border-black px-1 py-1 italic text-xs" colSpan={2}>- {charge.description || ''}</td>
+                                                <td className="border border-black px-1 py-1 text-right text-xs">{(charge.rate || 0).toFixed(2)}</td>
+                                                <td className="border border-black px-1 py-1 text-right text-xs">{((item.quantityKg || 0) * (charge.rate || 0)).toFixed(2)}</td>
                                             </tr>
                                         ))}
                                     </React.Fragment>
@@ -323,29 +323,29 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 {/* Totals & Signature */}
                 <div className="totals-section flex justify-between items-start mt-4">
                     <div className="signature-area w-2/3 pt-4">
-                        <div className="border-t border-border pt-2">
-                            <p className="text-xs text-muted-foreground mb-1">Authorized Signature:</p>
-                            <div className="h-6 border-b border-border w-2/3"></div>
+                        <div className="border-t border-gray-300 pt-2">
+                            <p className="text-xs text-gray-700 mb-1">Authorized Signature:</p>
+                            <div className="h-6 border-b border-gray-300 w-2/3"></div>
                             {invoice.salesperson && (
-                                <p className="mt-2 text-xs text-muted-foreground">
+                                <p className="mt-2 text-xs text-gray-600">
                                     <span className="font-medium">Prepared by:</span> {invoice.salesperson}
                                 </p>
                             )}
                         </div>
                     </div>
                     <div className="w-1/3">
-                        <div className="invoice-summary bg-muted p-2 rounded border">
-                            <h4 className="font-semibold text-foreground mb-2 text-xs">Invoice Summary</h4>
+                        <div className="invoice-summary bg-gray-50 p-2 rounded border">
+                            <h4 className="font-semibold text-gray-800 mb-2 text-xs">Invoice Summary</h4>
                             <div className="space-y-1 text-xs">
-                                <div className="flex justify-between py-1 border-b border-border">
-                                    <span className="text-muted-foreground">Sub-Total:</span>
+                                <div className="flex justify-between py-1 border-b border-gray-200">
+                                    <span className="text-gray-600">Sub-Total:</span>
                                     <span className="font-medium">{invoice.currency} {(invoice.subTotal || 0).toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between py-1 border-b border-border">
-                                    <span className="text-muted-foreground">VAT/TVA:</span>
+                                <div className="flex justify-between py-1 border-b border-gray-200">
+                                    <span className="text-gray-600">VAT/TVA:</span>
                                     <span className="font-medium">{invoice.currency} {(invoice.tva || 0).toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between py-1 font-bold text-sm border-t border-primary text-primary">
+                                <div className="flex justify-between py-1 font-bold text-sm border-t border-red-600 text-red-600">
                                     <span>TOTAL:</span>
                                     <span>{invoice.currency} {(invoice.totalAmount || 0).toFixed(2)}</span>
                                 </div>
@@ -355,13 +355,13 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
                 </div>
 
                 {/* Footer */}
-                <div className="footer-section text-center pt-4 mt-4 border-t border-border">
-                    <div className="bg-muted p-2 rounded mx-auto max-w-md">
-                        <p className="font-semibold text-foreground mb-1 text-xs">Payment Information</p>
-                        <p className="text-xs text-muted-foreground mb-1">All payments should be made payable to:</p>
-                        <p className="font-bold text-foreground text-xs">Africa World Cargo Ltd</p>
-                        <div className="mt-2 pt-2 border-t border-border">
-                            <p className="font-bold text-primary text-sm">WE THANK YOU FOR YOUR TRUST</p>
+                <div className="footer-section text-center pt-4 mt-4 border-t border-gray-200">
+                    <div className="bg-gray-50 p-2 rounded mx-auto max-w-md">
+                        <p className="font-semibold text-gray-800 mb-1 text-xs">Payment Information</p>
+                        <p className="text-xs text-gray-700 mb-1">All payments should be made payable to:</p>
+                        <p className="font-bold text-gray-900 text-xs">Africa World Cargo Ltd</p>
+                        <div className="mt-2 pt-2 border-t border-gray-300">
+                            <p className="font-bold text-red-600 text-sm">WE THANK YOU FOR YOUR TRUST</p>
                         </div>
                     </div>
                 </div>

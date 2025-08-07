@@ -206,12 +206,12 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
           
           {/* Payment Status Section */}
           {!isPaid && (
-            <Card className="border-warning/20 bg-card">
+            <Card className="border-orange-200 bg-orange-50">
               <CardContent className="p-6">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
                   <div className="flex-1">
-                    <h3 className="font-medium text-foreground mb-2">Payment Status</h3>
+                    <h3 className="font-medium text-orange-900 mb-2">Payment Status</h3>
                     <div className="flex items-center space-x-3">
                       <Switch
                         id="mark-as-paid"
@@ -219,7 +219,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
                         onCheckedChange={setIsMarkedAsPaid}
                         aria-label="Mark as paid"
                       />
-                      <Label htmlFor="mark-as-paid" className="text-sm font-medium text-warning cursor-pointer">
+                      <Label htmlFor="mark-as-paid" className="text-sm font-medium text-orange-800 cursor-pointer">
                         Mark Invoice as Paid to Finalize
                       </Label>
                     </div>
