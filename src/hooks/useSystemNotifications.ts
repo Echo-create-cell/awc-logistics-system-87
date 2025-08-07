@@ -62,14 +62,20 @@ ${context?.additionalInfo ? `**Additional Info:** ${JSON.stringify(context.addit
     })
   }, [])
 
-  // Add notification to center
+  // Add notification to center with role-based filtering
   const addNotification = useCallback((
     title: string,
     description: string,
     variant: 'success' | 'warning' | 'error' | 'info' | 'pending' | 'critical' | 'default' = 'default',
     category: string = 'System',
-    context?: SystemNotificationContext
+    context?: SystemNotificationContext,
+    userRole?: string
   ) => {
+    // Skip notifications for admin and partner roles
+    if (userRole === 'admin' || userRole === 'partner') {
+      return
+    }
+
     const newNotification: NotificationItem = {
       id: generateId(),
       title,

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useSystemNotifications } from '@/hooks/useSystemNotifications'
+import { useNotificationManager } from '@/hooks/useNotificationManager'
 import { Quotation } from '@/types'
 import { InvoiceData } from '@/types/invoice'
 
@@ -14,7 +14,7 @@ export const useOverdueNotifications = ({
   invoices, 
   checkIntervalMinutes = 60 
 }: UseOverdueNotificationsProps) => {
-  const { notifyQuotationOverdue, notifyInvoiceOverdue } = useSystemNotifications()
+  const { notifyQuotationOverdue, notifyInvoiceOverdue } = useNotificationManager()
 
   useEffect(() => {
     const checkOverdueItems = () => {

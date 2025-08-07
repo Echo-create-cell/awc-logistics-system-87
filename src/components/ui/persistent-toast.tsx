@@ -24,6 +24,32 @@ export interface PersistentToastOptions {
   onAction?: () => void
 }
 
+// Storage for tracking notification frequency
+const getNotificationKey = (category: string, title: string) => `notification_${category}_${title}`
+
+const getWeeklyNotificationCount = (key: string): number => {
+  const stored = localStorage.getItem(key)
+  if (!stored) return 0
+  
+  const data = JSON.parse(stored)
+  const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000)
+  
+  // Filter out old entries and count recent ones
+  const recentEntries = data.filter((timestamp: number) => timestamp > oneWeekAgo)
+  
+  // Update storage with only recent entries
+  localStorage.setItem(key, JSON.stringify(recentEntries))
+  
+  return recentEntries.length
+}
+
+const incrementNotificationCount = (key: string) => {
+  const stored = localStorage.getItem(key)
+  const timestamps = stored ? JSON.parse(stored) : []
+  timestamps.push(Date.now())
+  localStorage.setItem(key, JSON.stringify(timestamps))
+}
+
 export const showPersistentToast = ({
   title,
   description,
@@ -34,6 +60,20 @@ export const showPersistentToast = ({
   actionRequired = false,
   onAction
 }: PersistentToastOptions) => {
+  // Check weekly limit for quotation and invoice notifications only
+  if (category && (category.toLowerCase().includes('quotation') || category.toLowerCase().includes('invoice'))) {
+    const notificationKey = getNotificationKey(category, title)
+    const weeklyCount = getWeeklyNotificationCount(notificationKey)
+    
+    // Limit to 3 per week for quotation/invoice notifications
+    if (weeklyCount >= 3) {
+      return // Don't show notification if limit reached
+    }
+    
+    // Increment count
+    incrementNotificationCount(notificationKey)
+  }
+
   const Icon = iconMap[variant]
   
   const duration = persistent || priority === 'critical' 
@@ -91,15 +131,15 @@ export const showPersistentToast = ({
   return sonnerToast(toastContent, {
     duration,
     className: `bg-white border border-gray-200 shadow-lg [&_button[data-close-button]]:bg-pink-500 [&_button[data-close-button]]:text-white [&_button[data-close-button]]:hover:bg-pink-600 [&_button[data-close-button]]:rounded-full [&_button[data-close-button]]:shadow-lg [&_button[data-close-button]]:shadow-pink-500/50`,
-    closeButton: true, // Always show close button for better UX
-    position: priority === 'critical' ? 'top-center' : 'top-right',
+    closeButton: true,
+    position: 'top-center', // Fixed position at top center for consistent stacking
   })
 }
 
 export const PersistentToaster = () => {
   return (
     <Toaster 
-      position="top-right"
+      position="top-center"
       toastOptions={{
         style: {
           background: 'white',
@@ -110,9 +150,9 @@ export const PersistentToaster = () => {
       }}
       richColors
       expand
-      visibleToasts={10}
-      gap={8}
-      offset={16}
+      visibleToasts={15}
+      gap={4}
+      offset={20}
     />
   )
 }
