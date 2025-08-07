@@ -90,7 +90,7 @@ export const generatePrintReport = (
           .revenue { color: #10b981; }
           .profit { color: #3b82f6; }
           .loss { color: #ef4444; }
-          .rate { color: #f97316; } /* Orange color for win rate */
+          .rate { color: hsl(217 91% 60%); } /* Primary color for win rate */
           .filter-info {
             background: #f3f4f6;
             padding: 15px;
@@ -127,7 +127,7 @@ export const generatePrintReport = (
             text-transform: uppercase;
           }
           .status-won, .status-paid { background: #dcfce7; color: #166534; }
-          .status-pending { background: #fef3c7; color: #92400e; }
+          .status-pending { background: hsl(210 40% 96%); color: hsl(215.4 16.3% 46.9%); }
           .status-lost, .status-overdue { background: #fee2e2; color: #991b1b; }
           .footer { 
             text-align: center; 

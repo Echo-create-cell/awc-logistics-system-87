@@ -69,10 +69,10 @@ const RejectQuotationModal = ({ open, quotation, onClose, onConfirm }: RejectQuo
           </Card>
 
           {/* Rejection Reason */}
-          <Card className="border-orange-200">
+          <Card className="border-warning/20">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                <AlertTriangle className="h-4 w-4 text-warning" />
                 <h3 className="font-medium text-gray-900">Reason for Rejection</h3>
               </div>
               
