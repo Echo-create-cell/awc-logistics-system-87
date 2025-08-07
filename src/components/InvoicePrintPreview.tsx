@@ -39,268 +39,96 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
     for (let i = 0; i < styles.length; i++) {
         doc.write(styles[i].outerHTML);
     }
-    // Add professional print styles optimized for A4 layout
+    // Add comprehensive print styles for one-page layout
     doc.write(`<style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-      
-      * { 
-        box-sizing: border-box; 
-      }
-      
       body { 
         -webkit-print-color-adjust: exact; 
         print-color-adjust: exact; 
-        color: #1a1a1a !important; 
-        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif !important;
-        font-size: 11px !important;
-        line-height: 1.4 !important;
+        color: black !important; 
+        font-size: 10px !important;
+        line-height: 1.2 !important;
         margin: 0;
-        padding: 15px;
-        background: white;
+        padding: 10px;
       }
-      
       @page { 
         size: A4; 
-        margin: 0.4in 0.5in; 
+        margin: 0.3in; 
+        margin-top: 0.2in;
+        margin-bottom: 0.2in;
       }
-      
       .invoice-container { 
-        max-width: 100%;
-        margin: 0 auto;
-        background: white;
-        position: relative;
-      }
-      
-      .professional-header {
-        border-bottom: 3px solid #2563eb !important;
-        margin-bottom: 20px !important;
-        padding-bottom: 15px !important;
-        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%) !important;
-        padding: 20px !important;
-        border-radius: 8px 8px 0 0 !important;
-      }
-      
-      .company-logo {
-        font-size: 24px !important;
-        font-weight: 700 !important;
-        color: #2563eb !important;
-        margin-bottom: 8px !important;
-      }
-      
-      .company-info {
+        max-height: 100vh; 
+        overflow: hidden; 
         font-size: 10px !important;
-        color: #475569 !important;
-        line-height: 1.3 !important;
       }
-      
-      .invoice-title {
-        font-size: 28px !important;
-        font-weight: 700 !important;
-        color: #2563eb !important;
-        margin-bottom: 10px !important;
-        text-transform: uppercase;
-        letter-spacing: 1px !important;
+      h1, h2, h3, h4 { 
+        font-size: 12px !important; 
+        margin: 4px 0 !important; 
       }
-      
-      .invoice-meta {
-        background: #f1f5f9 !important;
-        padding: 12px !important;
-        border-radius: 6px !important;
-        border-left: 4px solid #2563eb !important;
-      }
-      
-      .section-header {
-        font-size: 14px !important;
-        font-weight: 600 !important;
-        color: #1e293b !important;
-        margin: 16px 0 8px 0 !important;
-        padding-bottom: 4px !important;
-        border-bottom: 2px solid #e2e8f0 !important;
-        text-transform: uppercase;
-        letter-spacing: 0.5px !important;
-      }
-      
-      .info-grid {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 15px !important;
-        margin: 12px 0 !important;
-      }
-      
-      .info-card {
-        background: #f8fafc !important;
-        padding: 12px !important;
-        border-radius: 6px !important;
-        border: 1px solid #e2e8f0 !important;
-      }
-      
-      .info-label {
-        font-weight: 600 !important;
-        color: #475569 !important;
-        font-size: 9px !important;
-        text-transform: uppercase;
-        letter-spacing: 0.5px !important;
-        margin-bottom: 2px !important;
-      }
-      
-      .info-value {
-        color: #1e293b !important;
-        font-size: 10px !important;
-        font-weight: 500 !important;
-      }
-      
-      .professional-table {
-        width: 100% !important;
+      h1 { font-size: 18px !important; }
+      table { 
+        font-size: 9px !important; 
         border-collapse: collapse !important;
-        margin: 15px 0 !important;
-        font-size: 10px !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-        border-radius: 6px !important;
-        overflow: hidden !important;
+        width: 100% !important;
       }
-      
-      .table-header {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-        color: white !important;
-        font-weight: 600 !important;
-        text-transform: uppercase;
-        letter-spacing: 0.5px !important;
-      }
-      
-      .table-header th {
-        padding: 10px 8px !important;
-        border: none !important;
+      th, td { 
+        padding: 2px 4px !important; 
+        border: 1px solid #000 !important;
         font-size: 9px !important;
-        text-align: left !important;
       }
-      
-      .table-row {
-        border-bottom: 1px solid #e2e8f0 !important;
+      .company-header { 
+        margin-bottom: 8px !important; 
+        padding-bottom: 8px !important;
       }
-      
-      .table-row:nth-child(even) {
-        background: #f8fafc !important;
+      .client-info, .service-details { 
+        margin-bottom: 6px !important; 
+        padding: 6px !important;
       }
-      
-      .table-row td {
-        padding: 8px !important;
-        border: none !important;
-        border-right: 1px solid #e2e8f0 !important;
-        font-size: 9px !important;
-        color: #374151 !important;
+      .totals-section { 
+        margin-top: 8px !important;
       }
-      
-      .table-row td:last-child {
-        border-right: none !important;
-      }
-      
-      .amount-cell {
-        font-weight: 600 !important;
-        color: #059669 !important;
-        text-align: right !important;
-      }
-      
-      .totals-container {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: flex-start !important;
-        margin-top: 20px !important;
-      }
-      
-      .signature-section {
-        width: 60% !important;
-        padding-right: 20px !important;
-      }
-      
-      .signature-line {
-        border-bottom: 2px solid #d1d5db !important;
-        width: 200px !important;
-        height: 40px !important;
-        margin: 10px 0 !important;
-      }
-      
-      .totals-summary {
-        width: 35% !important;
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
-        padding: 15px !important;
-        border-radius: 8px !important;
-        border: 2px solid #e2e8f0 !important;
-      }
-      
-      .total-row {
-        display: flex !important;
-        justify-content: space-between !important;
-        padding: 6px 0 !important;
-        border-bottom: 1px solid #e2e8f0 !important;
-      }
-      
-      .total-row:last-child {
-        border-bottom: 2px solid #2563eb !important;
-        font-weight: 700 !important;
-        font-size: 12px !important;
-        color: #2563eb !important;
-        margin-top: 5px !important;
+      .signature-area { 
+        margin-top: 8px !important;
         padding-top: 8px !important;
       }
-      
-      .footer-payment {
-        margin-top: 25px !important;
-        padding: 15px !important;
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
-        border-radius: 8px !important;
-        border-top: 3px solid #2563eb !important;
-        text-align: center !important;
+      .footer-section { 
+        margin-top: 8px !important;
+        padding-top: 8px !important;
       }
-      
-      .payment-title {
-        font-weight: 700 !important;
-        color: #1e293b !important;
-        font-size: 12px !important;
-        margin-bottom: 8px !important;
-        text-transform: uppercase;
-      }
-      
-      .banking-info {
-        font-size: 9px !important;
-        color: #475569 !important;
-        line-height: 1.3 !important;
-      }
-      
-      .banking-highlight {
-        background: #dbeafe !important;
-        padding: 6px !important;
-        border-radius: 4px !important;
-        margin: 5px 0 !important;
-        color: #1e40af !important;
-        font-weight: 600 !important;
-      }
-      
-      .professional-badge {
-        display: inline-block !important;
-        padding: 4px 8px !important;
-        background: #dbeafe !important;
-        color: #1e40af !important;
-        border-radius: 4px !important;
+      .banking-details { 
         font-size: 8px !important;
-        font-weight: 600 !important;
-        text-transform: uppercase;
+        line-height: 1.1 !important;
       }
-      
-      .watermark {
-        position: absolute !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) rotate(-45deg) !important;
-        font-size: 60px !important;
-        color: rgba(37, 99, 235, 0.05) !important;
-        font-weight: 900 !important;
-        z-index: 0 !important;
-        pointer-events: none !important;
+      .invoice-summary { 
+        font-size: 9px !important;
       }
-      
-      .content-layer {
-        position: relative !important;
-        z-index: 1 !important;
+      .grid { 
+        display: grid !important;
+        gap: 4px !important;
+      }
+      .space-y-1 > * + * { 
+        margin-top: 2px !important;
+      }
+      .space-y-2 > * + * { 
+        margin-top: 4px !important;
+      }
+      .mb-8 { 
+        margin-bottom: 6px !important;
+      }
+      .mb-6 { 
+        margin-bottom: 4px !important;
+      }
+      .p-4 { 
+        padding: 6px !important;
+      }
+      .pt-16 { 
+        padding-top: 8px !important;
+      }
+      .pt-12 { 
+        padding-top: 6px !important;
+      }
+      .mt-8 { 
+        margin-top: 6px !important;
       }
     </style>`);
 
@@ -339,228 +167,201 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
           </div>
         </div>
         
-        <div className="p-8 bg-gray-50/30">
-            <div id="invoice-print-area" className="bg-white shadow-xl rounded-lg overflow-hidden max-w-4xl mx-auto">
-                {/* Watermark */}
-                <div className="watermark">AWC LOGISTICS</div>
-                
-                {/* Content Layer */}
-                <div className="content-layer">
-                    {/* Company Header */}
-                    <div className="professional-header">
-                        <div className="flex justify-between items-start">
-                            <div className="w-2/3 pr-6">
-                                <div className="company-logo">
-                                    <ProfessionalLogo size="lg" variant="invoice" className="mb-3" />
-                                    Africa World Cargo Ltd
-                                </div>
-                                <div className="company-info space-y-1">
-                                    <p className="font-semibold text-slate-700">TIN: 112933303 RW</p>
-                                    <p className="text-slate-600">KN 5 rd, Av18, 30 Remera, Kigali, Rwanda</p>
-                                    <p className="text-slate-600">Phone: +250 784 445 373</p>
-                                </div>
-                                <div className="banking-highlight mt-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
-                                    <p className="font-semibold text-blue-900 mb-2">Banking Details</p>
-                                    <div className="banking-info text-blue-800">
-                                        <p className="font-medium">Bank of Kigali</p>
-                                        <p>RWF: 00265 07771361 40 | EUR: 00265-07771427-09</p>
-                                        <p>USD: 00265-07771426-08 | Swift: BKIGRWRW</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="text-right w-1/3">
-                                <h1 className="invoice-title">INVOICE</h1>
-                                <div className="invoice-meta space-y-2">
-                                    <div className="professional-badge">
-                                        Invoice #{invoice.invoiceNumber}
-                                    </div>
-                                    <p className="text-sm font-medium">Date: {new Date(invoice.issueDate).toLocaleDateString('en-GB')}</p>
-                                    {invoice.awbNumber && (
-                                        <div className="bg-blue-100 border border-blue-300 p-2 rounded-md">
-                                            <p className="font-semibold text-blue-900">AWB: {invoice.awbNumber}</p>
-                                        </div>
-                                    )}
-                                    {invoice.destination && <p className="text-sm">Destination: {invoice.destination}</p>}
-                                    {invoice.doorDelivery && <p className="text-sm">Door Delivery: {invoice.doorDelivery}</p>}
-                                </div>
+        <div className="p-8">
+            <div id="invoice-print-area" className="print:text-xs print:leading-tight">
+                {/* Company Header */}
+                <div className="company-header flex justify-between items-start mb-4 pb-3 border-b border-red-600">
+                    <div className="w-2/3 pr-4">
+                        <ProfessionalLogo size="lg" variant="invoice" className="mb-2" />
+                        <h2 className="font-bold text-sm text-gray-800 mb-1">Africa World Cargo Ltd</h2>
+                        <p className="text-xs text-gray-600 mb-1">TIN: 112933303 RW</p>
+                        <p className="text-xs text-gray-700 leading-tight mb-2">
+                            KN 5 rd, Av18, 30 Remera, Kigali, Rwanda
+                        </p>
+                        <div className="banking-details border-t border-gray-200 pt-2">
+                            <p className="text-xs font-semibold text-gray-800 mb-1">Banking Details</p>
+                            <p className="text-xs text-gray-700 mb-1"><strong>Bank of Kigali</strong></p>
+                            <div className="text-xs text-gray-600 leading-tight">
+                                <p>RWF: 00265 07771361 40 | EUR: 00265-07771427-09</p>
+                                <p>USD: 00265-07771426-08 | Swift: BKIGRWRW</p>
+                                <p><strong>Phone:</strong> +250 784 445 373</p>
                             </div>
                         </div>
                     </div>
-
-                    {/* Client Information */}
-                    {(invoice.clientName || invoice.clientContactPerson || invoice.clientAddress || invoice.clientTin) && (
-                        <div className="p-6 mx-6 bg-slate-50 rounded-lg border border-slate-200">
-                            <h3 className="section-header mb-4">Client Information</h3>
-                            <div className="info-grid">
-                                {invoice.clientName && (
-                                    <div className="info-card">
-                                        <div className="info-label">Customer</div>
-                                        <div className="info-value">{invoice.clientName}</div>
-                                    </div>
-                                )}
-                                {invoice.clientContactPerson && (
-                                    <div className="info-card">
-                                        <div className="info-label">Contact Person</div>
-                                        <div className="info-value">{invoice.clientContactPerson}</div>
-                                    </div>
-                                )}
-                                {invoice.clientAddress && (
-                                    <div className="info-card">
-                                        <div className="info-label">Address</div>
-                                        <div className="info-value">{invoice.clientAddress}</div>
-                                    </div>
-                                )}
-                                {invoice.clientTin && (
-                                    <div className="info-card">
-                                        <div className="info-label">TIN</div>
-                                        <div className="info-value">{invoice.clientTin}</div>
-                                    </div>
-                                )}
-                            </div>
+                    <div className="text-right w-1/3">
+                        <h1 className="text-2xl font-bold text-red-600 mb-2">INVOICE</h1>
+                        <div className="bg-gray-50 p-2 rounded text-xs space-y-1">
+                            <p className="font-semibold"><strong>Invoice #:</strong> {invoice.invoiceNumber}</p>
+                            <p><strong>Date:</strong> {new Date(invoice.issueDate).toLocaleDateString('en-GB')}</p>
+                            {invoice.awbNumber && (
+                                <div className="bg-blue-100 border border-blue-200 p-1 rounded">
+                                    <p className="font-medium text-blue-800"><strong>AWB:</strong> {invoice.awbNumber}</p>
+                                </div>
+                            )}
+                            {invoice.destination && <p><strong>Destination:</strong> {invoice.destination}</p>}
+                            {invoice.doorDelivery && <p><strong>Door Delivery:</strong> {invoice.doorDelivery}</p>}
                         </div>
-                    )}
+                    </div>
+                </div>
 
-                    {/* Service Details */}
-                    {(invoice.salesperson || invoice.deliverDate || invoice.paymentConditions || invoice.validityDate) && (
-                        <div className="p-6 mx-6 bg-slate-50 rounded-lg border border-slate-200">
-                            <h3 className="section-header mb-4">Service Details</h3>
-                            <div className="info-grid grid-cols-4">
-                                {invoice.salesperson && (
-                                    <div className="info-card">
-                                        <div className="info-label">Salesperson</div>
-                                        <div className="info-value">{invoice.salesperson}</div>
-                                    </div>
-                                )}
-                                {invoice.deliverDate && (
-                                    <div className="info-card">
-                                        <div className="info-label">Delivery Date</div>
-                                        <div className="info-value">{new Date(invoice.deliverDate).toLocaleDateString('en-GB')}</div>
-                                    </div>
-                                )}
-                                {invoice.paymentConditions && (
-                                    <div className="info-card">
-                                        <div className="info-label">Payment Terms</div>
-                                        <div className="info-value">{invoice.paymentConditions}</div>
-                                    </div>
-                                )}
-                                {invoice.validityDate && (
-                                    <div className="info-card">
-                                        <div className="info-label">Valid Until</div>
-                                        <div className="info-value">{new Date(invoice.validityDate).toLocaleDateString('en-GB')}</div>
-                                    </div>
-                                )}
-                            </div>
+                {/* Client Information */}
+                {(invoice.clientName || invoice.clientContactPerson || invoice.clientAddress || invoice.clientTin) && (
+                    <div className="client-info mb-3 bg-gray-50 p-2 rounded">
+                        <h3 className="font-semibold text-sm text-gray-800 mb-2 border-b border-gray-300 pb-1">Client Information</h3>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                            {invoice.clientName && (
+                                <div>
+                                    <span className="font-medium text-gray-700">Customer:</span>
+                                    <p className="text-gray-900">{invoice.clientName}</p>
+                                </div>
+                            )}
+                            {invoice.clientContactPerson && (
+                                <div>
+                                    <span className="font-medium text-gray-700">Contact Person:</span>
+                                    <p className="text-gray-900">{invoice.clientContactPerson}</p>
+                                </div>
+                            )}
+                            {invoice.clientAddress && (
+                                <div>
+                                    <span className="font-medium text-gray-700">Address:</span>
+                                    <p className="text-gray-900">{invoice.clientAddress}</p>
+                                </div>
+                            )}
+                            {invoice.clientTin && (
+                                <div>
+                                    <span className="font-medium text-gray-700">TIN:</span>
+                                    <p className="text-gray-900">{invoice.clientTin}</p>
+                                </div>
+                            )}
                         </div>
-                    )}
+                    </div>
+                )}
 
-                    {/* Items Table */}
-                    <div className="mx-6">
-                        <h3 className="section-header mb-4">Invoice Items</h3>
-                        <table className="professional-table">
-                            <thead>
-                                <tr className="table-header">
-                                    <th>Qty (kg)</th>
-                                    <th>Commodity</th>
-                                    <th>Description</th>
-                                    <th className="text-right">Price</th>
-                                    <th className="text-right">Total ({invoice.currency})</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {invoice.items.map((item) => {
-                                    if (item.charges.length === 1) {
-                                        const charge = item.charges[0];
-                                        return (
-                                            <tr key={item.id} className="table-row">
-                                                <td className="text-center font-medium">{item.quantityKg || 0}</td>
-                                                <td className="font-medium">{item.commodity || ''}</td>
-                                                <td>{charge.description || ''}</td>
-                                                <td className="text-right">{(charge.rate || 0).toFixed(2)}</td>
-                                                <td className="amount-cell">{(item.total || 0).toFixed(2)}</td>
+                {/* Details Table - Only show if at least one field has data */}
+                {(invoice.salesperson || invoice.deliverDate || invoice.paymentConditions || invoice.validityDate) && (
+                    <div className="service-details mb-3">
+                        <h3 className="font-semibold text-sm text-gray-800 mb-2">Service Details</h3>
+                        <div className="grid grid-cols-4 gap-2 bg-gray-50 p-2 rounded text-xs">
+                            {invoice.salesperson && (
+                                <div>
+                                    <span className="font-medium text-gray-700 block">Salesperson</span>
+                                    <p className="text-gray-900">{invoice.salesperson}</p>
+                                </div>
+                            )}
+                            {invoice.deliverDate && (
+                                <div>
+                                    <span className="font-medium text-gray-700 block">Delivery Date</span>
+                                    <p className="text-gray-900">{new Date(invoice.deliverDate).toLocaleDateString('en-GB')}</p>
+                                </div>
+                            )}
+                            {invoice.paymentConditions && (
+                                <div>
+                                    <span className="font-medium text-gray-700 block">Payment Terms</span>
+                                    <p className="text-gray-900">{invoice.paymentConditions}</p>
+                                </div>
+                            )}
+                            {invoice.validityDate && (
+                                <div>
+                                    <span className="font-medium text-gray-700 block">Valid Until</span>
+                                    <p className="text-gray-900">{new Date(invoice.validityDate).toLocaleDateString('en-GB')}</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Items Table */}
+                <table className="w-full border-collapse mb-3 text-xs">
+                    <thead>
+                        <tr className="bg-gray-800 text-white">
+                            <th className="border border-black px-1 py-1 text-left font-normal text-xs">Qty (kg)</th>
+                            <th className="border border-black px-1 py-1 text-left font-normal text-xs">Commodity</th>
+                            <th className="border border-black px-1 py-1 text-left font-normal text-xs">Description</th>
+                            <th className="border border-black px-1 py-1 text-right font-normal text-xs">Price</th>
+                            <th className="border border-black px-1 py-1 text-right font-normal text-xs">Total ({invoice.currency})</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {invoice.items.map((item) => {
+                            if (item.charges.length === 1) {
+                                const charge = item.charges[0];
+                                return (
+                                    <tr key={item.id} className="even:bg-gray-100">
+                                        <td className="border border-black px-1 py-1 text-center text-xs">{item.quantityKg || 0}</td>
+                                        <td className="border border-black px-1 py-1 text-xs">{item.commodity || ''}</td>
+                                        <td className="border border-black px-1 py-1 text-xs">{charge.description || ''}</td>
+                                        <td className="border border-black px-1 py-1 text-right text-xs">{(charge.rate || 0).toFixed(2)}</td>
+                                        <td className="border border-black px-1 py-1 text-right text-xs">{(item.total || 0).toFixed(2)}</td>
+                                    </tr>
+                                );
+                            } else {
+                                return (
+                                    <React.Fragment key={item.id}>
+                                        <tr className="bg-gray-200/60 font-bold">
+                                            <td className="border border-black px-1 py-1 text-center text-xs">{item.quantityKg || 0}</td>
+                                            <td className="border border-black px-1 py-1 text-xs" colSpan={2}>{item.commodity || ''}</td>
+                                            <td className="border border-black px-1 py-1 text-right text-xs">
+                                                {(item.charges.reduce((sum, c) => sum + (c.rate || 0), 0)).toFixed(2)}
+                                            </td>
+                                            <td className="border border-black px-1 py-1 text-right text-xs">{(item.total || 0).toFixed(2)}</td>
+                                        </tr>
+                                        {item.charges.map(charge => (
+                                            <tr key={charge.id} className="even:bg-gray-100">
+                                                <td className="border border-black px-1 py-1"></td>
+                                                <td className="border border-black px-1 py-1 italic text-xs" colSpan={2}>- {charge.description || ''}</td>
+                                                <td className="border border-black px-1 py-1 text-right text-xs">{(charge.rate || 0).toFixed(2)}</td>
+                                                <td className="border border-black px-1 py-1 text-right text-xs">{((item.quantityKg || 0) * (charge.rate || 0)).toFixed(2)}</td>
                                             </tr>
-                                        );
-                                    } else {
-                                        return (
-                                            <React.Fragment key={item.id}>
-                                                <tr className="table-row bg-blue-50 font-semibold">
-                                                    <td className="text-center">{item.quantityKg || 0}</td>
-                                                    <td colSpan={2} className="font-bold">{item.commodity || ''}</td>
-                                                    <td className="text-right">
-                                                        {(item.charges.reduce((sum, c) => sum + (c.rate || 0), 0)).toFixed(2)}
-                                                    </td>
-                                                    <td className="amount-cell">{(item.total || 0).toFixed(2)}</td>
-                                                </tr>
-                                                {item.charges.map(charge => (
-                                                    <tr key={charge.id} className="table-row">
-                                                        <td></td>
-                                                        <td colSpan={2} className="text-slate-600 italic pl-4">→ {charge.description || ''}</td>
-                                                        <td className="text-right">{(charge.rate || 0).toFixed(2)}</td>
-                                                        <td className="text-right">{((item.quantityKg || 0) * (charge.rate || 0)).toFixed(2)}</td>
-                                                    </tr>
-                                                ))}
-                                            </React.Fragment>
-                                        );
-                                    }
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                                        ))}
+                                    </React.Fragment>
+                                );
+                            }
+                        })}
+                    </tbody>
+                </table>
 
-                    {/* Totals & Signature */}
-                    <div className="totals-container mx-6">
-                        <div className="signature-section">
-                            <h3 className="section-header mb-4">Authorization</h3>
-                            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                                <p className="text-sm text-slate-600 mb-3">Authorized Signature:</p>
-                                <div className="signature-line bg-white border-2 border-dashed border-slate-300 rounded"></div>
-                                {invoice.salesperson && (
-                                    <div className="mt-3 pt-3 border-t border-slate-200">
-                                        <p className="text-sm text-slate-700">
-                                            <span className="font-semibold">Prepared by:</span> {invoice.salesperson}
-                                        </p>
-                                        <p className="text-xs text-slate-500 mt-1">
-                                            Date: {new Date().toLocaleDateString('en-GB')}
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
+                {/* Totals & Signature */}
+                <div className="totals-section flex justify-between items-start mt-4">
+                    <div className="signature-area w-2/3 pt-4">
+                        <div className="border-t border-gray-300 pt-2">
+                            <p className="text-xs text-gray-700 mb-1">Authorized Signature:</p>
+                            <div className="h-6 border-b border-gray-300 w-2/3"></div>
+                            {invoice.salesperson && (
+                                <p className="mt-2 text-xs text-gray-600">
+                                    <span className="font-medium">Prepared by:</span> {invoice.salesperson}
+                                </p>
+                            )}
                         </div>
-                        
-                        <div className="totals-summary">
-                            <h4 className="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wide">Invoice Summary</h4>
-                            <div className="space-y-2">
-                                <div className="total-row">
-                                    <span className="text-slate-600">Sub-Total:</span>
-                                    <span className="font-semibold">{invoice.currency} {(invoice.subTotal || 0).toFixed(2)}</span>
+                    </div>
+                    <div className="w-1/3">
+                        <div className="invoice-summary bg-gray-50 p-2 rounded border">
+                            <h4 className="font-semibold text-gray-800 mb-2 text-xs">Invoice Summary</h4>
+                            <div className="space-y-1 text-xs">
+                                <div className="flex justify-between py-1 border-b border-gray-200">
+                                    <span className="text-gray-600">Sub-Total:</span>
+                                    <span className="font-medium">{invoice.currency} {(invoice.subTotal || 0).toFixed(2)}</span>
                                 </div>
-                                <div className="total-row">
-                                    <span className="text-slate-600">VAT/TVA (18%):</span>
-                                    <span className="font-semibold">{invoice.currency} {(invoice.tva || 0).toFixed(2)}</span>
+                                <div className="flex justify-between py-1 border-b border-gray-200">
+                                    <span className="text-gray-600">VAT/TVA:</span>
+                                    <span className="font-medium">{invoice.currency} {(invoice.tva || 0).toFixed(2)}</span>
                                 </div>
-                                <div className="total-row">
-                                    <span className="text-lg">TOTAL AMOUNT:</span>
-                                    <span className="text-lg">{invoice.currency} {(invoice.totalAmount || 0).toFixed(2)}</span>
+                                <div className="flex justify-between py-1 font-bold text-sm border-t border-red-600 text-red-600">
+                                    <span>TOTAL:</span>
+                                    <span>{invoice.currency} {(invoice.totalAmount || 0).toFixed(2)}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Professional Footer */}
-                    <div className="footer-payment mx-6">
-                        <div className="payment-title">Payment Information</div>
-                        <div className="mt-4 space-y-2">
-                            <p className="text-sm text-slate-700">All payments should be made payable to:</p>
-                            <div className="banking-highlight">
-                                <p className="font-bold text-lg">Africa World Cargo Ltd</p>
-                            </div>
-                            <div className="mt-4 pt-4 border-t border-slate-300">
-                                <p className="font-bold text-blue-600 text-lg tracking-wide">
-                                    🙏 WE THANK YOU FOR YOUR TRUST
-                                </p>
-                                <p className="text-xs text-slate-500 mt-2">
-                                    Invoice generated on {new Date().toLocaleDateString('en-GB')} | AWC Logistics Management System
-                                </p>
-                            </div>
+                {/* Footer */}
+                <div className="footer-section text-center pt-4 mt-4 border-t border-gray-200">
+                    <div className="bg-gray-50 p-2 rounded mx-auto max-w-md">
+                        <p className="font-semibold text-gray-800 mb-1 text-xs">Payment Information</p>
+                        <p className="text-xs text-gray-700 mb-1">All payments should be made payable to:</p>
+                        <p className="font-bold text-gray-900 text-xs">Africa World Cargo Ltd</p>
+                        <div className="mt-2 pt-2 border-t border-gray-300">
+                            <p className="font-bold text-red-600 text-sm">WE THANK YOU FOR YOUR TRUST</p>
                         </div>
                     </div>
                 </div>
