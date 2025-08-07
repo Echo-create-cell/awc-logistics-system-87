@@ -10,11 +10,10 @@ interface GetQuotationColumnsProps {
   onInvoiceFromQuotation?: (quotation: Quotation) => void;
   onEdit?: (quotation: Quotation) => void;
   onView?: (quotation: Quotation) => void;
-  onPrint?: (quotation: Quotation) => void;
 }
 
 export const getQuotationColumns = ({
-  user, onApprove, onReject, onInvoiceFromQuotation, onEdit, onView, onPrint
+  user, onApprove, onReject, onInvoiceFromQuotation, onEdit, onView
 }: GetQuotationColumnsProps): TableColumn[] => [
   // Actions column moved to first position for easy access
   {
@@ -30,7 +29,6 @@ export const getQuotationColumns = ({
         onInvoiceFromQuotation={onInvoiceFromQuotation}
         onEdit={onEdit}
         onView={onView}
-        onPrint={onPrint}
       />
     ),
   },

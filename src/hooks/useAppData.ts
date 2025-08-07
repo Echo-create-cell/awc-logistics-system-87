@@ -109,12 +109,6 @@ export const useAppData = () => {
     notifyInvoicePrinted(invoice, { user });
   };
 
-  const handlePrintQuotation = (quotation: Quotation) => {
-    // This could trigger a print preview or direct print
-    // For now, we'll just show a notification
-    console.log('Printing quotation:', quotation.id);
-  };
-
   const handleEditQuotation = (updatedQuotation: Quotation) => {
     setQuotations(prev => prev.map(q => 
       q.id === updatedQuotation.id ? updatedQuotation : q
@@ -172,7 +166,6 @@ export const useAppData = () => {
     handleEditUser,
     handleDeleteUser,
     handleCreateUser,
-    handlePrintQuotation,
     handleTabChange,
     setPrintPreview,
     setActiveTab,

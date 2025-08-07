@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, Eye, TrendingUp, Printer } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, TrendingUp } from 'lucide-react';
 import { Quotation } from '@/types';
 
 interface QuotationApprovalCardProps {
@@ -10,7 +10,6 @@ interface QuotationApprovalCardProps {
   onApprove: (id: string) => void;
   onReject: (quotation: Quotation) => void;
   onView: (quotation: Quotation) => void;
-  onPrint?: (quotation: Quotation) => void;
 }
 
 const getStatusColor = (status: string) => {
@@ -41,7 +40,7 @@ const formatVolume = (volume: string) => {
   }
 };
 
-const QuotationApprovalCard = ({ quotation, onApprove, onReject, onView, onPrint }: QuotationApprovalCardProps) => {
+const QuotationApprovalCard = ({ quotation, onApprove, onReject, onView }: QuotationApprovalCardProps) => {
   const profit = quotation.clientQuote - quotation.buyRate;
   const margin = quotation.clientQuote > 0 ? ((profit / quotation.clientQuote) * 100) : 0;
   const volume = formatVolume(quotation.volume);
@@ -140,32 +139,6 @@ const QuotationApprovalCard = ({ quotation, onApprove, onReject, onView, onPrint
               >
                 <Eye className="h-4 w-4" />
                 <span className="font-medium">View</span>
-              </Button>
-              {onPrint && (
-                <Button
-                  onClick={() => onPrint(quotation)}
-                  variant="outline"
-                  size="sm"
-                  className="px-3 gap-1.5 text-gray-600 hover:text-gray-700"
-                >
-                  <Printer className="h-4 w-4" />
-                  <span className="font-medium">Print</span>
-                </Button>
-              )}
-            </div>
-          )}
-          
-          {/* Always show print button if available */}
-          {quotation.status !== 'pending' && onPrint && (
-            <div className="pt-4">
-              <Button
-                onClick={() => onPrint(quotation)}
-                variant="outline"
-                size="sm"
-                className="w-full gap-1.5 text-gray-600 hover:text-gray-700"
-              >
-                <Printer className="h-4 w-4" />
-                <span className="font-medium">Print Quotation</span>
               </Button>
             </div>
           )}

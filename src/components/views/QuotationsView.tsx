@@ -9,7 +9,6 @@ import QuotationModal from '../modals/QuotationModal';
 import { getQuotationColumns } from '../quotations/quotationTableColumns';
 import RejectQuotationModal from '../modals/RejectQuotationModal';
 import QuotationApprovalCard from '../admin/QuotationApprovalCard';
-import QuotationPrintPreview from '../QuotationPrintPreview';
 
 interface QuotationsViewProps {
   user: User;
@@ -19,19 +18,16 @@ interface QuotationsViewProps {
   onEdit?: (quotation: Quotation) => void;
   onApprove?: (id: string) => void;
   onReject?: (id: string, reason: string) => void;
-  onPrint?: (quotation: Quotation) => void;
 }
 
 const QuotationsView = ({
-  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onApprove, onReject, onPrint
+  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onApprove, onReject
 }: QuotationsViewProps) => {
   const [modalQuotation, setModalQuotation] = useState<Quotation|null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
   const [quotationToReject, setQuotationToReject] = useState<Quotation | null>(null);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
-  const [showPrintPreview, setShowPrintPreview] = useState(false);
-  const [quotationToPrint, setQuotationToPrint] = useState<Quotation | null>(null);
 
   const handleEdit = (quotation: Quotation) => {
     setModalQuotation(quotation);
@@ -61,20 +57,6 @@ const QuotationsView = ({
     setModalOpen(true);
   };
 
-  const handlePrintQuotation = (quotation: Quotation) => {
-    if (onPrint) {
-      onPrint(quotation);
-    } else {
-      setQuotationToPrint(quotation);
-      setShowPrintPreview(true);
-    }
-  };
-
-  const handlePrintComplete = () => {
-    setShowPrintPreview(false);
-    setQuotationToPrint(null);
-  };
-
   const handleExport = () => {
     const dataStr = JSON.stringify(filteredQuotations, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
@@ -93,7 +75,6 @@ const QuotationsView = ({
     onInvoiceFromQuotation,
     onEdit: handleEdit,
     onView: (quotation: Quotation) => handleViewQuotation(quotation),
-    onPrint: handlePrintQuotation,
   });
 
   // Admins see only pending, partners and others see all
@@ -178,7 +159,6 @@ const QuotationsView = ({
                 onApprove={onApprove!}
                 onReject={handleRequestReject}
                 onView={handleViewQuotation}
-                onPrint={handlePrintQuotation}
               />
             ))}
           </div>
@@ -221,14 +201,6 @@ const QuotationsView = ({
         onClose={() => setRejectionModalOpen(false)}
         onConfirm={handleConfirmReject}
       />
-      
-      {showPrintPreview && quotationToPrint && (
-        <QuotationPrintPreview
-          quotation={quotationToPrint}
-          onClose={() => setShowPrintPreview(false)}
-          onPrint={handlePrintComplete}
-        />
-      )}
     </div>
   );
 };

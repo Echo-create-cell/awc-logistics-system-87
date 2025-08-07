@@ -29,7 +29,6 @@ const Index = () => {
     handleEditUser,
     handleDeleteUser,
     handleCreateUser,
-    handlePrintQuotation,
     handleTabChange,
     setPrintPreview,
     setActiveTab,
@@ -110,7 +109,6 @@ const Index = () => {
               onEditUser={handleEditUser}
               onDeleteUser={handleDeleteUser}
               onCreateUser={handleCreateUser}
-              onPrintQuotation={handlePrintQuotation}
             />
           </div>
         </div>
