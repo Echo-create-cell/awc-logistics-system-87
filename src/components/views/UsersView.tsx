@@ -111,7 +111,7 @@ const UsersView = ({ users }: UsersViewProps) => {
                 size="sm" 
                 variant="ghost" 
                 onClick={() => handleDelete(row.id)} 
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="text-destructive hover:text-destructive hover:bg-destructive/10"
                 title="Delete User"
               >
                 <Trash2 size={16} />
@@ -133,8 +133,8 @@ const UsersView = ({ users }: UsersViewProps) => {
       render: (value: string) => (
         <Badge className={`${
           value === 'active' 
-            ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-            : 'bg-red-100 text-red-800 hover:bg-red-200'
+            ? 'bg-success/10 text-success hover:bg-success/20' 
+            : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
         } font-medium`}>
           {value}
         </Badge>

@@ -108,7 +108,7 @@ const QuotationsView = ({
         </div>
         <div className="flex items-center space-x-2">
           {user.role === 'admin' && (
-            <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center space-x-1 bg-muted rounded-lg p-1">
               <Button
                 size="sm"
                 variant={viewMode === 'table' ? 'default' : 'ghost'}
