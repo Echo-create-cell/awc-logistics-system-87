@@ -12,7 +12,6 @@ export const useAppData = () => {
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [invoices, setInvoices] = useState<InvoiceData[]>(mockInvoices);
   const [printPreview, setPrintPreview] = useState<InvoiceData | null>(null);
-  const [quotationPrintPreview, setQuotationPrintPreview] = useState<Quotation | null>(null);
   const [invoiceQuotation, setInvoiceQuotation] = useState<Quotation | null>(null);
   const {
     notifyQuotationApproved,
@@ -110,10 +109,6 @@ export const useAppData = () => {
     notifyInvoicePrinted(invoice, { user });
   };
 
-  const handlePrintQuotation = (quotation: Quotation) => {
-    setQuotationPrintPreview(quotation);
-  };
-
   const handleEditQuotation = (updatedQuotation: Quotation) => {
     setQuotations(prev => prev.map(q => 
       q.id === updatedQuotation.id ? updatedQuotation : q
@@ -159,7 +154,6 @@ export const useAppData = () => {
     users,
     invoices,
     printPreview,
-    quotationPrintPreview,
     invoiceQuotation,
     handleApproveQuotation,
     handleRejectQuotation,
@@ -168,14 +162,13 @@ export const useAppData = () => {
     handleSaveInvoice,
     handleEditInvoice,
     handlePrintInvoice,
-    handlePrintQuotation,
     handleEditQuotation,
     handleEditUser,
     handleDeleteUser,
     handleCreateUser,
     handleTabChange,
-    clearPrintPreview: () => setPrintPreview(null),
-    clearQuotationPrintPreview: () => setQuotationPrintPreview(null),
-    clearInvoiceQuotation: () => setInvoiceQuotation(null),
+    setPrintPreview,
+    setActiveTab,
+    setInvoiceQuotation,
   };
 };

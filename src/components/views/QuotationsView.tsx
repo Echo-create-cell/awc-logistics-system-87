@@ -18,11 +18,10 @@ interface QuotationsViewProps {
   onEdit?: (quotation: Quotation) => void;
   onApprove?: (id: string) => void;
   onReject?: (id: string, reason: string) => void;
-  onPrint?: (quotation: Quotation) => void;
 }
 
 const QuotationsView = ({
-  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onApprove, onReject, onPrint
+  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onApprove, onReject
 }: QuotationsViewProps) => {
   const [modalQuotation, setModalQuotation] = useState<Quotation|null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -76,7 +75,6 @@ const QuotationsView = ({
     onInvoiceFromQuotation,
     onEdit: handleEdit,
     onView: (quotation: Quotation) => handleViewQuotation(quotation),
-    onPrint,
   });
 
   // Admins see only pending, partners and others see all
@@ -161,7 +159,6 @@ const QuotationsView = ({
                 onApprove={onApprove!}
                 onReject={handleRequestReject}
                 onView={handleViewQuotation}
-                onPrint={onPrint}
               />
             ))}
           </div>

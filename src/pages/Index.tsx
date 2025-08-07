@@ -4,7 +4,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import LoginForm from '@/components/LoginForm';
 import Sidebar from '@/components/Sidebar';
 import InvoicePrintPreview from '@/components/InvoicePrintPreview';
-import QuotationPrintPreview from '@/components/QuotationPrintPreview';
 import { useToast } from '@/hooks/use-toast';
 import { useAppData } from '@/hooks/useAppData';
 import MainContent from '@/components/MainContent';
@@ -18,7 +17,6 @@ const Index = () => {
     users,
     invoices,
     printPreview,
-    quotationPrintPreview,
     invoiceQuotation,
     handleApproveQuotation,
     handleRejectQuotation,
@@ -27,15 +25,14 @@ const Index = () => {
     handleSaveInvoice,
     handleEditInvoice,
     handlePrintInvoice,
-    handlePrintQuotation,
     handleEditQuotation,
     handleEditUser,
     handleDeleteUser,
     handleCreateUser,
     handleTabChange,
-    clearPrintPreview,
-    clearQuotationPrintPreview,
-    clearInvoiceQuotation,
+    setPrintPreview,
+    setActiveTab,
+    setInvoiceQuotation,
   } = useAppData();
 
   if (!user) {
@@ -108,8 +105,7 @@ const Index = () => {
               onSaveInvoice={handleSaveInvoice}
               onEditInvoice={handleEditInvoice}
               onPrintInvoice={handlePrintInvoice}
-              onPrintQuotation={handlePrintQuotation}
-              onInvoiceQuotationClear={clearInvoiceQuotation}
+              onInvoiceQuotationClear={() => setInvoiceQuotation(null)}
               onEditUser={handleEditUser}
               onDeleteUser={handleDeleteUser}
               onCreateUser={handleCreateUser}
@@ -121,26 +117,12 @@ const Index = () => {
       {printPreview && (
         <InvoicePrintPreview
           invoice={printPreview}
-          onClose={clearPrintPreview}
+          onClose={() => setPrintPreview(null)}
           onPrint={() => {
-            clearPrintPreview();
+            setPrintPreview(null);
             toast({
               title: "Invoice Printed",
               description: "Invoice has been sent to printer successfully.",
-            });
-          }}
-        />
-      )}
-
-      {quotationPrintPreview && (
-        <QuotationPrintPreview
-          quotation={quotationPrintPreview}
-          onClose={clearQuotationPrintPreview}
-          onPrint={() => {
-            clearQuotationPrintPreview();
-            toast({
-              title: "Quotation Printed",
-              description: "Quotation has been sent to printer successfully.",
             });
           }}
         />

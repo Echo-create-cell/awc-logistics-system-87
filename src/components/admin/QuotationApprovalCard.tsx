@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, Eye, TrendingUp, Printer } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, TrendingUp } from 'lucide-react';
 import { Quotation } from '@/types';
 
 interface QuotationApprovalCardProps {
@@ -10,7 +10,6 @@ interface QuotationApprovalCardProps {
   onApprove: (id: string) => void;
   onReject: (quotation: Quotation) => void;
   onView: (quotation: Quotation) => void;
-  onPrint?: (quotation: Quotation) => void;
 }
 
 const getStatusColor = (status: string) => {
@@ -41,7 +40,7 @@ const formatVolume = (volume: string) => {
   }
 };
 
-const QuotationApprovalCard = ({ quotation, onApprove, onReject, onView, onPrint }: QuotationApprovalCardProps) => {
+const QuotationApprovalCard = ({ quotation, onApprove, onReject, onView }: QuotationApprovalCardProps) => {
   const profit = quotation.clientQuote - quotation.buyRate;
   const margin = quotation.clientQuote > 0 ? ((profit / quotation.clientQuote) * 100) : 0;
   const volume = formatVolume(quotation.volume);
@@ -113,53 +112,36 @@ const QuotationApprovalCard = ({ quotation, onApprove, onReject, onView, onPrint
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-2 pt-4">
-            {/* Print button - always available */}
-            {onPrint && (
+          {quotation.status === 'pending' && (
+            <div className="flex gap-2 pt-4">
               <Button
-                onClick={() => onPrint(quotation)}
-                variant="outline"
+                onClick={() => onApprove(quotation.id)}
                 size="sm"
-                className="px-3 gap-1.5 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white gap-1.5"
               >
-                <Printer className="h-4 w-4" />
-                <span className="font-medium">Print</span>
+                <CheckCircle className="h-4 w-4" />
+                <span className="font-medium">Approve</span>
               </Button>
-            )}
-            
-            {/* Status-specific actions */}
-            {quotation.status === 'pending' ? (
-              <>
-                <Button
-                  onClick={() => onApprove(quotation.id)}
-                  size="sm"
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white gap-1.5"
-                >
-                  <CheckCircle className="h-4 w-4" />
-                  <span className="font-medium">Approve</span>
-                </Button>
-                <Button
-                  onClick={() => onReject(quotation)}
-                  variant="destructive"
-                  size="sm"
-                  className="flex-1 gap-1.5"
-                >
-                  <XCircle className="h-4 w-4" />
-                  <span className="font-medium">Reject</span>
-                </Button>
-              </>
-            ) : (
+              <Button
+                onClick={() => onReject(quotation)}
+                variant="destructive"
+                size="sm"
+                className="flex-1 gap-1.5"
+              >
+                <XCircle className="h-4 w-4" />
+                <span className="font-medium">Reject</span>
+              </Button>
               <Button
                 onClick={() => onView(quotation)}
                 variant="outline"
                 size="sm"
-                className="flex-1 gap-1.5"
+                className="px-3 gap-1.5"
               >
                 <Eye className="h-4 w-4" />
-                <span className="font-medium">View Details</span>
+                <span className="font-medium">View</span>
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
