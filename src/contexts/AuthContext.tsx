@@ -21,40 +21,40 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const mockUsers: User[] = [
   {
     id: '1',
-    name: 'System Administrator',
-    email: 'admin@awclogistics.com',
+    name: 'N. SOLANGE',
+    email: 'n.solange@africaworldcargo.com',
     role: 'admin',
     status: 'active',
     createdAt: '2024-01-15'
   },
   {
     id: '2',
-    name: 'JOHN NDAYAMBAJE',
-    email: 'john@awclogistics.com',
+    name: 'I. ARNOLD',
+    email: 'i.arnold@africaworldcargo.com',
     role: 'sales_director',
     status: 'active',
     createdAt: '2024-02-01'
   },
   {
     id: '3',
-    name: 'RONNY TWAHIRWA',
-    email: 'ronny@awclogistics.com',
+    name: 'A. BENON',
+    email: 'a.benon@africaworldcargo.com',
     role: 'sales_agent',
     status: 'active',
     createdAt: '2024-02-15'
   },
   {
     id: '4',
-    name: 'Finance Controller',
-    email: 'finance@awclogistics.com',
+    name: 'N. MARIEMERCI',
+    email: 'n.mariemerci@africaworldcargo.com',
     role: 'finance_officer',
     status: 'active',
     createdAt: '2024-03-01'
   },
   {
     id: '5',
-    name: 'Michel M. TSHIKALA',
-    email: 'michel@awclogistics.com',
+    name: 'K. PETER',
+    email: 'k.peter@africaworldcargo.com',
     role: 'partner',
     status: 'active',
     createdAt: '2024-03-10'
@@ -66,11 +66,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [userCredentials, setUserCredentials] = useState<Record<string, string>>(() => {
-    // Initialize with default credentials for all users
-    const credentials: Record<string, string> = {};
-    mockUsers.forEach(user => {
-      credentials[user.email] = 'password';
-    });
+    // Initialize with specific credentials for all users
+    const credentials: Record<string, string> = {
+      'n.solange@africaworldcargo.com': 'CEO@AWC',
+      'i.arnold@africaworldcargo.com': 'Director@AWC',
+      'a.benon@africaworldcargo.com': 'Agent@AWC',
+      'n.mariemerci@africaworldcargo.com': 'Finance@AWC',
+      'k.peter@africaworldcargo.com': 'Partner@AWC'
+    };
     return credentials;
   });
   const { notifyLoginSuccess, notifyLoginFailed, notifyLogout } = useNotifications();
