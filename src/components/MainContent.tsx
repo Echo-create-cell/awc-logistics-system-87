@@ -71,8 +71,8 @@ const MainContent = ({
             user={user}
             quotations={quotations}
             setActiveTab={onTabChange}
-            onInvoiceFromQuotation={user.role === 'admin' || user.role === 'partner' ? undefined : onGenerateInvoiceFromQuotation}
-            onEdit={user.role === 'admin' || user.role === 'partner' ? undefined : onEditQuotation}
+            onInvoiceFromQuotation={user.role === 'partner' ? undefined : onGenerateInvoiceFromQuotation}
+            onEdit={user.role === 'partner' ? undefined : onEditQuotation}
             onApprove={user.role === 'admin' ? onApproveQuotation : undefined}
             onReject={user.role === 'admin' ? onRejectQuotation : undefined}
           />
@@ -90,7 +90,7 @@ const MainContent = ({
             user={user}
             invoices={invoices}
             onSave={onSaveInvoice}
-            onEdit={user.role === 'admin' || user.role === 'partner' ? undefined : onEditInvoice}
+            onEdit={user.role === 'partner' ? undefined : onEditInvoice}
             onPrint={onPrintInvoice}
             setActiveTab={onTabChange}
             quotations={quotations}
