@@ -141,23 +141,26 @@ export const showPersistentToast = ({
 
 export const PersistentToaster = () => {
   return (
-    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] pointer-events-none">
+    <div className="fixed top-24 right-6 z-[9999] pointer-events-none max-w-sm">
       <Toaster 
-        position="top-center"
+        position="top-right"
         toastOptions={{
           style: {
             background: 'white',
             color: 'hsl(var(--foreground))',
             border: '1px solid hsl(var(--border))',
+            borderRadius: '8px',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
             position: 'relative',
             pointerEvents: 'auto',
+            maxWidth: '400px',
           },
-          className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg mb-2',
+          className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg mb-3',
         }}
         richColors
         expand={false}
-        visibleToasts={10}
-        gap={8}
+        visibleToasts={5}
+        gap={12}
         offset={0}
       />
     </div>

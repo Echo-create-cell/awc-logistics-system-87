@@ -7,6 +7,8 @@ import InvoicePrintPreview from '@/components/InvoicePrintPreview';
 import { useToast } from '@/hooks/use-toast';
 import { useAppData } from '@/hooks/useAppData';
 import MainContent from '@/components/MainContent';
+import { NotificationPanel } from '@/components/layout/NotificationPanel';
+import { PersistentToaster } from '@/components/ui/persistent-toast';
 
 const Index = () => {
   const { user } = useAuth();
@@ -76,6 +78,7 @@ const Index = () => {
                     })}
                   </p>
                 </div>
+                <NotificationPanel />
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">
                     {user.name.split(' ').map(n => n[0]).join('')}
@@ -127,6 +130,8 @@ const Index = () => {
           }}
         />
       )}
+      
+      <PersistentToaster />
     </div>
   );
 };
