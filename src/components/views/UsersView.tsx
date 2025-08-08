@@ -10,22 +10,23 @@ import { useUserManagement } from '@/hooks/useUserManagement';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface UsersViewProps {
-  users: User[];
+  users?: User[]; // Make optional since we'll use users from the hook
 }
 
-const UsersView = ({ users }: UsersViewProps) => {
+const UsersView = ({ users: propUsers }: UsersViewProps) => {
   const { user: currentUser } = useAuth();
   const [modalUser, setModalUser] = useState<User|null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   
   const {
+    users, // Use users from the hook instead of props
     createUser,
     updateUser,
     deleteUser,
     resetUserPassword,
     getUserCredentials,
     validateAdminAccess
-  } = useUserManagement(users);
+  } = useUserManagement(propUsers || []);
 
   const isAdmin = validateAdminAccess(currentUser);
 
