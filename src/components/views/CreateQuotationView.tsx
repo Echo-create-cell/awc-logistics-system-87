@@ -38,7 +38,7 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
   } = useQuotationForm(null, user);
 
   const handleSaveQuotation = () => {
-    if (!clientName || clientQuote <= 0 || !buyRate || !currency || !quotationData.quoteSentBy) {
+    if (!clientName || clientQuote <= 0 || !currency || !quotationData.quoteSentBy) {
       toast({
         title: "Missing Fields",
         description: "Please ensure client name, commodities, pricing, and 'Quote Sent By' are all filled in.",
