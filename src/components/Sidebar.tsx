@@ -27,6 +27,7 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'users', label: 'User Management', icon: Users },
           { id: 'quotations', label: 'Quotation Approvals', icon: FileText },
           { id: 'invoices', label: 'All Invoices', icon: DollarSign },
+          { id: 'documents', label: 'Documents', icon: FileText },
           { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
           { id: 'settings', label: 'Settings', icon: Settings },
           { id: 'logout', label: 'Logout', icon: LogOut },
@@ -54,14 +55,15 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'invoices', label: 'Invoice Management', icon: DollarSign },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
-      case 'partner':
-        return [
-          { id: 'dashboard', label: 'Dashboard', icon: Home },
-          { id: 'quotations', label: 'View Quotations', icon: FileText },
-          { id: 'invoices', label: 'View Invoices', icon: DollarSign },
-          { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
-          { id: 'logout', label: 'Logout', icon: LogOut },
-        ];
+    case 'partner':
+      return [
+        { id: 'dashboard', label: 'Dashboard', icon: Home },
+        { id: 'quotations', label: 'View Quotations', icon: FileText },
+        { id: 'invoices', label: 'View Invoices', icon: DollarSign },
+        { id: 'documents', label: 'Documents', icon: FileText },
+        { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
+        { id: 'logout', label: 'Logout', icon: LogOut },
+      ];
       default:
         return [];
     }
