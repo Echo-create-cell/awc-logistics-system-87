@@ -1,4 +1,6 @@
 import { useToast } from "@/hooks/use-toast"
+import { NOTIFICATIONS_ENABLED } from "@/config/features"
+
 import {
   Toast,
   ToastClose,
@@ -10,6 +12,8 @@ import {
 
 export function Toaster() {
   const { toasts } = useToast()
+
+  if (!NOTIFICATIONS_ENABLED) return null
 
   return (
     <ToastProvider>

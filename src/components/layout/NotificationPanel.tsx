@@ -5,9 +5,14 @@ import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { NotificationCenter } from '@/components/system/NotificationCenter'
 import { useSystemNotifications } from '@/hooks/useSystemNotifications'
+import { NOTIFICATIONS_ENABLED } from '@/config/features'
+
 
 export const NotificationPanel: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
+
+  if (!NOTIFICATIONS_ENABLED) return null
+
   const { 
     notifications, 
     unreadCount, 

@@ -1,6 +1,8 @@
 import { useToast } from '@/hooks/use-toast';
 import { Quotation, User } from '@/types';
 import { InvoiceData } from '@/types/invoice';
+import { NOTIFICATIONS_ENABLED } from '@/config/features';
+
 
 export interface NotificationContext {
   user?: User;
@@ -9,6 +11,52 @@ export interface NotificationContext {
 }
 
 export const useNotifications = () => {
+  if (!NOTIFICATIONS_ENABLED) {
+    const noop = (..._args: any[]) => undefined as any;
+    return {
+      // Quotation notifications
+      notifyQuotationCreated: noop,
+      notifyQuotationUpdated: noop,
+      notifyQuotationApproved: noop,
+      notifyQuotationRejected: noop,
+      notifyQuotationStatusChanged: noop,
+      // Invoice notifications
+      notifyInvoiceCreated: noop,
+      notifyInvoiceUpdated: noop,
+      notifyInvoiceGenerated: noop,
+      notifyInvoicePrinted: noop,
+      // User management notifications
+      notifyUserCreated: noop,
+      notifyUserUpdated: noop,
+      notifyUserDeleted: noop,
+      notifyUserRoleChanged: noop,
+      // System operations notifications
+      notifySystemBackup: noop,
+      notifyDataReset: noop,
+      notifySystemMaintenance: noop,
+      // Authentication notifications
+      notifyLoginSuccess: noop,
+      notifyLoginFailed: noop,
+      notifyLogout: noop,
+      // Permission notifications
+      notifyAccessDenied: noop,
+      notifyUnauthorizedAccess: noop,
+      // Data operations notifications
+      notifyDataExported: noop,
+      notifyDataImported: noop,
+      // Network notifications
+      notifyConnectionIssue: noop,
+      notifyConnectionRestored: noop,
+      // Validation notifications
+      notifyValidationError: noop,
+      notifyFormSaved: noop,
+      // Password reset and error notifications
+      notifyPasswordReset: noop,
+      notifyError: noop,
+      // Custom notification
+      notifyCustom: noop,
+    };
+  }
   const { toast } = useToast();
 
   // Quotation Notifications

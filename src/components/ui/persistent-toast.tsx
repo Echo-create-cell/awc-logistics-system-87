@@ -1,6 +1,8 @@
 import * as React from "react"
+import { NOTIFICATIONS_ENABLED } from "@/config/features"
 import { Toaster } from "@/components/ui/sonner"
 import { toast as sonnerToast } from "sonner"
+
 import { CheckCircle, AlertCircle, XCircle, Info, Clock, AlertTriangle } from "lucide-react"
 
 const iconMap = {
@@ -60,6 +62,9 @@ export const showPersistentToast = ({
   actionRequired = false,
   onAction
 }: PersistentToastOptions) => {
+  if (!NOTIFICATIONS_ENABLED) {
+    return
+  }
   // Check weekly limit for quotation and invoice notifications only
   if (category && (category.toLowerCase().includes('quotation') || category.toLowerCase().includes('invoice'))) {
     const notificationKey = getNotificationKey(category, title)
@@ -140,6 +145,7 @@ export const showPersistentToast = ({
 }
 
 export const PersistentToaster = () => {
+  if (!NOTIFICATIONS_ENABLED) return null
   return (
     <div className="fixed top-24 right-6 z-[9999] pointer-events-none max-w-sm">
       <Toaster 

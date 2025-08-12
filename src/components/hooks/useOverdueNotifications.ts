@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { useNotificationManager } from '@/hooks/useNotificationManager'
 import { Quotation } from '@/types'
 import { InvoiceData } from '@/types/invoice'
+import { NOTIFICATIONS_ENABLED } from '@/config/features'
+
 
 interface UseOverdueNotificationsProps {
   quotations: Quotation[]
@@ -17,6 +19,7 @@ export const useOverdueNotifications = ({
   const { notifyQuotationOverdue, notifyInvoiceOverdue } = useNotificationManager()
 
   useEffect(() => {
+    if (!NOTIFICATIONS_ENABLED) return
     const checkOverdueItems = () => {
       const now = new Date()
 

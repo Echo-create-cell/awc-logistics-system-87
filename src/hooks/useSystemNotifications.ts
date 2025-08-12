@@ -4,6 +4,8 @@ import { showPersistentToast } from '@/components/ui/persistent-toast'
 import type { NotificationItem } from '@/components/system/NotificationCenter'
 import { Quotation, User } from '@/types'
 import { InvoiceData } from '@/types/invoice'
+import { NOTIFICATIONS_ENABLED } from '@/config/features'
+
 
 export interface SystemNotificationContext {
   user?: User
@@ -16,6 +18,35 @@ export interface SystemNotificationContext {
 }
 
 export const useSystemNotifications = () => {
+  if (!NOTIFICATIONS_ENABLED) {
+    const noop = (..._args: any[]) => undefined as any
+    return {
+      notifications: [],
+      unreadCount: 0,
+      criticalNotifications: [],
+      notifyQuotationCreated: noop,
+      notifyQuotationApproved: noop,
+      notifyQuotationRejected: noop,
+      notifyQuotationOverdue: noop,
+      notifyQuotationWon: noop,
+      notifyQuotationLost: noop,
+      notifyInvoiceCreated: noop,
+      notifyInvoiceOverdue: noop,
+      notifyInvoicePaid: noop,
+      notifyUserLogin: noop,
+      notifyUserCreated: noop,
+      notifyUnauthorizedAccess: noop,
+      notifySystemMaintenance: noop,
+      notifyDataBackup: noop,
+      notifyExportCompleted: noop,
+      notifyPrintCompleted: noop,
+      markAsRead: noop,
+      markAllAsRead: noop,
+      deleteNotification: noop,
+      clearAllNotifications: noop,
+      addNotification: noop,
+    }
+  }
   const { toast } = useToast()
   const [notifications, setNotifications] = useState<NotificationItem[]>([])
 
