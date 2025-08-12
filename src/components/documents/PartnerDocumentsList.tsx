@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Download, Printer } from 'lucide-react'
+import { Download, Printer, Eye } from 'lucide-react'
 import { getDocuments, getDocumentBlob, type DocumentRecord } from '@/services/documentStorage'
 import { showPersistentToast } from '@/components/ui/persistent-toast'
 
@@ -28,6 +28,14 @@ export default function PartnerDocumentsList() {
     a.click()
     a.remove()
     URL.revokeObjectURL(url)
+  }
+
+  const onView = async (rec: DocumentRecord) => {
+    const blob = await getDocumentBlob(rec.id)
+    if (!blob) return
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener,noreferrer')
+    setTimeout(() => URL.revokeObjectURL(url), 10000)
   }
 
   const onPrint = async (rec: DocumentRecord) => {
@@ -85,6 +93,9 @@ export default function PartnerDocumentsList() {
                 <TableCell>{formatSize(d.size)}</TableCell>
                 <TableCell>{new Date(d.uploadedAt).toLocaleString()}</TableCell>
                 <TableCell className="text-right space-x-2">
+                  <Button size="sm" variant="ghost" onClick={() => onView(d)}>
+                    <Eye className="h-4 w-4 mr-1" /> View
+                  </Button>
                   <Button size="sm" variant="outline" onClick={() => onDownload(d)}>
                     <Download className="h-4 w-4 mr-1" /> Download
                   </Button>
