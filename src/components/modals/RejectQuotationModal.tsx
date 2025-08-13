@@ -120,19 +120,32 @@ const RejectQuotationModal = ({ open, quotation, onClose, onConfirm, onSave }: R
         </div>
         
         <DialogFooter className="pt-6 border-t border-gray-100 bg-gray-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
-          <div className="flex justify-end gap-3 w-full">
+          <div className="flex justify-between gap-3 w-full">
             <Button variant="outline" onClick={onClose} className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
               Cancel
             </Button>
-            <Button 
-              variant="destructive" 
-              onClick={handleConfirm} 
-              disabled={!reason.trim() || reason.trim().length < 10}
-              className="bg-red-600 hover:bg-red-700 text-white"
-            >
-              <XCircle className="h-4 w-4 mr-2" />
-              Confirm Rejection
-            </Button>
+            <div className="flex gap-3">
+              {onSave && (
+                <Button 
+                  variant="outline" 
+                  onClick={handleSave} 
+                  disabled={!reason.trim() || reason.trim().length < 10}
+                  className="bg-white border-blue-300 text-blue-700 hover:bg-blue-50"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Save Draft
+                </Button>
+              )}
+              <Button 
+                variant="destructive" 
+                onClick={handleConfirm} 
+                disabled={!reason.trim() || reason.trim().length < 10}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                Confirm Rejection
+              </Button>
+            </div>
           </div>
         </DialogFooter>
       </DialogContent>

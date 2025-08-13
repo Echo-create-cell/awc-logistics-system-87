@@ -52,6 +52,12 @@ const QuotationsView = ({
     setQuotationToReject(null);
   };
 
+  const handleSaveRejectionDraft = (reason: string) => {
+    // Save draft functionality - store reason for later use
+    console.log('Saving rejection draft for quotation:', quotationToReject?.id, 'Reason:', reason);
+    setRejectionModalOpen(false);
+  };
+
   const handleViewQuotation = (quotation: Quotation) => {
     setModalQuotation(quotation);
     setModalOpen(true);
@@ -209,6 +215,7 @@ const QuotationsView = ({
         quotation={quotationToReject}
         onClose={() => setRejectionModalOpen(false)}
         onConfirm={handleConfirmReject}
+        onSave={handleSaveRejectionDraft}
       />
     </div>
   );
