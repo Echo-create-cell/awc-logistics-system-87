@@ -13,9 +13,10 @@ interface RejectQuotationModalProps {
   quotation: Quotation | null;
   onClose: () => void;
   onConfirm: (reason: string) => void;
+  onSave?: (reason: string) => void;
 }
 
-const RejectQuotationModal = ({ open, quotation, onClose, onConfirm }: RejectQuotationModalProps) => {
+const RejectQuotationModal = ({ open, quotation, onClose, onConfirm, onSave }: RejectQuotationModalProps) => {
   const [reason, setReason] = useState('');
 
   useEffect(() => {
@@ -27,6 +28,12 @@ const RejectQuotationModal = ({ open, quotation, onClose, onConfirm }: RejectQuo
   const handleConfirm = () => {
     if (reason.trim()) {
       onConfirm(reason);
+    }
+  };
+
+  const handleSave = () => {
+    if (reason.trim() && onSave) {
+      onSave(reason);
     }
   };
 
