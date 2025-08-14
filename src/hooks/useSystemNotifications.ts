@@ -148,7 +148,7 @@ ${context?.additionalInfo ? `**Additional Info:** ${JSON.stringify(context.addit
     })
 
     return newNotification.id
-  }, [toast])
+  }, [toast, showDetailedNotification])
 
   // Enhanced notification functions
   const notifyQuotationCreated = useCallback((quotation: Quotation, context?: SystemNotificationContext) => {
