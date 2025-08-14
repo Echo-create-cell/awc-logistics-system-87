@@ -7,7 +7,7 @@ import InvoicePrintPreview from '@/components/InvoicePrintPreview';
 import { useToast } from '@/hooks/use-toast';
 import { useAppData } from '@/hooks/useAppData';
 import MainContent from '@/components/MainContent';
-import WeeklyNotificationSystem from '@/components/notifications/WeeklyNotificationSystem';
+import DailyNotificationSystem from '@/components/notifications/DailyNotificationSystem';
 
 
 const Index = () => {
@@ -130,8 +130,8 @@ const Index = () => {
         />
       )}
       
-      {/* Weekly Notification System */}
-      <WeeklyNotificationSystem 
+      {/* Daily Notification System */}
+      <DailyNotificationSystem 
         quotations={quotations}
         invoices={invoices}
       />

@@ -47,12 +47,20 @@ const mockUsers: User[] = [
     id: '4',
     name: 'N. MARIEMERCI',
     email: 'n.mariemerci@africaworldcargo.com',
-    role: 'finance_officer',
+    role: 'sales_agent',
     status: 'active',
     createdAt: '2024-03-01'
   },
   {
     id: '5',
+    name: 'U. EPIPHANIE',
+    email: 'u.epiphanie@africaworldcargo.com',
+    role: 'finance_officer',
+    status: 'active',
+    createdAt: '2024-03-05'
+  },
+  {
+    id: '6',
     name: 'K. PETER',
     email: 'k.peter@africaworldcargo.com',
     role: 'partner',
@@ -71,7 +79,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       'n.solange@africaworldcargo.com': 'CEO@AWC',
       'i.arnold@africaworldcargo.com': 'Director@AWC',
       'a.benon@africaworldcargo.com': 'Agent@AWC',
-      'n.mariemerci@africaworldcargo.com': 'Finance@AWC',
+      'n.mariemerci@africaworldcargo.com': 'Agent2@AWC',
+      'u.epiphanie@africaworldcargo.com': 'Finance@AWC',
       'k.peter@africaworldcargo.com': 'Partner@AWC'
     };
     return credentials;

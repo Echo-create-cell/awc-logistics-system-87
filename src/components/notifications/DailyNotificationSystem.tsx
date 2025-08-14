@@ -4,7 +4,7 @@ import { Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 import { useAuth } from '@/contexts/AuthContext';
 
-interface WeeklyNotificationSystemProps {
+interface DailyNotificationSystemProps {
   quotations: Quotation[];
   invoices: InvoiceData[];
 }
@@ -19,7 +19,7 @@ interface NotificationData {
   data: any;
 }
 
-const WeeklyNotificationSystem: React.FC<WeeklyNotificationSystemProps> = ({
+const DailyNotificationSystem: React.FC<DailyNotificationSystemProps> = ({
   quotations,
   invoices
 }) => {
@@ -28,23 +28,31 @@ const WeeklyNotificationSystem: React.FC<WeeklyNotificationSystemProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [currentNotificationIndex, setCurrentNotificationIndex] = useState(0);
 
-  // Check if it's time to show notifications (Tuesday and Friday at 10 AM)
+  // Check if it's time to show notifications (Every day at 9 AM)
   const shouldShowNotifications = useCallback(() => {
     const now = new Date();
-    const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
     const hour = now.getHours();
+    const minute = now.getMinutes();
     
-    // Show on Tuesday (2) and Friday (5) at 10 AM
-    const isNotificationDay = dayOfWeek === 2 || dayOfWeek === 5;
-    const isNotificationTime = hour >= 10 && hour < 11;
+    // Show daily at 9:00 AM (with 5 minute window)
+    const isNotificationTime = hour === 9 && minute >= 0 && minute < 5;
+    
+    // TEST MODE: For demonstration, also show if there are notifications (remove this in production)
+    const testMode = true; // Set to false in production
+    const hasData = quotations.length > 0 || invoices.length > 0;
     
     // Check if we already showed notification today
     const lastShown = localStorage.getItem('lastNotificationDate');
     const today = now.toDateString();
     const alreadyShownToday = lastShown === today;
     
-    return isNotificationDay && isNotificationTime && !alreadyShownToday;
-  }, []);
+    // For testing, reset the localStorage daily check if needed
+    if (testMode && !alreadyShownToday && hasData) {
+      return true;
+    }
+    
+    return isNotificationTime && !alreadyShownToday;
+  }, [quotations.length, invoices.length]);
 
   // Generate notification data based on quotations and invoices
   const generateNotifications = useCallback(() => {
@@ -173,20 +181,20 @@ const WeeklyNotificationSystem: React.FC<WeeklyNotificationSystemProps> = ({
   return (
     <div className="fixed top-4 right-4 z-[9999] max-w-sm">
       <div className={`
-        transform transition-all duration-500 ease-out
+        transform transition-all duration-700 ease-out
         ${isVisible ? 'translate-x-0 opacity-100 scale-100' : 'translate-x-full opacity-0 scale-95'}
       `}>
-        <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden backdrop-blur-sm">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-4 text-white">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-700 p-4 text-white shadow-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Bell className="w-5 h-5" />
-                <span className="font-semibold text-sm">Weekly Summary</span>
+                <Bell className="w-5 h-5 animate-pulse" />
+                <span className="font-semibold text-sm">Daily Business Summary</span>
               </div>
               <button
                 onClick={() => setIsVisible(false)}
-                className="hover:bg-white/20 rounded-full p-1 transition-colors"
+                className="hover:bg-white/20 rounded-full p-1.5 transition-all duration-200 hover:scale-110"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -238,13 +246,14 @@ const WeeklyNotificationSystem: React.FC<WeeklyNotificationSystemProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="bg-gray-50 px-4 py-2 border-t border-gray-100">
-            <p className="text-xs text-gray-500 text-center">
+          <div className="bg-gradient-to-r from-gray-50 to-blue-50 px-4 py-3 border-t border-gray-100">
+            <p className="text-xs text-gray-600 text-center font-medium">
               {new Date().toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 month: 'short', 
-                day: 'numeric' 
-              })} • Bi-weekly Summary
+                day: 'numeric',
+                year: 'numeric'
+              })} • Daily Operations Update
             </p>
           </div>
         </div>
@@ -253,4 +262,4 @@ const WeeklyNotificationSystem: React.FC<WeeklyNotificationSystemProps> = ({
   );
 };
 
-export default WeeklyNotificationSystem;
+export default DailyNotificationSystem;
