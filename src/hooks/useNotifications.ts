@@ -92,6 +92,14 @@ export const useNotifications = () => {
     });
   };
 
+  const notifyQuotationFeedback = (quotation: Quotation, feedback: string, context?: NotificationContext) => {
+    toast({
+      title: "📝 Quotation Feedback",
+      description: `Quotation Q-${quotation.id.slice(-4)} for ${quotation.clientName} requires revision. Admin feedback: ${feedback}`,
+      variant: "default",
+    });
+  };
+
   const notifyQuotationStatusChanged = (quotation: Quotation, oldStatus: string, newStatus: string, context?: NotificationContext) => {
     const statusEmojis = {
       pending: "⏳",
@@ -325,6 +333,7 @@ export const useNotifications = () => {
     notifyQuotationUpdated,
     notifyQuotationApproved,
     notifyQuotationRejected,
+    notifyQuotationFeedback,
     notifyQuotationStatusChanged,
     
     // Invoice notifications

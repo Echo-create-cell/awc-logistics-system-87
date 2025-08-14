@@ -53,9 +53,13 @@ const QuotationsView = ({
   };
 
   const handleSaveRejectionDraft = (reason: string) => {
-    // Save draft functionality - store reason for later use
-    console.log('Saving rejection draft for quotation:', quotationToReject?.id, 'Reason:', reason);
+    // Save draft functionality - return to agent for modification
+    if (quotationToReject && onReject) {
+      // Pass true as third parameter to indicate draft save
+      (onReject as any)(quotationToReject.id, reason, true);
+    }
     setRejectionModalOpen(false);
+    setQuotationToReject(null);
   };
 
   const handleViewQuotation = (quotation: Quotation) => {
@@ -92,10 +96,12 @@ const QuotationsView = ({
     onView: (quotation: Quotation) => handleViewQuotation(quotation),
   });
 
-  // Admins see only pending, partners and others see all
-  const filteredQuotations = user.role === 'admin'
-    ? quotations.filter(q => q.status === 'pending')
-    : quotations;
+  // Admins and finance officers see all quotations, partners see all, others see their own
+  const filteredQuotations = user.role === 'admin' || user.role === 'finance_officer'
+    ? quotations // Admin and finance see all
+    : user.role === 'partner'
+    ? quotations // Partners see all
+    : quotations.filter(q => q.quoteSentBy === user.name); // Others see only their own
 
   return (
     <div className="space-y-6">
@@ -112,17 +118,19 @@ const QuotationsView = ({
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-foreground">
-            {user.role === 'admin' ? 'Quotation Approvals' : 'My Quotations'}
+            {user.role === 'admin' || user.role === 'finance_officer' ? 'All Quotations' : 'My Quotations'}
           </h2>
           <p className="text-muted-foreground mt-1">
             {user.role === 'admin' 
-              ? 'Review and approve pending quotations' 
+              ? 'Review and approve all quotations' 
+              : user.role === 'finance_officer'
+              ? 'View and analyze all quotations for financial reporting'
               : 'Manage your quotations and generate invoices'
             }
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          {user.role === 'admin' && (
+          {(user.role === 'admin' || user.role === 'finance_officer') && (
             <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
               <Button
                 size="sm"
@@ -159,7 +167,7 @@ const QuotationsView = ({
         </div>
       </div>
       
-      {user.role === 'admin' && viewMode === 'cards' ? (
+      {(user.role === 'admin' || user.role === 'finance_officer') && viewMode === 'cards' ? (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">

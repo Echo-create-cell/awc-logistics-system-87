@@ -13,7 +13,7 @@ const DocumentsView = () => {
         <p className="text-muted-foreground mt-1">Upload, share, download, and print documents.</p>
       </header>
 
-      {user?.role === 'admin' ? (
+      {user?.role === 'admin' || user?.role === 'finance_officer' ? (
         <AdminDocumentsPanel />
       ) : (
         <PartnerDocumentsList />

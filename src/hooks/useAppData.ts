@@ -18,6 +18,7 @@ export const useAppData = () => {
   const {
     notifyQuotationApproved,
     notifyQuotationRejected,
+    notifyQuotationFeedback,
     notifyQuotationCreated,
     notifyQuotationUpdated,
     notifyInvoiceCreated,
@@ -50,21 +51,38 @@ export const useAppData = () => {
     notificationManager.notifyQuotationApproved(quotation, { user });
   };
 
-  const handleRejectQuotation = (id: string, reason: string) => {
+  const handleRejectQuotation = (id: string, reason: string, saveAsDraft = false) => {
     const quotation = quotations.find(q => q.id === id);
     if (!quotation) return;
     
-    setQuotations(prev =>
-      prev.map(q => {
-        if (q.id === id) {
-          const newRemarks = [q.remarks, `Reason for loss: ${reason}`].filter(Boolean).join('\n\n');
-          return { ...q, status: 'lost' as const, remarks: newRemarks };
-        }
-        return q;
-      })
-    );
-    notifyQuotationRejected(quotation, reason, { user });
-    notificationManager.notifyQuotationRejected(quotation, reason, { user });
+    if (saveAsDraft) {
+      // Save as draft - return to original agent for modification
+      setQuotations(prev =>
+        prev.map(q => {
+          if (q.id === id) {
+            const draftRemarks = [q.remarks, `Draft Rejection Feedback: ${reason}`].filter(Boolean).join('\n\n');
+            return { ...q, status: 'pending' as const, remarks: draftRemarks };
+          }
+          return q;
+        })
+      );
+      
+      // Notify the agent about the feedback
+      notifyQuotationFeedback(quotation, reason, { user });
+    } else {
+      // Permanent rejection
+      setQuotations(prev =>
+        prev.map(q => {
+          if (q.id === id) {
+            const newRemarks = [q.remarks, `Reason for loss: ${reason}`].filter(Boolean).join('\n\n');
+            return { ...q, status: 'lost' as const, remarks: newRemarks };
+          }
+          return q;
+        })
+      );
+      notifyQuotationRejected(quotation, reason, { user });
+      notificationManager.notifyQuotationRejected(quotation, reason, { user });
+    }
   };
 
   const handleQuotationCreated = (newQuotationData: Quotation) => {
