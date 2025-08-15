@@ -74,9 +74,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [userCredentials, setUserCredentials] = useState<Record<string, string>>(() => {
-    // Initialize with specific credentials for all users
+    // Initialize with specific credentials matching provided user credentials
     const credentials: Record<string, string> = {
-      'n.solange@africaworldcargo.com': 'CEO@AWC',
+      'n.solange@africaworldcargo.com': 'Action@AWC',
       'i.arnold@africaworldcargo.com': 'Director@AWC',
       'a.benon@africaworldcargo.com': 'Agent@AWC',
       'n.mariemerci@africaworldcargo.com': 'Agent2@AWC',

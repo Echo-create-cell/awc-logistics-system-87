@@ -887,92 +887,102 @@ export const mockQuotations: Quotation[] = [
   }
 ];
 
+// Note: These users should match the ones in AuthContext for consistency
 export const mockUsers: User[] = [
   {
     id: '1',
-    name: 'System Administrator',
-    email: 'admin@awclogistics.com',
+    name: 'N. SOLANGE',
+    email: 'n.solange@africaworldcargo.com',
     role: 'admin',
     status: 'active',
     createdAt: '2024-01-15T00:00:00.000Z'
   },
   {
     id: '2',
-    name: 'JOHN NDAYAMBAJE',
-    email: 'john@awclogistics.com',
+    name: 'I. ARNOLD',
+    email: 'i.arnold@africaworldcargo.com',
     role: 'sales_director',
     status: 'active',
     createdAt: '2024-02-01T00:00:00.000Z'
   },
   {
     id: '3',
-    name: 'RONNY TWAHIRWA',
-    email: 'ronny@awclogistics.com',
+    name: 'A. BENON',
+    email: 'a.benon@africaworldcargo.com',
     role: 'sales_agent',
     status: 'active',
     createdAt: '2024-02-15T00:00:00.000Z'
   },
   {
     id: '4',
-    name: 'ANDY NUMA',
-    email: 'andy@awclogistics.com',
+    name: 'N. MARIEMERCI',
+    email: 'n.mariemerci@africaworldcargo.com',
     role: 'sales_agent',
     status: 'active',
     createdAt: '2024-03-01T00:00:00.000Z'
   },
   {
     id: '5',
-    name: 'Michel M. TSHIKALA',
-    email: 'michel@awclogistics.com',
+    name: 'U. EPIPHANIE',
+    email: 'u.epiphanie@africaworldcargo.com',
+    role: 'finance_officer',
+    status: 'active',
+    createdAt: '2024-03-05T00:00:00.000Z'
+  },
+  {
+    id: '6',
+    name: 'K. PETER',
+    email: 'k.peter@africaworldcargo.com',
     role: 'partner',
     status: 'active',
     createdAt: '2024-03-10T00:00:00.000Z'
   },
+  // Additional system users for quotations data consistency
   {
-    id: '6',
-    name: 'PATRICK',
-    email: 'patrick@awclogistics.com',
+    id: '7',
+    name: 'JOHN NDAYAMBAJE',
+    email: 'john.ndayambaje@africaworldcargo.com',
     role: 'sales_agent',
     status: 'active',
     createdAt: '2024-03-15T00:00:00.000Z'
   },
   {
-    id: '7',
-    name: 'JAMES',
-    email: 'james@awclogistics.com',
+    id: '8',
+    name: 'RONNY TWAHIRWA',
+    email: 'ronny.twahirwa@africaworldcargo.com',
     role: 'sales_agent',
     status: 'active',
     createdAt: '2024-03-20T00:00:00.000Z'
   },
   {
-    id: '8',
-    name: 'YNANI KAMIKAZI',
-    email: 'ynani@awclogistics.com',
+    id: '9',
+    name: 'ANDY NUMA',
+    email: 'andy.numa@africaworldcargo.com',
     role: 'sales_agent',
     status: 'active',
     createdAt: '2024-03-25T00:00:00.000Z'
   },
   {
-    id: '9',
-    name: 'PATSON NHARIVE',
-    email: 'patson@awclogistics.com',
-    role: 'sales_agent',
+    id: '10',
+    name: 'Michel M. TSHIKALA',
+    email: 'michel.tshikala@africaworldcargo.com',
+    role: 'partner',
     status: 'active',
     createdAt: '2024-04-01T00:00:00.000Z'
   },
   {
-    id: '10',
-    name: 'Herbert Akita',
-    email: 'herbert@awclogistics.com',
-    role: 'sales_director',
+    id: '11',
+    name: 'PATRICK',
+    email: 'patrick@africaworldcargo.com',
+    role: 'sales_agent',
     status: 'active',
     createdAt: '2024-04-05T00:00:00.000Z'
   },
   {
-    id: '11',
-    name: 'Finance Controller',
-    email: 'finance@awclogistics.com',
-    role: 'finance_officer',
+    id: '12',
+    name: 'JAMES',
+    email: 'james@africaworldcargo.com',
+    role: 'sales_agent',
     status: 'active',
     createdAt: '2024-04-10T00:00:00.000Z'
   }
