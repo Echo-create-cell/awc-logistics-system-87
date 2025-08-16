@@ -161,13 +161,13 @@ const EnhancedSearchableTable = ({
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-blue-200">
               <div className="flex items-center space-x-3">
                 {activeFiltersCount > 0 && (
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-800 font-medium">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 font-medium">
                     {activeFiltersCount} filter{activeFiltersCount > 1 ? 's' : ''} applied
                   </Badge>
                 )}
                 
                 {sortConfig && (
-                  <Badge variant="outline" className="bg-white border-blue-200 text-blue-700">
+                  <Badge variant="outline" className="bg-card border-primary/20 text-primary">
                     {sortConfig.direction === 'asc' ? <SortAsc className="h-3 w-3 mr-1" /> : <SortDesc className="h-3 w-3 mr-1" />}
                     Sorted by {sortConfig.key}
                   </Badge>

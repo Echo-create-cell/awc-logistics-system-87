@@ -20,7 +20,7 @@ const FinancialMetricsCards = ({ metrics }: FinancialMetricsCardsProps) => {
           <TrendingUp className="h-4 w-4 text-emerald-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(metrics.totalRevenue)}</div>
+          <div className="text-2xl font-bold text-success">{formatCurrency(metrics.totalRevenue)}</div>
           <p className="text-xs text-muted-foreground">From {metrics.totalInvoices} invoices</p>
         </CardContent>
       </Card>
@@ -31,7 +31,7 @@ const FinancialMetricsCards = ({ metrics }: FinancialMetricsCardsProps) => {
           <BarChart3 className="h-4 w-4 text-blue-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{formatCurrency(metrics.totalProfit)}</div>
+          <div className="text-2xl font-bold text-primary">{formatCurrency(metrics.totalProfit)}</div>
           <p className="text-xs text-muted-foreground">Win rate: {formatPercentage(metrics.winRate)}</p>
         </CardContent>
       </Card>
@@ -42,7 +42,7 @@ const FinancialMetricsCards = ({ metrics }: FinancialMetricsCardsProps) => {
           <TrendingDown className="h-4 w-4 text-red-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(metrics.totalLoss)}</div>
+          <div className="text-2xl font-bold text-destructive">{formatCurrency(metrics.totalLoss)}</div>
           <p className="text-xs text-muted-foreground">From lost quotations</p>
         </CardContent>
       </Card>
@@ -53,7 +53,7 @@ const FinancialMetricsCards = ({ metrics }: FinancialMetricsCardsProps) => {
           <FileText className="h-4 w-4 text-purple-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{formatCurrency(metrics.avgDealSize)}</div>
+          <div className="text-2xl font-bold text-accent-foreground">{formatCurrency(metrics.avgDealSize)}</div>
           <p className="text-xs text-muted-foreground">Per invoice</p>
         </CardContent>
       </Card>
@@ -64,7 +64,7 @@ const FinancialMetricsCards = ({ metrics }: FinancialMetricsCardsProps) => {
           <CheckCircle className="h-4 w-4 text-emerald-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{metrics.paidInvoices}</div>
+          <div className="text-2xl font-bold text-success">{metrics.paidInvoices}</div>
           <p className="text-xs text-muted-foreground">{formatCurrency(metrics.totalRevenue * (metrics.paidInvoices / metrics.totalInvoices))}</p>
         </CardContent>
       </Card>
@@ -75,7 +75,7 @@ const FinancialMetricsCards = ({ metrics }: FinancialMetricsCardsProps) => {
           <Clock className="h-4 w-4 text-amber-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{metrics.pendingInvoices}</div>
+          <div className="text-2xl font-bold text-warning">{metrics.pendingInvoices}</div>
           <p className="text-xs text-muted-foreground">Awaiting payment</p>
         </CardContent>
       </Card>
@@ -86,7 +86,7 @@ const FinancialMetricsCards = ({ metrics }: FinancialMetricsCardsProps) => {
           <TrendingDown className="h-4 w-4 text-red-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-red-600 dark:text-red-400">{metrics.overdueInvoices}</div>
+          <div className="text-2xl font-bold text-destructive">{metrics.overdueInvoices}</div>
           <p className="text-xs text-muted-foreground">Require follow-up</p>
         </CardContent>
       </Card>

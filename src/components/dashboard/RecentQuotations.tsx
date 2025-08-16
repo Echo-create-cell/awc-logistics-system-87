@@ -32,7 +32,7 @@ const RecentQuotations = ({ quotations, userRole, setActiveTab }: RecentQuotatio
               <div className="relative flex space-x-3 items-start">
                 <div>
                   <span className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center ring-8 ring-white">
-                    <Badge className="bg-yellow-100 text-yellow-800">{quotation.status}</Badge>
+                    <Badge className="bg-warning/10 text-warning border-warning/20">{quotation.status}</Badge>
                   </span>
                 </div>
                 <div className="min-w-0 flex-1 pt-1.5">

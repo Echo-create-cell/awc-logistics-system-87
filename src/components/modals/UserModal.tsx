@@ -67,7 +67,7 @@ const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) =>
                 {isEditing ? 'Edit User' : 'Add New User'}
                 {isEditing && form.status && (
                   <Badge variant={form.status === 'active' ? "default" : "secondary"} 
-                         className={form.status === 'active' ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}>
+                         className={form.status === 'active' ? "bg-success/10 text-success border-success/20" : "bg-muted text-muted-foreground border-border"}>
                     {form.status}
                   </Badge>
                 )}
@@ -252,7 +252,7 @@ const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) =>
             
             <div className="flex gap-3">
               <DialogClose asChild>
-                <Button variant="outline" className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
+                <Button variant="outline" className="bg-card border-border text-foreground hover:bg-muted">
                   Cancel
                 </Button>
               </DialogClose>

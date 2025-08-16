@@ -13,18 +13,18 @@ interface QuotationApprovalCardProps {
 }
 
 const getStatusColor = (status: string) => {
-  switch (status) {
+    switch (status) {
     case 'pending':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return 'bg-warning/10 text-warning border-warning/20';
     case 'approved':
     case 'won':
-      return 'bg-green-100 text-green-800 border-green-200';
+      return 'bg-success/10 text-success border-success/20';
     case 'rejected':
     case 'lost':
-      return 'bg-red-100 text-red-800 border-red-200';
+      return 'bg-destructive/10 text-destructive border-destructive/20';
     default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
-  }
+      return 'bg-muted text-muted-foreground border-border';
+    }
 };
 
 const formatVolume = (volume: string) => {

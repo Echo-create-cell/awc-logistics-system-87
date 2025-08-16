@@ -65,7 +65,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
             <div className="flex-1">
               <DialogTitle className="text-xl font-semibold text-gray-900 flex items-center gap-2">
                 {isPaid ? "View Invoice" : "Edit Invoice"}
-                <Badge variant={isPaid ? "default" : "secondary"} className={isPaid ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}>
+                <Badge variant={isPaid ? "default" : "secondary"} className={isPaid ? "bg-success/10 text-success border-success/20" : "bg-primary/10 text-primary border-primary/20"}>
                   {form.status}
                 </Badge>
               </DialogTitle>
@@ -246,14 +246,14 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
               <Button 
                 onClick={handlePrint} 
                 variant="outline" 
-                className="bg-white border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400"
+                className="bg-card border-primary/30 text-primary hover:bg-primary/5 hover:border-primary/40"
               >
                 <FileText className="h-4 w-4 mr-2" />
                 Print Invoice
               </Button>
             )}
             <DialogClose asChild>
-              <Button variant="outline" className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
+              <Button variant="outline" className="bg-card border-border text-foreground hover:bg-muted">
                 Cancel
               </Button>
             </DialogClose>

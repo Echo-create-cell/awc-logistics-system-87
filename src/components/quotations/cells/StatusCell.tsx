@@ -10,9 +10,9 @@ interface StatusCellProps {
 const StatusCell = ({ row }: StatusCellProps) => {
   const value = row.status;
   const colors = {
-    won: 'bg-green-100 text-green-800 hover:bg-green-200',
-    pending: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-    lost: 'bg-red-100 text-red-800 hover:bg-red-200'
+    won: 'bg-success/10 text-success border-success/20 hover:bg-success/20',
+    pending: 'bg-warning/10 text-warning border-warning/20 hover:bg-warning/20',
+    lost: 'bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20'
   };
   const statusText = {
     won: 'Approved',
@@ -24,7 +24,7 @@ const StatusCell = ({ row }: StatusCellProps) => {
     <div>
       <Badge className={`${colors[value]} font-medium`}>{statusText[value] || value}</Badge>
       {row.status === 'won' && row.approvedBy && row.approvedAt && (
-         <div className="text-xs text-gray-500 mt-1">
+         <div className="text-xs text-muted-foreground mt-1">
            by {row.approvedBy} on {new Date(row.approvedAt).toLocaleDateString()}
          </div>
       )}

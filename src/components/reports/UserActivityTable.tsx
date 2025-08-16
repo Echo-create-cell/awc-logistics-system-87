@@ -46,27 +46,27 @@ const UserActivityTable = ({ userActivities, canViewAllUsers }: UserActivityTabl
                   <TableCell className="font-medium">{activity.userName}</TableCell>
                   <TableCell>{activity.quotationsCreated}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="text-green-600">
+                    <Badge variant="outline" className="text-success">
                       {activity.quotationsWon}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="text-red-600">
+                    <Badge variant="outline" className="text-destructive">
                       {activity.quotationsLost}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge 
                       variant={activity.winRate >= 50 ? "default" : "secondary"}
-                      className={activity.winRate >= 50 ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}
+                      className={activity.winRate >= 50 ? "bg-success/10 text-success border-success/20" : "bg-warning/10 text-warning border-warning/20"}
                     >
                       {formatPercentage(activity.winRate)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-blue-600 font-medium">
+                  <TableCell className="text-primary font-medium">
                     {formatCurrency(activity.totalProfit)}
                   </TableCell>
-                  <TableCell className="text-green-600 font-medium">
+                  <TableCell className="text-success font-medium">
                     {formatCurrency(activity.totalRevenue)}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">

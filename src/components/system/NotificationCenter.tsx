@@ -56,13 +56,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
   const getVariantColor = (variant: string) => {
     switch (variant) {
-      case 'success': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
-      case 'warning': return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
-      case 'error': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-      case 'info': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-      case 'pending': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
-      case 'critical': return 'bg-red-200 text-red-900 dark:bg-red-800 dark:text-red-100'
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+      case 'success': return 'bg-success/10 text-success border-success/20'
+      case 'warning': return 'bg-warning/10 text-warning border-warning/20'
+      case 'error': return 'bg-destructive/10 text-destructive border-destructive/20'
+      case 'info': return 'bg-primary/10 text-primary border-primary/20'
+      case 'pending': return 'bg-warning/10 text-warning border-warning/20'
+      case 'critical': return 'bg-destructive/20 text-destructive border-destructive/30'
+      default: return 'bg-muted text-muted-foreground border-border'
     }
   }
 
