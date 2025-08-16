@@ -56,7 +56,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-card">
         <DialogHeader className="pb-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${isPaid ? 'bg-green-100' : 'bg-blue-100'}`}>
@@ -96,7 +96,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
                     onChange={(e) => handleChange('invoiceNumber', e.target.value)}
                     placeholder="AWC-YYYYMM-XXX"
                     disabled={isPaid}
-                    className={`${isPaid ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:border-blue-500 focus:ring-blue-500`}
+                    className={`${isPaid ? 'bg-muted' : 'bg-card'} border-border focus:border-primary focus:ring-primary/20`}
                   />
                 </div>
                 <div className="space-y-2">
@@ -109,7 +109,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
                     onChange={(e) => handleChange('clientName', e.target.value)}
                     placeholder="Enter client name"
                     disabled={isPaid}
-                    className={`${isPaid ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:border-blue-500 focus:ring-blue-500`}
+                    className={`${isPaid ? 'bg-muted' : 'bg-card'} border-border focus:border-primary focus:ring-primary/20`}
                   />
                 </div>
               </div>
@@ -130,7 +130,7 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
                     Currency
                   </Label>
                   <Select value={form.currency} onValueChange={(value) => handleChange('currency', value)} disabled={isPaid}>
-                    <SelectTrigger className={`${isPaid ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:border-blue-500 focus:ring-blue-500`}>
+                    <SelectTrigger className={`${isPaid ? 'bg-muted' : 'bg-card'} border-border focus:border-primary focus:ring-primary/20`}>
                       <SelectValue placeholder="Select currency" />
                     </SelectTrigger>
                     <SelectContent>

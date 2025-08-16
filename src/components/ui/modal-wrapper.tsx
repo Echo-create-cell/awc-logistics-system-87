@@ -49,7 +49,7 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = ({
 }) => {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className={`${sizeClasses[size]} bg-card border border-border/20 shadow-large ${className}`}>
+      <DialogContent className={`${sizeClasses[size]} bg-card text-card-foreground border border-border/20 shadow-large ${className}`}>
         <DialogHeader className="pb-6 border-b border-border/10">
           <div className="flex items-center gap-3">
             {Icon && (

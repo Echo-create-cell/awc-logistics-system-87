@@ -52,7 +52,7 @@ const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) =>
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-card">
         <DialogHeader className="pb-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${isEditing ? 'bg-blue-100' : 'bg-green-100'}`}>
