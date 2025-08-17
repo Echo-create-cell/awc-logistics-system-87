@@ -12,11 +12,11 @@ interface FormSectionProps {
 }
 
 const variantClasses = {
-  default: 'border-border bg-card',
-  warning: 'border-warning/30 bg-warning/5',
-  error: 'border-destructive/30 bg-destructive/5',
-  success: 'border-success/30 bg-success/5',
-  info: 'border-blue-200 bg-blue-50/50 dark:border-blue-800 dark:bg-blue-950/20'
+  default: 'border-border bg-background',
+  warning: 'border-warning/30 bg-background',
+  error: 'border-destructive/30 bg-background',
+  success: 'border-success/30 bg-background',
+  info: 'border-blue-200 bg-background dark:border-blue-800'
 };
 
 const iconVariantClasses = {

@@ -83,14 +83,17 @@ const QuotationActions = ({
        row.status === 'won' && 
        row.linkedInvoiceIds && 
        row.linkedInvoiceIds.length > 0 && (
-        <Badge variant="secondary" className="text-xs px-2 py-1 bg-success/10 text-success border-success/20">
+        <Badge variant="secondary" className="text-xs px-2 py-1 bg-background text-success border-success/20 shadow-soft">
           ✓ Invoice Generated
         </Badge>
       )}
       
       {buttons.length > 0 && (
         <ActionButtonGroup
-          buttons={buttons}
+          buttons={buttons.map(btn => ({
+            ...btn,
+            className: `${btn.className || ''} bg-background border border-border hover:bg-muted/50 text-foreground shadow-soft`
+          }))}
           size="sm"
           alignment="left"
         />
