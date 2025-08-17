@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, Edit, FileText } from 'lucide-react';
 import { Quotation, User } from '@/types';
+import { ActionButtonGroup } from '@/components/ui/action-button-group';
 
 interface QuotationActionsProps {
   quotation: Quotation;
@@ -24,76 +24,76 @@ const QuotationActions = ({
   onEdit,
   onView,
 }: QuotationActionsProps) => {
+  const buttons = [];
+
+  // Admin approval/rejection actions
+  if (user.role === 'admin' && row.status === 'pending') {
+    buttons.push(
+      {
+        label: 'Approve',
+        onClick: () => onApprove?.(row.id),
+        variant: 'success' as const,
+        icon: CheckCircle
+      },
+      {
+        label: 'Reject',
+        onClick: () => onReject?.(row),
+        variant: 'destructive' as const,
+        icon: XCircle
+      }
+    );
+  }
+
+  // Admin and Partner view-only for quotations
+  if ((user.role === 'admin' || user.role === 'partner') && onView) {
+    buttons.push({
+      label: 'View',
+      onClick: () => onView(row),
+      variant: 'outline' as const,
+      icon: Eye
+    });
+  }
+
+  // Invoice generation for sales roles
+  if ((user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won') {
+    if (!row.linkedInvoiceIds || row.linkedInvoiceIds.length === 0) {
+      buttons.push({
+        label: 'Generate Invoice',
+        onClick: () => onInvoiceFromQuotation?.(row),
+        variant: 'default' as const,
+        icon: FileText
+      });
+    }
+  }
+
+  // Only sales_director can edit quotations
+  if (user.role === 'sales_director' && (row.status === 'pending' || row.status === 'lost') && onEdit) {
+    buttons.push({
+      label: 'Edit',
+      onClick: () => onEdit(row),
+      variant: 'outline' as const,
+      icon: Edit
+    });
+  }
+
   return (
-    <div className="flex gap-2 items-center">
-      {/* Admin approval/rejection actions */}
-      {user.role === 'admin' && row.status === 'pending' && (
-        <>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onApprove?.(row.id)}
-            className="text-green-600 hover:text-green-700 hover:bg-green-50 px-3 py-1.5 gap-1.5"
-            title="Approve Quotation"
-          >
-            <CheckCircle size={14} />
-            <span className="text-xs font-medium">Approve</span>
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onReject?.(row)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 gap-1.5"
-            title="Reject Quotation"
-          >
-            <XCircle size={14} />
-            <span className="text-xs font-medium">Reject</span>
-          </Button>
-        </>
+    <div className="flex items-center gap-2">
+      {/* Show badge if invoice is already generated */}
+      {(user.role === 'sales_director' || user.role === 'sales_agent') && 
+       row.status === 'won' && 
+       row.linkedInvoiceIds && 
+       row.linkedInvoiceIds.length > 0 && (
+        <Badge variant="secondary" className="text-xs px-2 py-1 bg-success/10 text-success border-success/20">
+          ✓ Invoice Generated
+        </Badge>
       )}
       
-      {/* Admin and Partner view-only for quotations */}
-      {(user.role === 'admin' || user.role === 'partner') && onView && (
-        <Button 
-          size="sm" 
-          variant="ghost" 
-          onClick={() => onView(row)}
-          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 gap-1.5"
-          title="View Quotation Details"
-        >
-          <Eye size={14} />
-          <span className="text-xs font-medium">View</span>
-        </Button>
-      )}
-      
-      {/* Invoice generation for sales roles */}
-      {(user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won' && (
-        (!row.linkedInvoiceIds || row.linkedInvoiceIds.length === 0) ? (
-          <Button
-            size="sm"
-            className="px-3 py-1.5 text-white bg-primary hover:bg-primary/90 text-xs font-medium gap-1.5"
-            onClick={() => onInvoiceFromQuotation?.(row)}
-            title="Generate Invoice from Quotation"
-          >
-            <span>Generate Invoice</span>
-          </Button>
-        ) : (
-          <Badge variant="secondary" className="text-xs px-2 py-1">✓ Invoice Generated</Badge>
-        )
-      )}
-      
-      {/* Only sales_director can edit quotations - admin and others cannot edit */}
-      {user.role === 'sales_director' && (row.status === 'pending' || row.status === 'lost') && onEdit && (
-        <Button 
-          size="sm" 
-          variant="ghost" 
-          onClick={() => onEdit(row)}
-          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 gap-1.5"
-          title="Edit Quotation"
-        >
-          <Edit size={14} />
-          <span className="text-xs font-medium">Edit</span>
-        </Button>
+      {buttons.length > 0 && (
+        <ActionButtonGroup
+          buttons={buttons}
+          size="sm"
+          alignment="left"
+        />
       )}
     </div>
   );

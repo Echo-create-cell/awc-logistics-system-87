@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Quotation } from '@/types';
-import { Card, CardContent } from '@/components/ui/card';
 import { AlertTriangle, XCircle, FileText } from 'lucide-react';
+import { ModalWrapper } from '@/components/ui/modal-wrapper';
+import { FormSection } from '@/components/ui/form-section';
+import { ActionButtonGroup } from '@/components/ui/action-button-group';
 
 interface RejectQuotationModalProps {
   open: boolean;
@@ -39,117 +39,111 @@ const RejectQuotationModal = ({ open, quotation, onClose, onConfirm, onSave }: R
 
   if (!quotation) return null;
 
+  const actionButtons = [
+    {
+      label: 'Cancel',
+      onClick: onClose,
+      variant: 'outline' as const
+    },
+    ...(onSave ? [{
+      label: 'Save Draft',
+      onClick: handleSave,
+      variant: 'secondary' as const,
+      icon: FileText,
+      disabled: !reason.trim() || reason.trim().length < 10
+    }] : []),
+    {
+      label: 'Confirm Rejection',
+      onClick: handleConfirm,
+      variant: 'destructive' as const,
+      icon: XCircle,
+      disabled: !reason.trim() || reason.trim().length < 10
+    }
+  ];
+
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="sm:max-w-[600px] bg-white">
-        <DialogHeader className="pb-6 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-red-100">
-              <XCircle className="h-5 w-5 text-red-600" />
+    <ModalWrapper
+      open={open}
+      onClose={onClose}
+      title="Reject Quotation"
+      description={`Please provide a detailed reason for rejecting the quotation for "${quotation.clientName}". This information will be recorded and help improve future quotations.`}
+      icon={XCircle}
+      iconVariant="destructive"
+      size="lg"
+    >
+      <div className="space-y-6">
+        {/* Quotation Summary */}
+        <FormSection
+          title="Quotation Summary"
+          icon={FileText}
+          variant="info"
+        >
+          <div className="text-sm text-muted-foreground space-y-2">
+            <div className="flex justify-between">
+              <span>Client:</span>
+              <span className="font-medium text-foreground">{quotation.clientName}</span>
             </div>
-            <div className="flex-1">
-              <DialogTitle className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                Reject Quotation
-              </DialogTitle>
-              <DialogDescription className="text-gray-600 mt-1">
-                Please provide a detailed reason for rejecting the quotation for <strong>"{quotation.clientName}"</strong>. 
-                This information will be recorded and help improve future quotations.
-              </DialogDescription>
+            <div className="flex justify-between">
+              <span>Amount:</span>
+              <span className="font-medium text-foreground">
+                {quotation.currency} {quotation.clientQuote?.toLocaleString()}
+              </span>
             </div>
-          </div>
-        </DialogHeader>
-
-        <div className="py-6 space-y-6">
-          {/* Quotation Summary */}
-          <Card className="border-gray-200 bg-gray-50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <FileText className="h-4 w-4 text-gray-600" />
-                <h3 className="font-medium text-gray-900">Quotation Summary</h3>
-              </div>
-              <div className="text-sm text-gray-600 space-y-1">
-                <div>Client: <strong>{quotation.clientName}</strong></div>
-                <div>Amount: <strong>{quotation.currency} {quotation.clientQuote?.toLocaleString()}</strong></div>
-                <div>Agent: <strong>{quotation.quoteSentBy}</strong></div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Rejection Reason */}
-          <Card className="border-orange-200">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle className="h-4 w-4 text-orange-600" />
-                <h3 className="font-medium text-gray-900">Reason for Rejection</h3>
-              </div>
-              
-              <div className="space-y-3">
-                <Label htmlFor="rejection-reason" className="text-sm font-medium text-gray-700">
-                  Detailed Explanation <span className="text-red-500">*</span>
-                </Label>
-                <Textarea
-                  id="rejection-reason"
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  placeholder="Please provide a specific reason:&#10;• Price was too high compared to competitors&#10;• Client requirements changed&#10;• Lost to competitor due to timing&#10;• Project was cancelled or postponed&#10;• Service scope didn't match client needs&#10;• Other (please specify)..."
-                  className="min-h-[140px] text-sm border-gray-300 focus:border-orange-500 focus:ring-orange-500 resize-none"
-                  rows={7}
-                />
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>Minimum 10 characters required for detailed feedback</span>
-                  <span className={reason.length >= 10 ? "text-green-600" : "text-orange-600"}>
-                    {reason.length}/10 characters
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Warning Notice */}
-          <Card className="border-red-200 bg-red-50">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
-                <div className="text-sm text-red-800">
-                  <strong>Important:</strong> This action will permanently mark the quotation as "lost" and cannot be undone. 
-                  The rejection reason will be recorded for analysis and future improvements.
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <DialogFooter className="pt-6 border-t border-gray-100 bg-gray-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
-          <div className="flex justify-between gap-3 w-full">
-            <Button variant="outline" onClick={onClose} className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
-              Cancel
-            </Button>
-            <div className="flex gap-3">
-              {onSave && (
-                <Button 
-                  variant="outline" 
-                  onClick={handleSave} 
-                  disabled={!reason.trim() || reason.trim().length < 10}
-                  className="bg-white border-blue-300 text-blue-700 hover:bg-blue-50"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Save Draft
-                </Button>
-              )}
-              <Button 
-                variant="destructive" 
-                onClick={handleConfirm} 
-                disabled={!reason.trim() || reason.trim().length < 10}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
-                <XCircle className="h-4 w-4 mr-2" />
-                Confirm Rejection
-              </Button>
+            <div className="flex justify-between">
+              <span>Agent:</span>
+              <span className="font-medium text-foreground">{quotation.quoteSentBy}</span>
             </div>
           </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </FormSection>
+
+        {/* Rejection Reason */}
+        <FormSection
+          title="Reason for Rejection"
+          description="Provide a detailed explanation to help improve future quotations."
+          icon={AlertTriangle}
+          variant="warning"
+        >
+          <div className="space-y-3">
+            <Label htmlFor="rejection-reason" className="text-sm font-medium text-foreground">
+              Detailed Explanation <span className="text-destructive">*</span>
+            </Label>
+            <Textarea
+              id="rejection-reason"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Please provide a specific reason:&#10;• Price was too high compared to competitors&#10;• Client requirements changed&#10;• Lost to competitor due to timing&#10;• Project was cancelled or postponed&#10;• Service scope didn't match client needs&#10;• Other (please specify)..."
+              className="min-h-[140px] text-sm resize-none focus:ring-warning/20 focus:border-warning"
+              rows={7}
+            />
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Minimum 10 characters required for detailed feedback</span>
+              <span className={reason.length >= 10 ? "text-success" : "text-warning"}>
+                {reason.length}/10 characters
+              </span>
+            </div>
+          </div>
+        </FormSection>
+
+        {/* Warning Notice */}
+        <FormSection
+          title="Important Notice"
+          icon={AlertTriangle}
+          variant="error"
+        >
+          <p className="text-sm text-destructive/80 leading-relaxed">
+            This action will permanently mark the quotation as "lost" and cannot be undone. 
+            The rejection reason will be recorded for analysis and future improvements.
+          </p>
+        </FormSection>
+      </div>
+      
+      <div className="pt-6 border-t border-border/10">
+        <ActionButtonGroup
+          buttons={actionButtons}
+          alignment="between"
+        />
+      </div>
+    </ModalWrapper>
   );
 };
 
