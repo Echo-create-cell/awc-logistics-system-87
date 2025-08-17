@@ -153,7 +153,7 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-card rounded-lg max-w-4xl w-full max-h-[95vh] overflow-auto border shadow-large">
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[95vh] overflow-auto border shadow-large">
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-blue-100">

@@ -69,45 +69,45 @@ const ReportDataTable = ({ filteredData }: ReportDataTableProps) => {
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-border">
-            <thead className="bg-muted/30">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Client</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Volume</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
-            <tbody className="bg-card divide-y divide-border">
+            <tbody className="bg-white divide-y divide-gray-200">
               {paginatedData.map((item, index) => {
                 const isQuotation = 'clientQuote' in item;
                 const amount = isQuotation ? (item as Quotation).clientQuote : (item as InvoiceData).totalAmount;
                 return (
                   <tr key={`${isQuotation ? 'quotation' : 'invoice'}-${item.id || index}`}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(item.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {isQuotation ? 'Quotation' : 'Invoice'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.clientName || 'N/A'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {formatVolume(item)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       ${amount.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         item.status === 'won' || item.status === 'paid' 
-                          ? 'bg-success/10 text-success border-success/20'
+                          ? 'bg-green-100 text-green-800'
                           : item.status === 'pending'
-                          ? 'bg-warning/10 text-warning border-warning/20'
-                          : 'bg-destructive/10 text-destructive border-destructive/20'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
                       }`}>
                         {item.status}
                       </span>
@@ -121,8 +121,8 @@ const ReportDataTable = ({ filteredData }: ReportDataTableProps) => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-4 border-t border-border mt-4">
-            <p className="text-sm text-muted-foreground">
+          <div className="flex items-center justify-between pt-4 border-t border-gray-200 mt-4">
+            <p className="text-sm text-gray-600">
               Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredData.length)} to{' '}
               {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} results
             </p>
@@ -137,7 +137,7 @@ const ReportDataTable = ({ filteredData }: ReportDataTableProps) => {
                 <ChevronLeft className="h-4 w-4" />
                 Previous
               </Button>
-              <span className="px-3 py-1 text-sm font-medium bg-muted text-muted-foreground rounded-md">
+              <span className="px-3 py-1 text-sm font-medium bg-gray-100 rounded-md">
                 {currentPage} of {totalPages}
               </span>
               <Button

@@ -1,12 +1,12 @@
 
 import React, { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Quotation, User } from "@/types";
 import QuotationForm from "./quotation/QuotationForm";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Edit, Printer } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { FileText, Eye, Edit, Printer } from "lucide-react";
 import QuotationPrintPreview from "../QuotationPrintPreview";
-import { ModalWrapper } from "@/components/ui/modal-wrapper";
-import { ActionButtonGroup } from "@/components/ui/action-button-group";
 
 interface QuotationModalProps {
   open: boolean;
@@ -33,71 +33,71 @@ const QuotationModal = ({ open, quotation, onClose, onSave, user, viewOnly = fal
     setShowPrintPreview(false);
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'won':
-        return { text: status, variant: 'default' as const };
-      case 'lost':
-        return { text: status, variant: 'destructive' as const };
-      default:
-        return { text: status, variant: 'secondary' as const };
-    }
-  };
-
-  const actionButtons = [
-    {
-      label: 'Print',
-      onClick: handlePrint,
-      variant: 'outline' as const,
-      icon: Printer
-    }
-  ];
-
   return (
-    <>
-      <ModalWrapper
-        open={open}
-        onClose={onClose}
-        title={viewOnly ? 'View Quotation Details' : 'Edit Quotation'}
-        description={
-          viewOnly 
-            ? 'Review quotation details and information.' 
-            : 'Update quotation details. Profit will be calculated automatically.'
-        }
-        icon={viewOnly ? Eye : Edit}
-        iconVariant={viewOnly ? 'info' : 'default'}
-        badge={quotation ? getStatusBadge(quotation.status) : undefined}
-        size="xl"
-      >
-        <div className="space-y-6">
-          {quotation && (
-            <div className="text-sm text-muted-foreground bg-muted/30 p-4 rounded-lg border border-border/20">
-              <div className="flex items-center justify-between">
-                <span>Client: <strong className="text-foreground">{quotation.clientName}</strong></span>
-                <span>Quote: <strong className="text-foreground">{quotation.currency} {quotation.clientQuote?.toLocaleString()}</strong></span>
-              </div>
+    <Dialog open={open} onOpenChange={v => !v && onClose()}>
+      <DialogContent className="sm:max-w-5xl max-h-[95vh] overflow-y-auto bg-white">
+        <DialogHeader className="pb-6 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-lg ${viewOnly ? 'bg-blue-100' : 'bg-green-100'}`}>
+              {viewOnly ? (
+                <Eye className="h-5 w-5 text-blue-600" />
+              ) : (
+                <Edit className="h-5 w-5 text-green-600" />
+              )}
             </div>
-          )}
-          
-          {quotation && (
-            <QuotationForm
-              quotation={quotation}
-              onSave={handleSaveForm}
-              onClose={onClose}
-              user={user}
-              viewOnly={viewOnly}
-            />
-          )}
-        </div>
+            <div className="flex-1">
+              <DialogTitle className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                {viewOnly ? 'View Quotation Details' : 'Edit Quotation'}
+                {quotation && (
+                  <Badge 
+                    variant={quotation.status === 'won' ? "default" : quotation.status === 'lost' ? "destructive" : "secondary"} 
+                    className={
+                      quotation.status === 'won' ? "bg-green-100 text-green-800" : 
+                      quotation.status === 'lost' ? "bg-red-100 text-red-800" : 
+                      "bg-yellow-100 text-yellow-800"
+                    }
+                  >
+                    {quotation.status}
+                  </Badge>
+                )}
+              </DialogTitle>
+              <DialogDescription className="text-gray-600 mt-1">
+                {viewOnly 
+                  ? 'Review quotation details and information.' 
+                  : 'Update quotation details. Profit will be calculated automatically.'
+                }
+                {quotation && (
+                  <span className="block mt-1 text-sm">
+                    Client: <strong>{quotation.clientName}</strong> • 
+                    Quote: <strong>{quotation.currency} {quotation.clientQuote?.toLocaleString()}</strong>
+                  </span>
+                )}
+              </DialogDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handlePrint}
+                className="gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              >
+                <Printer size={16} />
+                Print
+              </Button>
+            </div>
+          </div>
+        </DialogHeader>
         
-        <div className="pt-6 border-t border-border/10">
-          <ActionButtonGroup
-            buttons={actionButtons}
-            alignment="right"
-            size="sm"
+        {quotation && (
+          <QuotationForm
+            quotation={quotation}
+            onSave={handleSaveForm}
+            onClose={onClose}
+            user={user}
+            viewOnly={viewOnly}
           />
-        </div>
-      </ModalWrapper>
+        )}
+      </DialogContent>
       
       {showPrintPreview && quotation && (
         <QuotationPrintPreview
@@ -106,7 +106,7 @@ const QuotationModal = ({ open, quotation, onClose, onSave, user, viewOnly = fal
           onPrint={handlePrintComplete}
         />
       )}
-    </>
+    </Dialog>
   );
 };
 

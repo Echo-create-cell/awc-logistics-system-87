@@ -107,7 +107,7 @@ export const showPersistentToast = ({
             {category ? `${category}: ${title}` : title}
           </h4>
           {priority === 'critical' && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-destructive/10 text-destructive border-destructive/20 animate-pulse">
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 animate-pulse">
               URGENT
             </span>
           )}
@@ -135,7 +135,7 @@ export const showPersistentToast = ({
 
   return sonnerToast(toastContent, {
     duration,
-    className: `bg-card border border-border shadow-large [&_button[data-close-button]]:bg-destructive [&_button[data-close-button]]:text-destructive-foreground [&_button[data-close-button]]:hover:bg-destructive/80 [&_button[data-close-button]]:rounded-full [&_button[data-close-button]]:shadow-large [&_button[data-close-button]]:shadow-destructive/50`,
+    className: `bg-white border border-gray-200 shadow-lg [&_button[data-close-button]]:bg-pink-500 [&_button[data-close-button]]:text-white [&_button[data-close-button]]:hover:bg-pink-600 [&_button[data-close-button]]:rounded-full [&_button[data-close-button]]:shadow-lg [&_button[data-close-button]]:shadow-pink-500/50`,
     closeButton: true,
     position: 'top-center',
     style: {

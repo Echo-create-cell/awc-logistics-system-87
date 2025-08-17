@@ -40,7 +40,7 @@ const UserActivityMonitor = ({ users, quotations, invoices }: UserActivityMonito
             <Activity className="h-6 w-6 text-blue-600" />
           </div>
           User Performance Overview
-          <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary border-primary/20">
+          <Badge variant="secondary" className="ml-auto bg-blue-100 text-blue-800">
             {activeUsers.length} Active Users
           </Badge>
         </CardTitle>
@@ -106,8 +106,8 @@ const UserActivityMonitor = ({ users, quotations, invoices }: UserActivityMonito
                         className={`mb-1 px-3 py-1 text-sm font-bold ${
                           activity.winRate >= 75 ? "bg-green-500 hover:bg-green-600" :
                           activity.winRate >= 50 ? "bg-blue-500 hover:bg-blue-600" :
-                          activity.winRate >= 25 ? "bg-warning text-warning-foreground hover:bg-warning/80" :
-                          "bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20"
+                          activity.winRate >= 25 ? "bg-yellow-500 hover:bg-yellow-600 text-yellow-900" :
+                          "bg-red-100 text-red-800 hover:bg-red-200"
                         }`}
                       >
                         {activity.winRate.toFixed(1)}%

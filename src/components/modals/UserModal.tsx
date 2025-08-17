@@ -52,7 +52,7 @@ const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) =>
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-card">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader className="pb-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${isEditing ? 'bg-blue-100' : 'bg-green-100'}`}>
@@ -67,7 +67,7 @@ const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) =>
                 {isEditing ? 'Edit User' : 'Add New User'}
                 {isEditing && form.status && (
                   <Badge variant={form.status === 'active' ? "default" : "secondary"} 
-                         className={form.status === 'active' ? "bg-success/10 text-success border-success/20" : "bg-muted text-muted-foreground border-border"}>
+                         className={form.status === 'active' ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}>
                     {form.status}
                   </Badge>
                 )}
@@ -252,7 +252,7 @@ const UserModal = ({ open, user, onClose, onSave, onDelete }: UserModalProps) =>
             
             <div className="flex gap-3">
               <DialogClose asChild>
-                <Button variant="outline" className="bg-card border-border text-foreground hover:bg-muted">
+                <Button variant="outline" className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
                   Cancel
                 </Button>
               </DialogClose>
