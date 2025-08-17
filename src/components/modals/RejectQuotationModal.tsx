@@ -44,7 +44,7 @@ const RejectQuotationModal = ({ open, quotation, onClose, onConfirm, onSave }: R
       label: 'Cancel',
       onClick: onClose,
       variant: 'outline' as const,
-      className: 'bg-background border border-border hover:bg-muted/50 text-foreground shadow-soft'
+      className: 'bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 shadow-soft'
     },
     ...(onSave ? [{
       label: 'Save Changes',
@@ -52,7 +52,7 @@ const RejectQuotationModal = ({ open, quotation, onClose, onConfirm, onSave }: R
       variant: 'secondary' as const,
       icon: FileText,
       disabled: !reason.trim() || reason.trim().length < 10,
-      className: 'bg-background border border-border hover:bg-muted/50 text-foreground shadow-soft'
+      className: 'bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 shadow-soft'
     }] : []),
     {
       label: 'Confirm Rejection',

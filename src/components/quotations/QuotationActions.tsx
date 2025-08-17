@@ -92,7 +92,7 @@ const QuotationActions = ({
         <ActionButtonGroup
           buttons={buttons.map(btn => ({
             ...btn,
-            className: `${btn.className || ''} bg-background border border-border hover:bg-muted/50 text-foreground shadow-soft`
+            className: `${btn.className || ''} bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 shadow-soft`
           }))}
           size="sm"
           alignment="left"
