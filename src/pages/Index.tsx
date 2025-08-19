@@ -5,7 +5,7 @@ import LoginForm from '@/components/LoginForm';
 import Sidebar from '@/components/Sidebar';
 import InvoicePrintPreview from '@/components/InvoicePrintPreview';
 import { useToast } from '@/hooks/use-toast';
-import { useSupabaseData } from '@/hooks/useSupabaseData';
+import { useAppData } from '@/hooks/useAppData';
 import MainContent from '@/components/MainContent';
 import DailyNotificationSystem from '@/components/notifications/DailyNotificationSystem';
 
@@ -20,7 +20,6 @@ const Index = () => {
     invoices,
     printPreview,
     invoiceQuotation,
-    loading,
     handleApproveQuotation,
     handleRejectQuotation,
     handleQuotationCreated,
@@ -36,18 +35,10 @@ const Index = () => {
     setPrintPreview,
     setActiveTab,
     setInvoiceQuotation,
-  } = useSupabaseData();
+  } = useAppData();
 
   if (!user) {
     return <LoginForm />;
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-lg text-muted-foreground">Loading data from database...</div>
-      </div>
-    );
   }
 
   return (
