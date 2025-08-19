@@ -2,9 +2,12 @@
 DROP TABLE IF EXISTS invoices CASCADE;
 DROP TABLE IF EXISTS quotations CASCADE;
 
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- Create quotations table with all required fields
 CREATE TABLE quotations (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   client_id TEXT,
   client_name TEXT,
   volume TEXT NOT NULL DEFAULT '',
@@ -32,7 +35,7 @@ CREATE TABLE quotations (
 
 -- Create invoices table with all required fields
 CREATE TABLE invoices (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   invoice_number TEXT NOT NULL UNIQUE,
   quotation_id TEXT,
   client_name TEXT NOT NULL,
