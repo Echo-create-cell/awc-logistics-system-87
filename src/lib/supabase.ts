@@ -1,27 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Debug environment variables
-console.log('Environment variables check:', {
-  VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
-  VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY ? '[PRESENT]' : '[MISSING]',
-  allEnvVars: Object.keys(import.meta.env)
-});
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-// Validate environment variables
-if (!supabaseUrl) {
-  console.error('❌ VITE_SUPABASE_URL is missing. Please check your Supabase integration.');
-  throw new Error('Supabase URL is required. Please check your Supabase integration in Lovable.');
-}
-
-if (!supabaseAnonKey) {
-  console.error('❌ VITE_SUPABASE_ANON_KEY is missing. Please check your Supabase integration.');
-  throw new Error('Supabase Anon Key is required. Please check your Supabase integration in Lovable.');
-}
-
-console.log('✅ Supabase environment variables are properly configured');
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
