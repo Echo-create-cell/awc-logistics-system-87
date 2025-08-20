@@ -1,40 +1,18 @@
 import { useState } from 'react';
 import { Quotation, User } from '@/types';
 import { InvoiceData } from '@/types/invoice';
+import { mockQuotations, mockUsers, mockInvoices } from '@/data/mockData';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useNotificationManager } from '@/hooks/useNotificationManager';
 import { useOverdueNotifications } from '@/components/hooks/useOverdueNotifications';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSupabaseQuotations } from '@/hooks/useSupabaseQuotations';
-import { useSupabaseInvoices } from '@/hooks/useSupabaseInvoices';
-import { useSupabaseUsers } from '@/hooks/useSupabaseUsers';
 
 export const useAppData = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
-  
-  // Use Supabase hooks for data management
-  const { 
-    quotations, 
-    loading: quotationsLoading, 
-    createQuotation, 
-    updateQuotation 
-  } = useSupabaseQuotations();
-  
-  const { 
-    invoices, 
-    loading: invoicesLoading, 
-    createInvoice, 
-    updateInvoice 
-  } = useSupabaseInvoices();
-  
-  const { 
-    users, 
-    loading: usersLoading, 
-    createUser, 
-    updateUser, 
-    deleteUser 
-  } = useSupabaseUsers();
+  const [quotations, setQuotations] = useState<Quotation[]>(mockQuotations);
+  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [invoices, setInvoices] = useState<InvoiceData[]>(mockInvoices);
   const [printPreview, setPrintPreview] = useState<InvoiceData | null>(null);
   const [invoiceQuotation, setInvoiceQuotation] = useState<Quotation | null>(null);
   const {
@@ -57,65 +35,61 @@ export const useAppData = () => {
   // Set up overdue notifications
   useOverdueNotifications({ quotations, invoices });
 
-  const handleApproveQuotation = async (id: string) => {
+  const handleApproveQuotation = (id: string) => {
     if (!user) return;
     const quotation = quotations.find(q => q.id === id);
     if (!quotation) return;
     
-    try {
-      await updateQuotation(id, {
-        status: 'won' as const,
-        approvedBy: user.name,
-        approvedAt: new Date().toISOString()
-      });
-      
-      notifyQuotationApproved(quotation, { user });
-      notificationManager.notifyQuotationApproved(quotation, { user });
-    } catch (error) {
-      console.error('Failed to approve quotation:', error);
-    }
+    setQuotations(prev =>
+      prev.map(q =>
+        q.id === id
+          ? { ...q, status: 'won' as const, approvedBy: user.name, approvedAt: new Date().toISOString() }
+          : q
+      )
+    );
+    notifyQuotationApproved(quotation, { user });
+    notificationManager.notifyQuotationApproved(quotation, { user });
   };
 
-  const handleRejectQuotation = async (id: string, reason: string, saveAsDraft = false) => {
+  const handleRejectQuotation = (id: string, reason: string, saveAsDraft = false) => {
     const quotation = quotations.find(q => q.id === id);
     if (!quotation) return;
     
-    try {
-      if (saveAsDraft) {
-        // Save as draft - return to original agent for modification
-        const draftRemarks = [quotation.remarks, `Draft Rejection Feedback: ${reason}`].filter(Boolean).join('\n\n');
-        await updateQuotation(id, {
-          status: 'pending' as const,
-          remarks: draftRemarks
-        });
-        
-        // Notify the agent about the feedback
-        notifyQuotationFeedback(quotation, reason, { user });
-      } else {
-        // Permanent rejection
-        const newRemarks = [quotation.remarks, `Reason for loss: ${reason}`].filter(Boolean).join('\n\n');
-        await updateQuotation(id, {
-          status: 'lost' as const,
-          remarks: newRemarks
-        });
-        
-        notifyQuotationRejected(quotation, reason, { user });
-        notificationManager.notifyQuotationRejected(quotation, reason, { user });
-      }
-    } catch (error) {
-      console.error('Failed to reject quotation:', error);
+    if (saveAsDraft) {
+      // Save as draft - return to original agent for modification
+      setQuotations(prev =>
+        prev.map(q => {
+          if (q.id === id) {
+            const draftRemarks = [q.remarks, `Draft Rejection Feedback: ${reason}`].filter(Boolean).join('\n\n');
+            return { ...q, status: 'pending' as const, remarks: draftRemarks };
+          }
+          return q;
+        })
+      );
+      
+      // Notify the agent about the feedback
+      notifyQuotationFeedback(quotation, reason, { user });
+    } else {
+      // Permanent rejection
+      setQuotations(prev =>
+        prev.map(q => {
+          if (q.id === id) {
+            const newRemarks = [q.remarks, `Reason for loss: ${reason}`].filter(Boolean).join('\n\n');
+            return { ...q, status: 'lost' as const, remarks: newRemarks };
+          }
+          return q;
+        })
+      );
+      notifyQuotationRejected(quotation, reason, { user });
+      notificationManager.notifyQuotationRejected(quotation, reason, { user });
     }
   };
 
-  const handleQuotationCreated = async (newQuotationData: Quotation) => {
-    try {
-      await createQuotation(newQuotationData);
-      notifyQuotationCreated(newQuotationData, { user });
-      notificationManager.notifyQuotationCreated(newQuotationData, { user });
-      setActiveTab('quotations');
-    } catch (error) {
-      console.error('Failed to create quotation:', error);
-    }
+  const handleQuotationCreated = (newQuotationData: Quotation) => {
+    setQuotations(prev => [newQuotationData, ...prev]);
+    notifyQuotationCreated(newQuotationData, { user });
+    notificationManager.notifyQuotationCreated(newQuotationData, { user });
+    setActiveTab('quotations');
   };
 
   const handleGenerateInvoiceFromQuotation = (quotation: Quotation) => {
@@ -124,35 +98,39 @@ export const useAppData = () => {
     // Notification will be sent when invoice is actually created
   };
 
-  const handleSaveInvoice = async (invoice: InvoiceData) => {
-    try {
-      await createInvoice(invoice);
+  const handleSaveInvoice = (invoice: InvoiceData) => {
+    setInvoices(prev => [invoice, ...prev]);
 
-      if (invoice.quotationId) {
-        const quotation = quotations.find(q => q.id === invoice.quotationId);
-        
-        if (quotation) {
-          notifyInvoiceGenerated(quotation, invoice, { user });
-        }
-      } else {
-        notifyInvoiceCreated(invoice, { user });
-        notificationManager.notifyInvoiceCreated(invoice, { user });
-      }
+    if (invoice.quotationId) {
+      const quotation = quotations.find(q => q.id === invoice.quotationId);
+      setQuotations((prev) => prev.map(q =>
+        q.id === invoice.quotationId
+          ? {
+              ...q,
+              linkedInvoiceIds: q.linkedInvoiceIds
+                ? [...q.linkedInvoiceIds, invoice.id]
+                : [invoice.id],
+            }
+          : q
+      ));
       
-      // Clear the invoice quotation after saving
-      setInvoiceQuotation(null);
-    } catch (error) {
-      console.error('Failed to save invoice:', error);
+      if (quotation) {
+        notifyInvoiceGenerated(quotation, invoice, { user });
+      }
+    } else {
+      notifyInvoiceCreated(invoice, { user });
+      notificationManager.notifyInvoiceCreated(invoice, { user });
     }
+    
+    // Clear the invoice quotation after saving
+    setInvoiceQuotation(null);
   };
 
-  const handleEditInvoice = async (updatedInvoice: InvoiceData) => {
-    try {
-      await updateInvoice(updatedInvoice.id, updatedInvoice);
-      notifyInvoiceUpdated(updatedInvoice, { user });
-    } catch (error) {
-      console.error('Failed to update invoice:', error);
-    }
+  const handleEditInvoice = (updatedInvoice: InvoiceData) => {
+    setInvoices(prev => prev.map(inv => 
+      inv.id === updatedInvoice.id ? updatedInvoice : inv
+    ));
+    notifyInvoiceUpdated(updatedInvoice, { user });
   };
 
   const handlePrintInvoice = (invoice: InvoiceData) => {
@@ -160,49 +138,37 @@ export const useAppData = () => {
     notifyInvoicePrinted(invoice, { user });
   };
 
-  const handleEditQuotation = async (updatedQuotation: Quotation) => {
-    try {
-      await updateQuotation(updatedQuotation.id, updatedQuotation);
-      notifyQuotationUpdated(updatedQuotation, { user });
-    } catch (error) {
-      console.error('Failed to update quotation:', error);
-    }
+  const handleEditQuotation = (updatedQuotation: Quotation) => {
+    setQuotations(prev => prev.map(q => 
+      q.id === updatedQuotation.id ? updatedQuotation : q
+    ));
+    notifyQuotationUpdated(updatedQuotation, { user });
   };
 
-  const handleEditUser = async (updatedUser: User) => {
-    try {
-      await updateUser(updatedUser.id, updatedUser);
-      notifyUserUpdated(updatedUser, { user });
-    } catch (error) {
-      console.error('Failed to update user:', error);
-    }
+  const handleEditUser = (updatedUser: User) => {
+    setUsers(prev => prev.map(u => 
+      u.id === updatedUser.id ? updatedUser : u
+    ));
+    notifyUserUpdated(updatedUser, { user });
   };
   
-  const handleDeleteUser = async (userId: string) => {
+  const handleDeleteUser = (userId: string) => {
     const userToDelete = users.find(u => u.id === userId);
-    try {
-      await deleteUser(userId);
-      if (userToDelete) {
-        notifyUserDeleted(userToDelete.name, { user });
-      }
-    } catch (error) {
-      console.error('Failed to delete user:', error);
+    setUsers(prev => prev.filter(u => u.id !== userId));
+    if (userToDelete) {
+      notifyUserDeleted(userToDelete.name, { user });
     }
   };
 
-  const handleCreateUser = async (newUser: Omit<User, 'id' | 'createdAt'>) => {
-    try {
-      const createdUser = await createUser(newUser);
-      const userWithTimestamp = {
-        ...createdUser,
-        createdAt: new Date().toISOString(),
-      } as User;
-      
-      notifyUserCreated(userWithTimestamp, { user });
-      notificationManager.notifyUserCreated(userWithTimestamp, { user });
-    } catch (error) {
-      console.error('Failed to create user:', error);
-    }
+  const handleCreateUser = (newUser: Omit<User, 'id' | 'createdAt'>) => {
+    const userWithId: User = {
+      ...newUser,
+      id: `user-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    } as User;
+    setUsers(prev => [userWithId, ...prev]);
+    notifyUserCreated(userWithId, { user });
+    notificationManager.notifyUserCreated(userWithId, { user });
   };
 
   const handleTabChange = (tab: string) => {
@@ -219,7 +185,6 @@ export const useAppData = () => {
     invoices,
     printPreview,
     invoiceQuotation,
-    loading: quotationsLoading || invoicesLoading || usersLoading,
     handleApproveQuotation,
     handleRejectQuotation,
     handleQuotationCreated,
