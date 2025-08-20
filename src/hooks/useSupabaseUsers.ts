@@ -39,24 +39,12 @@ export const useSupabaseUsers = () => {
 
   const createUser = async (userData: Omit<User, 'id' | 'createdAt'>) => {
     try {
-      // First create the auth user
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: userData.email,
-        password: 'temporary-password-123', // User should change this
-        email_confirm: true,
-        user_metadata: {
-          name: userData.name,
-          role: userData.role,
-        }
-      });
-
-      if (authError) throw authError;
-
-      // Then create the profile
+      // Note: Admin user creation requires proper authentication setup
+      // For now, we'll create the profile directly and let auth be handled separately
       const { data: newProfile, error: profileError } = await supabase
         .from('profiles')
         .insert({
-          user_id: authData.user.id,
+          user_id: currentUser?.id, // This will need to be updated when auth is implemented
           name: userData.name,
           email: userData.email,
           role: userData.role,

@@ -17,11 +17,13 @@ export type Database = {
       clients: {
         Row: {
           address: string | null
+          assigned_to: string | null
           city: string | null
           company_name: string
           contact_person: string | null
           country: string | null
           created_at: string
+          created_by: string | null
           email: string | null
           id: string
           phone: string | null
@@ -30,11 +32,13 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          assigned_to?: string | null
           city?: string | null
           company_name: string
           contact_person?: string | null
           country?: string | null
           created_at?: string
+          created_by?: string | null
           email?: string | null
           id?: string
           phone?: string | null
@@ -43,11 +47,13 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          assigned_to?: string | null
           city?: string | null
           company_name?: string
           contact_person?: string | null
           country?: string | null
           created_at?: string
+          created_by?: string | null
           email?: string | null
           id?: string
           phone?: string | null
@@ -377,7 +383,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_access_client: {
+        Args: { client_assigned_to: string; client_user_id: string }
+        Returns: boolean
+      }
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       freight_mode: "Air Freight" | "Sea Freight" | "Road Freight"
