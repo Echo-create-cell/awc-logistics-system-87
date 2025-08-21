@@ -1,0 +1,177 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Quotation } from '@/types';
+import { useToast } from '@/hooks/use-toast';
+
+export const useSupabaseQuotations = () => {
+  const [quotations, setQuotations] = useState<Quotation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  const fetchQuotations = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('quotations')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const formattedQuotations: Quotation[] = (data || []).map(item => ({
+        id: item.id,
+        clientId: item.client_id,
+        clientName: item.client_name || '',
+        volume: item.total_volume_kg?.toString() || '0',
+        buyRate: item.buy_rate || 0,
+        currency: item.currency || 'USD',
+        clientQuote: item.client_quote || 0,
+        profit: item.profit || 0,
+        profitPercentage: item.profit_percentage || '0.0',
+        quoteSentBy: item.quote_sent_by || '',
+        status: item.status as 'won' | 'lost' | 'pending',
+        followUpDate: item.follow_up_date || new Date().toISOString().split('T')[0],
+        remarks: item.remarks || '',
+        createdAt: item.created_at,
+        approvedBy: item.approved_by,
+        approvedAt: item.approved_at,
+        destination: item.destination,
+        doorDelivery: item.door_delivery,
+        freightMode: item.freight_mode as 'Air Freight' | 'Sea Freight' | 'Road Freight',
+        cargoDescription: item.cargo_description,
+        requestType: item.request_type as 'Import' | 'Export' | 'Re-Import' | 'Project' | 'Local',
+        countryOfOrigin: item.country_of_origin,
+        totalVolumeKg: item.total_volume_kg,
+      }));
+
+      setQuotations(formattedQuotations);
+    } catch (error) {
+      console.error('Error fetching quotations:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch quotations. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createQuotation = async (quotationData: Omit<Quotation, 'id' | 'createdAt'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('quotations')
+        .insert({
+          client_id: quotationData.clientId,
+          client_name: quotationData.clientName,
+          total_volume_kg: parseFloat(quotationData.volume) || 0,
+          buy_rate: quotationData.buyRate,
+          currency: quotationData.currency,
+          client_quote: quotationData.clientQuote,
+          profit: quotationData.profit,
+          profit_percentage: quotationData.profitPercentage,
+          quote_sent_by: quotationData.quoteSentBy,
+          status: quotationData.status,
+          follow_up_date: quotationData.followUpDate,
+          remarks: quotationData.remarks,
+          destination: quotationData.destination,
+          door_delivery: quotationData.doorDelivery,
+          freight_mode: quotationData.freightMode,
+          cargo_description: quotationData.cargoDescription,
+          request_type: quotationData.requestType,
+          country_of_origin: quotationData.countryOfOrigin,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await fetchQuotations(); // Refresh the list
+      return data;
+    } catch (error) {
+      console.error('Error creating quotation:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create quotation. Please try again.",
+      });
+      throw error;
+    }
+  };
+
+  const updateQuotation = async (id: string, updates: Partial<Quotation>) => {
+    try {
+      const { error } = await supabase
+        .from('quotations')
+        .update({
+          client_id: updates.clientId,
+          client_name: updates.clientName,
+          total_volume_kg: updates.volume ? parseFloat(updates.volume) : undefined,
+          buy_rate: updates.buyRate,
+          currency: updates.currency,
+          client_quote: updates.clientQuote,
+          profit: updates.profit,
+          profit_percentage: updates.profitPercentage,
+          quote_sent_by: updates.quoteSentBy,
+          status: updates.status,
+          follow_up_date: updates.followUpDate,
+          remarks: updates.remarks,
+          approved_by: updates.approvedBy,
+          approved_at: updates.approvedAt,
+          destination: updates.destination,
+          door_delivery: updates.doorDelivery,
+          freight_mode: updates.freightMode,
+          cargo_description: updates.cargoDescription,
+          request_type: updates.requestType,
+          country_of_origin: updates.countryOfOrigin,
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await fetchQuotations(); // Refresh the list
+    } catch (error) {
+      console.error('Error updating quotation:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update quotation. Please try again.",
+      });
+      throw error;
+    }
+  };
+
+  const deleteQuotation = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('quotations')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await fetchQuotations(); // Refresh the list
+    } catch (error) {
+      console.error('Error deleting quotation:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete quotation. Please try again.",
+      });
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    fetchQuotations();
+  }, []);
+
+  return {
+    quotations,
+    loading,
+    createQuotation,
+    updateQuotation,
+    deleteQuotation,
+    refetch: fetchQuotations,
+  };
+};
