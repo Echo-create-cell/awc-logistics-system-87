@@ -13,36 +13,53 @@ export const useSupabaseQuotations = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('quotations')
-        .select('*')
+        .select(`
+          *,
+          quotation_commodities(*)
+        `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const formattedQuotations: Quotation[] = (data || []).map(item => ({
-        id: item.id,
-        clientId: item.client_id,
-        clientName: item.client_name || '',
-        volume: item.total_volume_kg?.toString() || '0',
-        buyRate: item.buy_rate || 0,
-        currency: item.currency || 'USD',
-        clientQuote: item.client_quote || 0,
-        profit: item.profit || 0,
-        profitPercentage: item.profit_percentage || '0.0',
-        quoteSentBy: item.quote_sent_by || '',
-        status: item.status as 'won' | 'lost' | 'pending',
-        followUpDate: item.follow_up_date || new Date().toISOString().split('T')[0],
-        remarks: item.remarks || '',
-        createdAt: item.created_at,
-        approvedBy: item.approved_by,
-        approvedAt: item.approved_at,
-        destination: item.destination,
-        doorDelivery: item.door_delivery,
-        freightMode: item.freight_mode as 'Air Freight' | 'Sea Freight' | 'Road Freight',
-        cargoDescription: item.cargo_description,
-        requestType: item.request_type as 'Import' | 'Export' | 'Re-Import' | 'Project' | 'Local',
-        countryOfOrigin: item.country_of_origin,
-        totalVolumeKg: item.total_volume_kg,
-      }));
+      const formattedQuotations: Quotation[] = (data || []).map(item => {
+        // Format commodities data for backward compatibility
+        const commoditiesData = item.quotation_commodities || [];
+        const volumeData = commoditiesData.length > 0 
+          ? JSON.stringify(commoditiesData.map(c => ({
+              id: c.id,
+              name: c.name,
+              quantityKg: c.quantity_kg,
+              rate: c.rate,
+              clientRate: c.client_rate,
+            })))
+          : item.total_volume_kg?.toString() || '0';
+
+        return {
+          id: item.id,
+          clientId: item.client_id,
+          clientName: item.client_name || '',
+          volume: volumeData,
+          buyRate: item.buy_rate || 0,
+          currency: item.currency || 'USD',
+          clientQuote: item.client_quote || 0,
+          profit: item.profit || 0,
+          profitPercentage: item.profit_percentage || '0.0',
+          quoteSentBy: item.quote_sent_by || '',
+          status: item.status as 'won' | 'lost' | 'pending',
+          followUpDate: item.follow_up_date || new Date().toISOString().split('T')[0],
+          remarks: item.remarks || '',
+          createdAt: item.created_at,
+          approvedBy: item.approved_by,
+          approvedAt: item.approved_at,
+          destination: item.destination,
+          doorDelivery: item.door_delivery,
+          freightMode: item.freight_mode as 'Air Freight' | 'Sea Freight' | 'Road Freight',
+          cargoDescription: item.cargo_description,
+          requestType: item.request_type as 'Import' | 'Export' | 'Re-Import' | 'Project' | 'Local',
+          countryOfOrigin: item.country_of_origin,
+          totalVolumeKg: item.total_volume_kg,
+        };
+      });
 
       setQuotations(formattedQuotations);
     } catch (error) {
@@ -85,6 +102,30 @@ export const useSupabaseQuotations = () => {
         .single();
 
       if (error) throw error;
+
+      // Save commodities to quotation_commodities table
+      try {
+        const commodities = JSON.parse(quotationData.volume);
+        if (Array.isArray(commodities) && commodities.length > 0) {
+          const { error: commoditiesError } = await supabase
+            .from('quotation_commodities')
+            .insert(
+              commodities.map(commodity => ({
+                quotation_id: data.id,
+                name: commodity.name,
+                quantity_kg: commodity.quantityKg,
+                rate: commodity.rate || 0,
+                client_rate: commodity.clientRate || 0,
+              }))
+            );
+
+          if (commoditiesError) {
+            console.warn('Warning: Failed to save commodities:', commoditiesError);
+          }
+        }
+      } catch (parseError) {
+        console.warn('Warning: Could not parse commodities data:', parseError);
+      }
 
       await fetchQuotations(); // Refresh the list
       return data;
@@ -129,6 +170,41 @@ export const useSupabaseQuotations = () => {
 
       if (error) throw error;
 
+      // Update commodities if volume data is provided
+      if (updates.volume) {
+        try {
+          const commodities = JSON.parse(updates.volume);
+          if (Array.isArray(commodities)) {
+            // Delete existing commodities for this quotation
+            await supabase
+              .from('quotation_commodities')
+              .delete()
+              .eq('quotation_id', id);
+
+            // Insert updated commodities
+            if (commodities.length > 0) {
+              const { error: commoditiesError } = await supabase
+                .from('quotation_commodities')
+                .insert(
+                  commodities.map(commodity => ({
+                    quotation_id: id,
+                    name: commodity.name,
+                    quantity_kg: commodity.quantityKg,
+                    rate: commodity.rate || 0,
+                    client_rate: commodity.clientRate || 0,
+                  }))
+                );
+
+              if (commoditiesError) {
+                console.warn('Warning: Failed to update commodities:', commoditiesError);
+              }
+            }
+          }
+        } catch (parseError) {
+          console.warn('Warning: Could not parse commodities data during update:', parseError);
+        }
+      }
+
       await fetchQuotations(); // Refresh the list
     } catch (error) {
       console.error('Error updating quotation:', error);
@@ -143,6 +219,13 @@ export const useSupabaseQuotations = () => {
 
   const deleteQuotation = async (id: string) => {
     try {
+      // Delete associated commodities first (foreign key constraint)
+      await supabase
+        .from('quotation_commodities')
+        .delete()
+        .eq('quotation_id', id);
+
+      // Then delete the quotation
       const { error } = await supabase
         .from('quotations')
         .delete()
