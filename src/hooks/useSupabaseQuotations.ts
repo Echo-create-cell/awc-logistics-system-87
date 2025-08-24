@@ -76,19 +76,44 @@ export const useSupabaseQuotations = () => {
 
   const createQuotation = async (quotationData: Omit<Quotation, 'id' | 'createdAt'>) => {
     try {
+      console.log('Creating quotation with data:', quotationData);
+      
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        console.error('User not authenticated:', userError);
+        throw new Error('User must be authenticated to create quotations');
+      }
+
+      // Parse commodities data
+      let commodities = [];
+      let totalVolume = 0;
+      
+      try {
+        if (quotationData.volume) {
+          commodities = JSON.parse(quotationData.volume);
+          if (Array.isArray(commodities)) {
+            totalVolume = commodities.reduce((sum, c) => sum + (Number(c.quantityKg) || 0), 0);
+          }
+        }
+      } catch (parseError) {
+        console.warn('Could not parse commodities, using fallback:', parseError);
+        totalVolume = Number(quotationData.volume) || 0;
+      }
+
       const { data, error } = await supabase
         .from('quotations')
         .insert({
           client_id: quotationData.clientId,
           client_name: quotationData.clientName,
-          total_volume_kg: parseFloat(quotationData.volume) || 0,
-          buy_rate: quotationData.buyRate,
-          currency: quotationData.currency,
-          client_quote: quotationData.clientQuote,
-          profit: quotationData.profit,
-          profit_percentage: quotationData.profitPercentage,
+          total_volume_kg: totalVolume,
+          buy_rate: quotationData.buyRate || 0,
+          currency: quotationData.currency || 'USD',
+          client_quote: quotationData.clientQuote || 0,
+          profit: quotationData.profit || 0,
+          profit_percentage: quotationData.profitPercentage || '0.0%',
           quote_sent_by: quotationData.quoteSentBy,
-          status: quotationData.status,
+          status: quotationData.status || 'pending',
           follow_up_date: quotationData.followUpDate,
           remarks: quotationData.remarks,
           destination: quotationData.destination,
@@ -97,37 +122,44 @@ export const useSupabaseQuotations = () => {
           cargo_description: quotationData.cargoDescription,
           request_type: quotationData.requestType,
           country_of_origin: quotationData.countryOfOrigin,
+          created_by: user.id, // Critical: Set the created_by field for RLS
         })
         .select()
         .single();
 
-      if (error) throw error;
-
-      // Save commodities to quotation_commodities table
-      try {
-        const commodities = JSON.parse(quotationData.volume);
-        if (Array.isArray(commodities) && commodities.length > 0) {
-          const { error: commoditiesError } = await supabase
-            .from('quotation_commodities')
-            .insert(
-              commodities.map(commodity => ({
-                quotation_id: data.id,
-                name: commodity.name,
-                quantity_kg: commodity.quantityKg,
-                rate: commodity.rate || 0,
-                client_rate: commodity.clientRate || 0,
-              }))
-            );
-
-          if (commoditiesError) {
-            console.warn('Warning: Failed to save commodities:', commoditiesError);
-          }
-        }
-      } catch (parseError) {
-        console.warn('Warning: Could not parse commodities data:', parseError);
+      if (error) {
+        console.error('Supabase insert error:', error);
+        throw error;
       }
 
-      await fetchQuotations(); // Refresh the list
+      console.log('Quotation created successfully:', data);
+
+      // Save commodities to quotation_commodities table if we have valid commodities
+      if (Array.isArray(commodities) && commodities.length > 0) {
+        console.log('Saving commodities:', commodities);
+        
+        const { error: commoditiesError } = await supabase
+          .from('quotation_commodities')
+          .insert(
+            commodities.map(commodity => ({
+              quotation_id: data.id,
+              name: commodity.name || '',
+              quantity_kg: Number(commodity.quantityKg) || 0,
+              rate: Number(commodity.rate) || 0,
+              client_rate: Number(commodity.clientRate) || 0,
+            }))
+          );
+
+        if (commoditiesError) {
+          console.error('Failed to save commodities:', commoditiesError);
+          // Don't throw here - quotation is already saved
+        } else {
+          console.log('Commodities saved successfully');
+        }
+      }
+
+      // Refresh the quotations list
+      await fetchQuotations();
       return data;
     } catch (error) {
       console.error('Error creating quotation:', error);
