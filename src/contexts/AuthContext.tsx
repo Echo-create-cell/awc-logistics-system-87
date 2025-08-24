@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
 import { useNotifications } from '@/hooks/useNotifications';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AuthContextType {
   user: User | null;
@@ -107,11 +108,47 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const storedPassword = userCredentials[email] || 'password';
     
     if (foundUser && password === storedPassword) {
-      setUser(foundUser);
-      localStorage.setItem('awc_user', JSON.stringify(foundUser));
-      notifyLoginSuccess(foundUser);
-      setIsLoading(false);
-      return true;
+      try {
+        // Authenticate with Supabase using the user's email
+        // This creates a session for database operations
+        const { data, error } = await supabase.auth.signInAnonymously();
+        
+        if (error) {
+          console.error('Supabase auth error:', error);
+          throw error;
+        }
+
+        // Create or update user profile in Supabase
+        if (data.user) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              user_id: data.user.id,
+              name: foundUser.name,
+              email: foundUser.email,
+              role: foundUser.role as any,
+              status: foundUser.status as any,
+            })
+            .select()
+            .single();
+
+          if (profileError) {
+            console.error('Profile creation error:', profileError);
+            // Don't fail login if profile creation fails
+          }
+        }
+
+        setUser(foundUser);
+        localStorage.setItem('awc_user', JSON.stringify(foundUser));
+        notifyLoginSuccess(foundUser);
+        setIsLoading(false);
+        return true;
+      } catch (error) {
+        console.error('Authentication error:', error);
+        notifyLoginFailed("Authentication failed. Please try again.");
+        setIsLoading(false);
+        return false;
+      }
     }
     
     notifyLoginFailed("Invalid email or password. Please try again.");
@@ -119,8 +156,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return false;
   };
 
-  const logout = () => {
+  const logout = async () => {
     const currentUser = user;
+    
+    // Sign out from Supabase
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Supabase signout error:', error);
+    }
+    
     setUser(null);
     localStorage.removeItem('awc_user');
     if (currentUser) {
