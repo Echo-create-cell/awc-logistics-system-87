@@ -89,12 +89,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { notifyLoginSuccess, notifyLoginFailed, notifyLogout } = useNotifications();
 
   useEffect(() => {
-    // Check for stored user session
-    const storedUser = localStorage.getItem('awc_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    const initializeAuth = async () => {
+      // Check for stored user session
+      const storedUser = localStorage.getItem('awc_user');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        setUser(user);
+        
+        // Restore Supabase authentication session
+        try {
+          const { data, error } = await supabase.auth.signInAnonymously();
+          
+          if (!error && data.user) {
+            // Update/create profile in Supabase
+            await supabase
+              .from('profiles')
+              .upsert({
+                user_id: data.user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role as any,
+                status: user.status as any,
+              });
+          }
+        } catch (error) {
+          console.warn('Failed to restore Supabase session:', error);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
