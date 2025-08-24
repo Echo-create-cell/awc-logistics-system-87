@@ -37,19 +37,58 @@ const CreateQuotationView = ({ onQuotationCreated, setActiveTab, user }: CreateQ
     resetForm,
   } = useQuotationForm(null, user);
 
-  const handleSaveQuotation = () => {
-    if (!clientName || clientQuote <= 0 || !currency || !quotationData.quoteSentBy) {
+  const handleSaveQuotation = async () => {
+    // Enhanced validation with specific field checks
+    const validationErrors = [];
+    
+    if (!clientName || clientName.trim() === '') {
+      validationErrors.push("Client name is required");
+    }
+    
+    if (commodities.length === 0) {
+      validationErrors.push("At least one commodity is required");
+    }
+    
+    if (clientQuote <= 0) {
+      validationErrors.push("Client quote must be greater than 0");
+    }
+    
+    if (!currency) {
+      validationErrors.push("Currency is required");
+    }
+    
+    if (!quotationData.quoteSentBy || quotationData.quoteSentBy.trim() === '') {
+      validationErrors.push("Quote Sent By is required");
+    }
+
+    if (validationErrors.length > 0) {
       toast({
-        title: "Missing Fields",
-        description: "Please ensure client name, commodities, pricing, and 'Quote Sent By' are all filled in.",
+        title: "Validation Error",
+        description: validationErrors.join(", "),
         variant: "destructive",
       });
       return;
     }
 
-    const newQuotation = getQuotationPayload();
-    onQuotationCreated(newQuotation);
-    resetForm();
+    try {
+      const newQuotation = getQuotationPayload();
+      console.log('Saving quotation:', newQuotation); // Debug log
+      await onQuotationCreated(newQuotation);
+      
+      toast({
+        title: "Success",
+        description: "Quotation created successfully and sent for approval!",
+      });
+      
+      resetForm();
+    } catch (error) {
+      console.error('Failed to save quotation:', error);
+      toast({
+        title: "Save Failed", 
+        description: "Failed to save quotation. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
