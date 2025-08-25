@@ -78,12 +78,21 @@ export const useSupabaseQuotations = () => {
     try {
       console.log('Creating quotation with data:', quotationData);
       
-      // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        console.error('User not authenticated:', userError);
+      // Get current authenticated user session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log('Current session:', session);
+      
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw new Error('Authentication session error');
+      }
+      
+      if (!session?.user) {
+        console.error('No authenticated user found');
         throw new Error('User must be authenticated to create quotations');
       }
+
+      console.log('Authenticated user ID:', session.user.id);
 
       // Parse commodities data
       let commodities = [];
@@ -101,29 +110,36 @@ export const useSupabaseQuotations = () => {
         totalVolume = Number(quotationData.volume) || 0;
       }
 
+      console.log('Processed commodities:', commodities);
+      console.log('Total volume:', totalVolume);
+
+      const quotationPayload = {
+        client_id: quotationData.clientId,
+        client_name: quotationData.clientName,
+        total_volume_kg: totalVolume,
+        buy_rate: quotationData.buyRate || 0,
+        currency: quotationData.currency || 'USD',
+        client_quote: quotationData.clientQuote || 0,
+        profit: quotationData.profit || 0,
+        profit_percentage: quotationData.profitPercentage || '0.0%',
+        quote_sent_by: quotationData.quoteSentBy,
+        status: quotationData.status || 'pending',
+        follow_up_date: quotationData.followUpDate,
+        remarks: quotationData.remarks,
+        destination: quotationData.destination,
+        door_delivery: quotationData.doorDelivery,
+        freight_mode: quotationData.freightMode,
+        cargo_description: quotationData.cargoDescription,
+        request_type: quotationData.requestType,
+        country_of_origin: quotationData.countryOfOrigin,
+        created_by: session.user.id, // CRITICAL: Set the created_by field for RLS
+      };
+
+      console.log('Final quotation payload:', quotationPayload);
+
       const { data, error } = await supabase
         .from('quotations')
-        .insert({
-          client_id: quotationData.clientId,
-          client_name: quotationData.clientName,
-          total_volume_kg: totalVolume,
-          buy_rate: quotationData.buyRate || 0,
-          currency: quotationData.currency || 'USD',
-          client_quote: quotationData.clientQuote || 0,
-          profit: quotationData.profit || 0,
-          profit_percentage: quotationData.profitPercentage || '0.0%',
-          quote_sent_by: quotationData.quoteSentBy,
-          status: quotationData.status || 'pending',
-          follow_up_date: quotationData.followUpDate,
-          remarks: quotationData.remarks,
-          destination: quotationData.destination,
-          door_delivery: quotationData.doorDelivery,
-          freight_mode: quotationData.freightMode,
-          cargo_description: quotationData.cargoDescription,
-          request_type: quotationData.requestType,
-          country_of_origin: quotationData.countryOfOrigin,
-          created_by: user.id, // Critical: Set the created_by field for RLS
-        })
+        .insert(quotationPayload)
         .select()
         .single();
 

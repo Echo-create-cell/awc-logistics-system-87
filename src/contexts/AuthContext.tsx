@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
 import { useNotifications } from '@/hooks/useNotifications';
@@ -88,34 +87,100 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   });
   const { notifyLoginSuccess, notifyLoginFailed, notifyLogout } = useNotifications();
 
+  const establishSupabaseSession = async (foundUser: User) => {
+    try {
+      console.log('Establishing Supabase session for user:', foundUser);
+      
+      // Try to sign in with email and password (creating a real session)
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: `${foundUser.id}@temp.local`, // Use unique email per user
+        password: 'tempPassword123!'
+      });
+
+      if (error && error.message.includes('Invalid login credentials')) {
+        console.log('User not found in auth, creating new user...');
+        
+        // Sign up the user first
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: `${foundUser.id}@temp.local`,
+          password: 'tempPassword123!',
+          options: {
+            data: {
+              name: foundUser.name,
+              role: foundUser.role
+            }
+          }
+        });
+
+        if (signUpError) {
+          console.error('Failed to sign up user:', signUpError);
+          throw signUpError;
+        }
+
+        console.log('User signed up successfully:', signUpData);
+      } else if (error) {
+        console.error('Failed to sign in user:', error);
+        throw error;
+      } else {
+        console.log('User signed in successfully:', data);
+      }
+
+      // Get current session to confirm
+      const { data: sessionData } = await supabase.auth.getSession();
+      console.log('Current session:', sessionData);
+
+      if (sessionData.session?.user) {
+        // Create or update user profile in Supabase
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            user_id: sessionData.session.user.id,
+            name: foundUser.name,
+            email: foundUser.email,
+            role: foundUser.role as any,
+            status: foundUser.status as any,
+          }, {
+            onConflict: 'user_id'
+          });
+
+        if (profileError) {
+          console.error('Profile creation/update error:', profileError);
+        } else {
+          console.log('Profile updated successfully');
+        }
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Failed to establish Supabase session:', error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     const initializeAuth = async () => {
+      console.log('Initializing auth...');
+      
       // Check for stored user session
       const storedUser = localStorage.getItem('awc_user');
       if (storedUser) {
         const user = JSON.parse(storedUser);
-        setUser(user);
+        console.log('Found stored user:', user);
         
-        // Restore Supabase authentication session
-        try {
-          const { data, error } = await supabase.auth.signInAnonymously();
-          
-          if (!error && data.user) {
-            // Update/create profile in Supabase
-            await supabase
-              .from('profiles')
-              .upsert({
-                user_id: data.user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role as any,
-                status: user.status as any,
-              });
-          }
-        } catch (error) {
-          console.warn('Failed to restore Supabase session:', error);
+        // Establish Supabase session for the stored user
+        const sessionEstablished = await establishSupabaseSession(user);
+        
+        if (sessionEstablished) {
+          setUser(user);
+          console.log('Auth initialization complete - user restored with Supabase session');
+        } else {
+          console.warn('Failed to establish Supabase session, clearing stored user');
+          localStorage.removeItem('awc_user');
         }
+      } else {
+        console.log('No stored user found');
       }
+      
       setIsLoading(false);
     };
 
@@ -134,40 +199,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     if (foundUser && password === storedPassword) {
       try {
-        // Authenticate with Supabase using the user's email
-        // This creates a session for database operations
-        const { data, error } = await supabase.auth.signInAnonymously();
+        console.log('Login successful for user:', foundUser);
         
-        if (error) {
-          console.error('Supabase auth error:', error);
-          throw error;
+        // Establish Supabase session
+        const sessionEstablished = await establishSupabaseSession(foundUser);
+        
+        if (sessionEstablished) {
+          setUser(foundUser);
+          localStorage.setItem('awc_user', JSON.stringify(foundUser));
+          notifyLoginSuccess(foundUser);
+          setIsLoading(false);
+          return true;
+        } else {
+          throw new Error('Failed to establish database session');
         }
-
-        // Create or update user profile in Supabase
-        if (data.user) {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .upsert({
-              user_id: data.user.id,
-              name: foundUser.name,
-              email: foundUser.email,
-              role: foundUser.role as any,
-              status: foundUser.status as any,
-            })
-            .select()
-            .single();
-
-          if (profileError) {
-            console.error('Profile creation error:', profileError);
-            // Don't fail login if profile creation fails
-          }
-        }
-
-        setUser(foundUser);
-        localStorage.setItem('awc_user', JSON.stringify(foundUser));
-        notifyLoginSuccess(foundUser);
-        setIsLoading(false);
-        return true;
       } catch (error) {
         console.error('Authentication error:', error);
         notifyLoginFailed("Authentication failed. Please try again.");
@@ -187,6 +232,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Sign out from Supabase
     try {
       await supabase.auth.signOut();
+      console.log('Supabase sign out successful');
     } catch (error) {
       console.error('Supabase signout error:', error);
     }
