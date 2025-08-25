@@ -78,10 +78,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const credentials: Record<string, string> = {
       'n.solange@africaworldcargo.com': 'Action@AWC',
       'i.arnold@africaworldcargo.com': 'Director@AWC',
-      'a.benon@africaworldcargo.com': 'Agent@AWC',
-      'n.mariemerci@africaworldcargo.com': 'Agent2@AWC',
+      'a.benon@africaworldcargo.com': 'Sales1@AWC',
+      'n.mariemerci@africaworldcargo.com': 'Sales2@AWC',
       'u.epiphanie@africaworldcargo.com': 'Finance@AWC',
-      'k.peter@africaworldcargo.com': 'Partner@AWC'
+      'k.peter@africaworldcargo.com': 'Peter@AWC'
     };
     return credentials;
   });
