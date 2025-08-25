@@ -88,12 +88,18 @@ export const useAppData = () => {
 
   const handleQuotationCreated = async (newQuotationData: Quotation) => {
     try {
-      await createQuotation(newQuotationData);
+      console.log('Creating quotation with data:', newQuotationData);
+      console.log('User context:', user);
+      
+      const result = await createQuotation(newQuotationData);
+      console.log('Quotation created successfully:', result);
+      
       notifyQuotationCreated(newQuotationData, { user });
       notificationManager.notifyQuotationCreated(newQuotationData, { user });
       setActiveTab('quotations');
     } catch (error) {
-      console.error('Failed to create quotation:', error);
+      console.error('Failed to create quotation - detailed error:', error);
+      throw error; // Re-throw to let the UI handle it
     }
   };
 
