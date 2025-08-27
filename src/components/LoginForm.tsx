@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, Mail, Lock, Eye, EyeOff, Building2, Shield } from 'lucide-react';
 import { ProfessionalLogo } from '@/components/ui/professional-logo';
+import CreateSystemUsers from './CreateSystemUsers';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -138,6 +139,11 @@ const LoginForm = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* System Users Setup - Only shown for development */}
+        <div className="mt-4">
+          <CreateSystemUsers />
+        </div>
       </div>
     </div>
   );
