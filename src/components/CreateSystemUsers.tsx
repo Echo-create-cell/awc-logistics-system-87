@@ -7,6 +7,11 @@ const CreateSystemUsers = () => {
   const [isCreating, setIsCreating] = useState(false);
   const { toast } = useToast();
 
+  // Auto-create users on component mount
+  React.useEffect(() => {
+    createSystemUsers();
+  }, []);
+
   const createSystemUsers = async () => {
     setIsCreating(true);
     try {
