@@ -44,8 +44,10 @@ const CreateSystemUsers = () => {
   React.useEffect(() => {
     const autoCreateUsers = async () => {
       try {
+        console.log('Checking for existing system users...');
+        
         // Check if users already exist by trying to fetch profiles
-        const { data: existingProfiles } = await supabase
+        const { data: existingProfiles, error: fetchError } = await supabase
           .from('profiles')
           .select('email')
           .in('email', [
@@ -57,16 +59,23 @@ const CreateSystemUsers = () => {
             'k.peter@africaworldcargo.com'
           ]);
 
-        // If no existing profiles found, auto-create users
-        if (!existingProfiles || existingProfiles.length === 0) {
-          console.log('No existing system users found, creating them automatically...');
+        console.log('Existing profiles found:', existingProfiles?.length || 0);
+
+        // If less than 6 users exist, create all users
+        if (!existingProfiles || existingProfiles.length < 6) {
+          console.log('Creating all system users...');
           await createSystemUsers();
         } else {
-          console.log('System users already exist, skipping creation');
+          console.log('All 6 system users already exist');
+          toast({
+            title: "System Ready",
+            description: "All system users are available for login.",
+          });
         }
       } catch (error) {
         console.log('Error checking existing users:', error);
         // Try to create users anyway
+        console.log('Attempting to create users despite error...');
         await createSystemUsers();
       }
     };
