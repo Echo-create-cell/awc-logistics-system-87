@@ -163,13 +163,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
+          console.log('Fetching profile for user:', session.user.id);
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('user_id', session.user.id)
             .single();
           
+          console.log('Profile query result:', { profile, profileError });
+          
           if (profileError) {
+            console.error('Profile error details:', profileError);
             throw new Error('Failed to fetch user profile');
           }
           
