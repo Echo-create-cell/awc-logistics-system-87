@@ -68,8 +68,8 @@ const QuotationFormMain = ({
                 <SelectTrigger id="freightMode"><SelectValue placeholder="Select mode" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Air Freight">Air Freight</SelectItem>
-                  <SelectItem value="Ocean Freight">Ocean Freight</SelectItem>
-                  <SelectItem value="Land Freight">Land Freight</SelectItem>
+                  <SelectItem value="Sea Freight">Sea Freight</SelectItem>
+                  <SelectItem value="Road Freight">Road Freight</SelectItem>
                 </SelectContent>
               </Select>
             </div>
