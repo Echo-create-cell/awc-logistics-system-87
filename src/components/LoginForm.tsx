@@ -6,11 +6,10 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, Mail, Lock, Eye, EyeOff, Building2, Shield } from 'lucide-react';
 import { ProfessionalLogo } from '@/components/ui/professional-logo';
-import CreateSystemUsers from './CreateSystemUsers';
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('i.arnold@africaworldcargo.com');
+  const [password, setPassword] = useState('Action@AWC');
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading } = useAuth();
 
@@ -140,10 +139,6 @@ const LoginForm = () => {
           </CardContent>
         </Card>
 
-        {/* System Users Setup - Only shown for development */}
-        <div className="mt-4">
-          <CreateSystemUsers />
-        </div>
       </div>
     </div>
   );
