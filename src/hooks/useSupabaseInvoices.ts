@@ -70,6 +70,20 @@ export const useSupabaseInvoices = () => {
 
   const createInvoice = async (invoiceData: Omit<InvoiceData, 'id'>) => {
     try {
+      // Check if an invoice already exists for this quotation
+      if (invoiceData.quotationId) {
+        const { data: existingInvoices, error: checkError } = await supabase
+          .from('invoices')
+          .select('id')
+          .eq('quotation_id', invoiceData.quotationId);
+
+        if (checkError) throw checkError;
+
+        if (existingInvoices && existingInvoices.length > 0) {
+          throw new Error('An invoice has already been generated for this quotation');
+        }
+      }
+
       // Insert invoice
       const { data: invoice, error: invoiceError } = await supabase
         .from('invoices')

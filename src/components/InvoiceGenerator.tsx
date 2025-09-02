@@ -146,14 +146,22 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
     return invoice;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const invoice = getInvoicePayload();
     if (invoice) {
-      onSave?.(invoice);
-      toast({
-        title: "Invoice Saved",
-        description: `Invoice ${invoice.invoiceNumber} has been created successfully with all required information.`,
-      });
+      try {
+        await onSave?.(invoice);
+        toast({
+          title: "Invoice Saved",
+          description: `Invoice ${invoice.invoiceNumber} has been created successfully with all required information.`,
+        });
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Failed to Save Invoice",
+          description: error instanceof Error ? error.message : "An error occurred while saving the invoice.",
+        });
+      }
     }
   };
 

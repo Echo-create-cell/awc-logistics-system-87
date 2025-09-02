@@ -15,7 +15,8 @@ export const useSupabaseQuotations = () => {
         .from('quotations')
         .select(`
           *,
-          quotation_commodities(*)
+          quotation_commodities(*),
+          invoices(id)
         `)
         .order('created_at', { ascending: false });
 
@@ -58,6 +59,7 @@ export const useSupabaseQuotations = () => {
           requestType: item.request_type as 'Import' | 'Export' | 'Re-Import' | 'Project' | 'Local',
           countryOfOrigin: item.country_of_origin,
           totalVolumeKg: item.total_volume_kg,
+          linkedInvoiceIds: (item.invoices || []).map((inv: any) => inv.id),
         };
       });
 

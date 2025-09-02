@@ -8,9 +8,11 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { useNotificationManager } from '@/hooks/useNotificationManager';
 import { useOverdueNotifications } from '@/components/hooks/useOverdueNotifications';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 export const useAppData = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [users, setUsers] = useState<User[]>(mockUsers);
   
@@ -104,6 +106,16 @@ export const useAppData = () => {
   };
 
   const handleGenerateInvoiceFromQuotation = (quotation: Quotation) => {
+    // Check if an invoice already exists for this quotation
+    if (quotation.linkedInvoiceIds && quotation.linkedInvoiceIds.length > 0) {
+      toast({
+        variant: "destructive",
+        title: "Invoice Already Generated",
+        description: "An invoice has already been generated for this quotation.",
+      });
+      return;
+    }
+    
     setInvoiceQuotation(quotation);
     setActiveTab('invoices');
     // Notification will be sent when invoice is actually created
@@ -111,6 +123,14 @@ export const useAppData = () => {
 
   const handleSaveInvoice = async (invoice: InvoiceData) => {
     try {
+      // Check if an invoice already exists for this quotation
+      if (invoice.quotationId) {
+        const quotation = quotations.find(q => q.id === invoice.quotationId);
+        if (quotation?.linkedInvoiceIds && quotation.linkedInvoiceIds.length > 0) {
+          throw new Error('An invoice has already been generated for this quotation');
+        }
+      }
+
       await createInvoice(invoice);
 
       if (invoice.quotationId) {
@@ -119,6 +139,9 @@ export const useAppData = () => {
         if (quotation) {
           notifyInvoiceGenerated(quotation, invoice, { user });
         }
+        
+        // Refresh quotations to update linkedInvoiceIds
+        await refetchQuotations();
       } else {
         notifyInvoiceCreated(invoice, { user });
         notificationManager.notifyInvoiceCreated(invoice, { user });
@@ -128,6 +151,8 @@ export const useAppData = () => {
       setInvoiceQuotation(null);
     } catch (error) {
       console.error('Failed to save invoice:', error);
+      // Re-throw to let the UI handle the error display
+      throw error;
     }
   };
 
