@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Users, FileText, DollarSign, BarChart3, Home, Settings, LogOut, BookOpen } from 'lucide-react';
+import { Users, FileText, DollarSign, BarChart3, Home, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfessionalLogo } from '@/components/ui/professional-logo';
@@ -29,7 +29,6 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'invoices', label: 'All Invoices', icon: DollarSign },
           { id: 'documents', label: 'Documents', icon: FileText },
           { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
-          { id: 'user-guide', label: 'User Guide', icon: BookOpen },
           { id: 'settings', label: 'Settings', icon: Settings },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
@@ -40,7 +39,6 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'create', label: 'Create Quotation', icon: FileText },
           { id: 'invoices', label: 'Invoices', icon: DollarSign },
           { id: 'reports', label: 'Quotation Reports', icon: BarChart3 },
-          { id: 'user-guide', label: 'User Guide', icon: BookOpen },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
       case 'sales_agent':
@@ -48,7 +46,6 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'dashboard', label: 'Dashboard', icon: Home },
           { id: 'quotations', label: 'Approved Quotations', icon: FileText },
           { id: 'invoices', label: 'Invoices', icon: DollarSign },
-          { id: 'user-guide', label: 'User Guide', icon: BookOpen },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
       case 'finance_officer':
@@ -56,7 +53,6 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'dashboard', label: 'Dashboard', icon: Home },
           { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
           { id: 'invoices', label: 'Invoice Management', icon: DollarSign },
-          { id: 'user-guide', label: 'User Guide', icon: BookOpen },
           { id: 'logout', label: 'Logout', icon: LogOut },
         ];
     case 'partner':
@@ -66,7 +62,6 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
         { id: 'invoices', label: 'View Invoices', icon: DollarSign },
         { id: 'documents', label: 'Documents', icon: FileText },
         { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
-        { id: 'user-guide', label: 'User Guide', icon: BookOpen },
         { id: 'logout', label: 'Logout', icon: LogOut },
       ];
       default:

@@ -8,7 +8,6 @@ import UsersView from './views/UsersView';
 import ReportsView from './views/ReportsView';
 import SettingsView from './views/SettingsView';
 import DocumentsView from './views/DocumentsView';
-import UserGuideView from './views/UserGuideView';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 
@@ -124,8 +123,6 @@ const MainContent = ({
         return <SettingsView />;
       case 'documents':
         return <DocumentsView />;
-      case 'user-guide':
-        return <UserGuideView />;
       default:
         return (
           <DashboardView 
