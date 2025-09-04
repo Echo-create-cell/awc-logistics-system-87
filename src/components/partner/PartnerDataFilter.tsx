@@ -112,28 +112,53 @@ const PartnerDataFilter = ({
   };
 
   const handleExportCSV = () => {
-    const exportData = filteredData.map(item => ({
-      Date: new Date(item.createdAt).toLocaleDateString(),
-      Type: item.type.charAt(0).toUpperCase() + item.type.slice(1),
-      Client: item.clientName,
-      Amount: item.type === 'quotation' ? (item as any).clientQuote : (item as any).totalAmount,
-      Status: item.status,
-      ...(item.type === 'quotation' && { 'Sent By': (item as any).quoteSentBy }),
-      ...(item.type === 'invoice' && { 'Invoice Number': (item as any).invoiceNumber })
-    }));
-    
-    const csv = [
-      Object.keys(exportData[0] || {}).join(','),
-      ...exportData.map(row => Object.values(row).join(','))
-    ].join('\n');
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `partner-data-${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-    window.URL.revokeObjectURL(url);
+    try {
+      const exportData = filteredData.map(item => ({
+        Date: new Date(item.createdAt).toLocaleDateString(),
+        Type: item.type.charAt(0).toUpperCase() + item.type.slice(1),
+        Client: item.clientName || 'N/A',
+        Amount: item.type === 'quotation' ? (item as any).clientQuote : (item as any).totalAmount,
+        Status: item.status,
+        ...(item.type === 'quotation' && { 'Sent By': (item as any).quoteSentBy || 'N/A' }),
+        ...(item.type === 'invoice' && { 'Invoice Number': (item as any).invoiceNumber || 'N/A' })
+      }));
+      
+      if (exportData.length === 0) {
+        alert('No data to export');
+        return;
+      }
+      
+      // Properly escape CSV values
+      const escapeCSV = (value: any) => {
+        if (value === null || value === undefined) return '';
+        const stringValue = String(value).replace(/"/g, '""');
+        return `"${stringValue}"`;
+      };
+      
+      const headers = Object.keys(exportData[0] || {});
+      const csvContent = [
+        headers.join(','),
+        ...exportData.map(row => 
+          headers.map(header => escapeCSV(row[header as keyof typeof row])).join(',')
+        )
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `partner-data-${new Date().toISOString().split('T')[0]}.csv`;
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      console.log(`Successfully exported ${exportData.length} records to CSV`);
+    } catch (error) {
+      console.error('Error exporting partner data to CSV:', error);
+      alert('Failed to export data. Please try again.');
+    }
   };
 
   const clearFilters = () => {

@@ -273,35 +273,69 @@ export const generateCSVExport = (
   quotations: Quotation[],
   filteredData: (Quotation | InvoiceData)[]
 ) => {
-  let csvContent = '';
-  let filename = '';
+  try {
+    let csvContent = '';
+    let filename = '';
 
-  if (reportType === 'quotations') {
-    filename = `quotations-${new Date().toISOString().split('T')[0]}.csv`;
-    csvContent = 'Date,Client,Destination,Status,Amount,Sent By,Approved By\n';
-    quotations.forEach(q => {
-      csvContent += `${new Date(q.createdAt).toLocaleDateString()},"${q.clientName}","${q.destination}","${q.status}","${q.clientQuote || 0}","${q.quoteSentBy}","${q.approvedBy || 'N/A'}"\n`;
-    });
-  } else {
-    filename = `report-${new Date().toISOString().split('T')[0]}.csv`;
-    csvContent = 'Date,Type,Client,Amount,Status\n';
-    filteredData.forEach(item => {
-      const isQuotation = 'clientQuote' in item;
-      const amount = isQuotation ? (item as Quotation).clientQuote : (item as InvoiceData).totalAmount;
-      csvContent += `${new Date(item.createdAt).toLocaleDateString()},"${isQuotation ? 'Quotation' : 'Invoice'}","${item.clientName}","${amount || 0}","${item.status}"\n`;
-    });
-  }
+    if (reportType === 'quotations') {
+      filename = `quotations-${new Date().toISOString().split('T')[0]}.csv`;
+      csvContent = 'Date,Client,Destination,Status,Amount (USD),Sent By,Approved By\n';
+      quotations.forEach(q => {
+        // Properly escape CSV values
+        const escapeCSV = (value: string | null | undefined) => {
+          if (!value) return '';
+          const stringValue = String(value).replace(/"/g, '""');
+          return `"${stringValue}"`;
+        };
+        
+        const date = new Date(q.createdAt).toLocaleDateString();
+        const client = escapeCSV(q.clientName);
+        const destination = escapeCSV(q.destination);
+        const status = escapeCSV(q.status);
+        const amount = q.clientQuote || 0;
+        const sentBy = escapeCSV(q.quoteSentBy);
+        const approvedBy = escapeCSV(q.approvedBy || 'N/A');
+        
+        csvContent += `${date},${client},${destination},${status},${amount},${sentBy},${approvedBy}\n`;
+      });
+    } else {
+      filename = `report-${new Date().toISOString().split('T')[0]}.csv`;
+      csvContent = 'Date,Type,Client,Amount (USD),Status\n';
+      filteredData.forEach(item => {
+        const escapeCSV = (value: string | null | undefined) => {
+          if (!value) return '';
+          const stringValue = String(value).replace(/"/g, '""');
+          return `"${stringValue}"`;
+        };
+        
+        const isQuotation = 'clientQuote' in item;
+        const amount = isQuotation ? (item as Quotation).clientQuote : (item as InvoiceData).totalAmount;
+        const date = new Date(item.createdAt).toLocaleDateString();
+        const type = escapeCSV(isQuotation ? 'Quotation' : 'Invoice');
+        const client = escapeCSV(item.clientName);
+        const status = escapeCSV(item.status);
+        
+        csvContent += `${date},${type},${client},${amount || 0},${status}\n`;
+      });
+    }
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  if (link.download !== undefined) {
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', filename);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      console.log(`Successfully exported ${reportType === 'quotations' ? quotations.length : filteredData.length} records to CSV`);
+    }
+  } catch (error) {
+    console.error('Error exporting CSV:', error);
+    alert('Failed to export data. Please try again.');
   }
 };
 
@@ -311,32 +345,47 @@ export const generateGenericCSVExport = (
   columns: string[],
   filename: string
 ) => {
-  if (!data.length) return;
+  if (!data.length) {
+    alert('No data to export');
+    return;
+  }
   
-  // Create CSV headers
-  let csvContent = columns.join(',') + '\n';
-  
-  // Add data rows
-  data.forEach(row => {
-    const values = columns.map(col => {
-      const value = row[col];
-      // Handle null/undefined values and escape quotes
+  try {
+    // Properly escape CSV values
+    const escapeCSV = (value: any) => {
       if (value === null || value === undefined) return '';
       const stringValue = String(value).replace(/"/g, '""');
       return `"${stringValue}"`;
+    };
+    
+    // Create CSV headers
+    let csvContent = columns.join(',') + '\n';
+    
+    // Add data rows with proper escaping
+    data.forEach(row => {
+      const values = columns.map(col => {
+        const value = row[col];
+        return escapeCSV(value);
+      });
+      csvContent += values.join(',') + '\n';
     });
-    csvContent += values.join(',') + '\n';
-  });
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  if (link.download !== undefined) {
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${filename}-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${filename}-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      console.log(`Successfully exported ${data.length} records to ${filename}.csv`);
+    }
+  } catch (error) {
+    console.error('Error exporting generic CSV:', error);
+    alert('Failed to export data. Please try again.');
   }
 };

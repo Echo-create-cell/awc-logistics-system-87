@@ -162,22 +162,45 @@ const UserLogsMonitor = ({ users, quotations, invoices }: UserLogsMonitorProps) 
   };
 
   const handleExport = () => {
-    // Generate CSV content
-    let csvContent = 'Timestamp,User,Role,Action,Details\n';
-    filteredLogs.forEach(log => {
-      csvContent += `"${log.timestamp}","${log.userName}","${log.userRole}","${log.action}","${log.details}"\n`;
-    });
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `user-logs-${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    try {
+      // Generate CSV content with proper escaping
+      let csvContent = 'Timestamp,User,Role,Action,Details\n';
+      
+      filteredLogs.forEach(log => {
+        // Properly escape CSV values to handle commas and quotes
+        const escapeCSV = (value: string | null | undefined) => {
+          if (!value) return '';
+          const stringValue = String(value).replace(/"/g, '""');
+          return `"${stringValue}"`;
+        };
+        
+        const timestamp = escapeCSV(log.timestamp);
+        const userName = escapeCSV(log.userName);
+        const userRole = escapeCSV(log.userRole);
+        const action = escapeCSV(log.action);
+        const details = escapeCSV(log.details);
+        
+        csvContent += `${timestamp},${userName},${userRole},${action},${details}\n`;
+      });
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `user-logs-${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        console.log(`Successfully exported ${filteredLogs.length} user logs to CSV`);
+      }
+    } catch (error) {
+      console.error('Error exporting user logs to CSV:', error);
+      alert('Failed to export user logs. Please try again.');
     }
   };
 
