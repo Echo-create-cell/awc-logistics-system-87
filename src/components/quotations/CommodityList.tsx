@@ -40,44 +40,54 @@ const CommodityList = ({
                 </Button>
               )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="md:col-span-1">
-                <Label>Commodity Name</Label>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
+              <div className="flex flex-col space-y-2">
+                <Label className="text-sm font-medium text-muted-foreground">Commodity Name</Label>
                 <Input
                   value={commodity.name}
                   onChange={(e) => onUpdateCommodity(commodity.id, 'name', e.target.value)}
                   placeholder="e.g. Electronics"
                   disabled={viewOnly}
+                  className="h-10"
                 />
               </div>
-              <div className="md:col-span-1">
-                <Label>Quantity (kg)</Label>
+              <div className="flex flex-col space-y-2">
+                <Label className="text-sm font-medium text-muted-foreground">Quantity (kg)</Label>
                 <Input
                   type="number"
                   value={commodity.quantityKg}
                   onChange={(e) => onUpdateCommodity(commodity.id, 'quantityKg', parseFloat(e.target.value) || 0)}
                   placeholder="e.g. 100"
                   disabled={viewOnly}
+                  className="h-10"
+                  min="0"
+                  step="0.01"
                 />
               </div>
-              <div className="md:col-span-1">
-                <Label>Buy Rate ({currency}/kg)</Label>
+              <div className="flex flex-col space-y-2">
+                <Label className="text-sm font-medium text-muted-foreground">Buy Rate ({currency}/kg)</Label>
                 <Input
                   type="number"
                   value={commodity.rate}
                   onChange={(e) => onUpdateCommodity(commodity.id, 'rate', parseFloat(e.target.value) || 0)}
                   placeholder="e.g. 12.50"
                   disabled={viewOnly}
+                  className="h-10"
+                  min="0"
+                  step="0.01"
                 />
               </div>
-              <div className="md:col-span-1">
-                <Label>Client Rate ({currency}/kg)</Label>
+              <div className="flex flex-col space-y-2">
+                <Label className="text-sm font-medium text-muted-foreground">Client Rate ({currency}/kg)</Label>
                 <Input
                   type="number"
                   value={(commodity as any).clientRate || 0}
                   onChange={(e) => onUpdateCommodity(commodity.id, 'clientRate', parseFloat(e.target.value) || 0)}
                   placeholder="e.g. 15.00"
                   disabled={viewOnly}
+                  className="h-10"
+                  min="0"
+                  step="0.01"
                 />
               </div>
             </div>
