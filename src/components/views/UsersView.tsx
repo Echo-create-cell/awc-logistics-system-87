@@ -62,22 +62,46 @@ const UsersView = ({ users: propUsers }: UsersViewProps) => {
   };
 
   const handleExport = () => {
-    // Generate CSV content
-    let csvContent = 'Name,Email,Role,Status,Created Date\n';
-    users.forEach(user => {
-      csvContent += `"${user.name}","${user.email}","${user.role.replace('_', ' ')}","${user.status}","${new Date(user.createdAt).toLocaleDateString()}"\n`;
-    });
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `users-${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    try {
+      // Generate CSV content with proper escaping
+      let csvContent = 'Name,Email,Role,Status,Created Date\n';
+      
+      users.forEach(user => {
+        // Properly escape CSV values to handle commas and quotes
+        const escapeCSV = (value: string | null | undefined) => {
+          if (!value) return '';
+          const stringValue = String(value).replace(/"/g, '""');
+          return `"${stringValue}"`;
+        };
+        
+        const name = escapeCSV(user.name);
+        const email = escapeCSV(user.email);
+        const role = escapeCSV(user.role.replace('_', ' ').toUpperCase());
+        const status = escapeCSV(user.status.toUpperCase());
+        const createdDate = new Date(user.createdAt).toLocaleDateString();
+        
+        csvContent += `${name},${email},${role},${status},${createdDate}\n`;
+      });
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `users-${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        // Show success notification
+        console.log(`Successfully exported ${users.length} users to CSV`);
+      }
+    } catch (error) {
+      console.error('Error exporting users to CSV:', error);
+      alert('Failed to export users. Please try again.');
     }
   };
 

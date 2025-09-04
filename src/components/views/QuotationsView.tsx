@@ -68,22 +68,55 @@ const QuotationsView = ({
   };
 
   const handleExport = () => {
-    // Generate CSV content
-    let csvContent = 'Date,Client,Destination,Status,Amount,Sent By,Approved By\n';
-    filteredQuotations.forEach(q => {
-      csvContent += `${new Date(q.createdAt).toLocaleDateString()},"${q.clientName}","${q.destination}","${q.status}","${q.clientQuote || 0}","${q.quoteSentBy}","${q.approvedBy || 'N/A'}"\n`;
-    });
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `quotations-${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    // Filter quotations first
+    const filteredQuotations = user.role === 'admin' || user.role === 'finance_officer'
+      ? quotations
+      : user.role === 'partner'
+      ? quotations
+      : quotations.filter(q => q.quoteSentBy === user.name);
+
+    try {
+      // Generate CSV content with proper escaping
+      let csvContent = 'Date,Client,Destination,Status,Amount (USD),Sent By,Approved By\n';
+      
+      filteredQuotations.forEach(q => {
+        // Properly escape CSV values to handle commas and quotes
+        const escapeCSV = (value: string | null | undefined) => {
+          if (!value) return '';
+          const stringValue = String(value).replace(/"/g, '""');
+          return `"${stringValue}"`;
+        };
+        
+        const date = new Date(q.createdAt).toLocaleDateString();
+        const client = escapeCSV(q.clientName);
+        const destination = escapeCSV(q.destination);
+        const status = escapeCSV(q.status);
+        const amount = q.clientQuote || 0;
+        const sentBy = escapeCSV(q.quoteSentBy);
+        const approvedBy = escapeCSV(q.approvedBy || 'N/A');
+        
+        csvContent += `${date},${client},${destination},${status},${amount},${sentBy},${approvedBy}\n`;
+      });
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `quotations-${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        // Show success notification
+        console.log(`Successfully exported ${filteredQuotations.length} quotations to CSV`);
+      }
+    } catch (error) {
+      console.error('Error exporting quotations to CSV:', error);
+      alert('Failed to export quotations. Please try again.');
     }
   };
 

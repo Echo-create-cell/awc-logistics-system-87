@@ -46,22 +46,48 @@ const InvoicesView = ({
   };
 
   const handleExport = (data: InvoiceData[] = displayedInvoices) => {
-    // Generate CSV content
-    let csvContent = 'Invoice Number,Client,Amount,Status,Due Date,Created Date\n';
-    data.forEach(invoice => {
-      csvContent += `"${invoice.invoiceNumber}","${invoice.clientName}","${invoice.totalAmount}","${invoice.status}","${invoice.dueDate}","${new Date(invoice.createdAt).toLocaleDateString()}"\n`;
-    });
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `invoices-${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    try {
+      // Generate CSV content with proper escaping
+      let csvContent = 'Invoice Number,Client,Amount (USD),Currency,Status,Due Date,Created Date\n';
+      
+      data.forEach(invoice => {
+        // Properly escape CSV values to handle commas and quotes
+        const escapeCSV = (value: string | null | undefined) => {
+          if (!value) return '';
+          const stringValue = String(value).replace(/"/g, '""');
+          return `"${stringValue}"`;
+        };
+        
+        const invoiceNumber = escapeCSV(invoice.invoiceNumber);
+        const client = escapeCSV(invoice.clientName);
+        const amount = invoice.totalAmount || 0;
+        const currency = escapeCSV(invoice.currency || 'USD');
+        const status = escapeCSV(invoice.status);
+        const dueDate = invoice.dueDate || '';
+        const createdDate = new Date(invoice.createdAt).toLocaleDateString();
+        
+        csvContent += `${invoiceNumber},${client},${amount},${currency},${status},${dueDate},${createdDate}\n`;
+      });
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `invoices-${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        // Show success notification
+        console.log(`Successfully exported ${data.length} invoices to CSV`);
+      }
+    } catch (error) {
+      console.error('Error exporting invoices to CSV:', error);
+      alert('Failed to export invoices. Please try again.');
     }
   };
 
