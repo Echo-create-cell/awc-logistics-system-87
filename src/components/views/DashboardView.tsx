@@ -53,8 +53,12 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
       if (user.role === 'admin') {
         return q.status === 'pending';
       }
-      if (user.role === 'sales_director' || user.role === 'sales_agent') {
+      if (user.role === 'sales_director') {
         return q.status === 'pending' && q.quoteSentBy === user.name;
+      }
+      if (user.role === 'sales_agent') {
+        // Sales agents can see all quotations (pending for approval, approved for invoicing)
+        return true;
       }
       return false;
     })

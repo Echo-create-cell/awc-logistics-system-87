@@ -29,7 +29,8 @@ export const useReportsData = (
       
       // Role-based filtering - Partners can see all data like admins
       if (user?.role === 'sales_agent') {
-        return inDateRange && q.quoteSentBy === user.name;
+        // Sales agents can see all quotations in reports (RLS controls access)
+        return inDateRange;
       }
       if (user?.role === 'sales_director') {
         const salesAgents = users.filter(u => u.role === 'sales_agent').map(u => u.name);
