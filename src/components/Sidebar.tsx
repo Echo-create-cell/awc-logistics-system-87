@@ -25,6 +25,7 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
         return [
           { id: 'dashboard', label: 'Dashboard', icon: Home },
           { id: 'users', label: 'User Management', icon: Users },
+          { id: 'activity', label: 'User Activity', icon: BarChart3 },
           { id: 'quotations', label: 'Quotation Approvals', icon: FileText },
           { id: 'invoices', label: 'All Invoices', icon: DollarSign },
           { id: 'documents', label: 'Documents', icon: FileText },

@@ -84,37 +84,6 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
 
       <DashboardStats user={user} users={users} quotations={quotations} />
 
-      {/* Enhanced Admin Section */}
-      {user.role === 'admin' && (
-        <div className="space-y-6">
-          <Tabs defaultValue="activity" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="activity" className="text-sm font-medium">
-                User Activity Overview
-              </TabsTrigger>
-              <TabsTrigger value="logs" className="text-sm font-medium">
-                Detailed Activity Logs
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="activity" className="space-y-6">
-              <UserActivityMonitor 
-                users={users} 
-                quotations={quotations} 
-                invoices={invoices} 
-              />
-            </TabsContent>
-            
-            <TabsContent value="logs" className="space-y-6">
-              <UserLogsMonitor 
-                users={users} 
-                quotations={quotations} 
-                invoices={invoices} 
-              />
-            </TabsContent>
-          </Tabs>
-        </div>
-      )}
 
       {/* Enhanced Analytics Dashboard */}
       {(user.role === 'sales_director' || user.role === 'admin' || user.role === 'partner') && (
