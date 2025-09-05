@@ -68,12 +68,8 @@ const QuotationsView = ({
   };
 
   const handleExport = () => {
-    // Filter quotations first
-    const filteredQuotations = user.role === 'admin' || user.role === 'finance_officer'
-      ? quotations
-      : user.role === 'partner'
-      ? quotations
-      : quotations.filter(q => q.quoteSentBy === user.name);
+    // All users can export the quotations they see (controlled by RLS)
+    const filteredQuotations = quotations;
 
     try {
       // Generate CSV content with proper escaping
@@ -129,12 +125,9 @@ const QuotationsView = ({
     onView: (quotation: Quotation) => handleViewQuotation(quotation),
   });
 
-  // Admins and finance officers see all quotations, partners see all, others see their own
-  const filteredQuotations = user.role === 'admin' || user.role === 'finance_officer'
-    ? quotations // Admin and finance see all
-    : user.role === 'partner'
-    ? quotations // Partners see all
-    : quotations.filter(q => q.quoteSentBy === user.name); // Others see only their own
+  // All roles can see quotations - RLS policies handle security
+  // Sales agents can see all approved quotations for invoice generation
+  const filteredQuotations = quotations;
 
   return (
     <div className="space-y-6">
@@ -151,14 +144,16 @@ const QuotationsView = ({
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-foreground">
-            {user.role === 'admin' || user.role === 'finance_officer' ? 'All Quotations' : 'My Quotations'}
+            {user.role === 'admin' || user.role === 'finance_officer' ? 'All Quotations' : 'Quotations'}
           </h2>
           <p className="text-muted-foreground mt-1">
             {user.role === 'admin' 
               ? 'Review and approve all quotations' 
               : user.role === 'finance_officer'
               ? 'View and analyze all quotations for financial reporting'
-              : 'Manage your quotations and generate invoices'
+              : user.role === 'sales_agent'
+              ? 'View quotations and generate invoices from approved ones'
+              : 'Manage quotations and generate invoices'
             }
           </p>
         </div>
