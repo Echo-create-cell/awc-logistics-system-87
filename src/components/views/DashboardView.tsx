@@ -116,8 +116,8 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
         </div>
       )}
 
-      {/* Sales Director Enhanced Analytics Dashboard */}
-      {user.role === 'sales_director' && (
+      {/* Enhanced Analytics Dashboard */}
+      {(user.role === 'sales_director' || user.role === 'admin' || user.role === 'partner') && (
         <div className="space-y-8">
           <SalesDirectorAnalytics
             user={user}
