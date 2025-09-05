@@ -73,18 +73,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<User[]>(mockUsers);
-  const [userCredentials, setUserCredentials] = useState<Record<string, string>>(() => {
-    // Initialize with specific credentials matching provided user credentials
-    const credentials: Record<string, string> = {
-      'n.solange@africaworldcargo.com': 'Action@AWC',
-      'i.arnold@africaworldcargo.com': 'Director@AWC',
-      'a.benon@africaworldcargo.com': 'Sales1@AWC',
-      'n.mariemerci@africaworldcargo.com': 'Sales2@AWC',
-      'u.epiphanie@africaworldcargo.com': 'Finance@AWC',
-      'k.peter@africaworldcargo.com': 'Peter@AWC'
-    };
-    return credentials;
-  });
+  const [userCredentials, setUserCredentials] = useState<Record<string, string>>({});
   const { notifyLoginSuccess, notifyLoginFailed, notifyLogout } = useNotifications();
 
   const establishSupabaseSession = async (email: string, password: string) => {
