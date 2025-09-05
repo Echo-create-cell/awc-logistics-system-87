@@ -2,6 +2,7 @@
 import React from 'react';
 import DashboardStats from '@/components/DashboardStats';
 import RecentQuotations from '@/components/dashboard/RecentQuotations';
+import SalesDirectorAnalytics from '@/components/dashboard/SalesDirectorAnalytics';
 import UserActivityMonitor from '@/components/admin/UserActivityMonitor';
 import UserLogsMonitor from '@/components/admin/UserLogsMonitor';
 import FinancialMetricsCards from '@/components/reports/FinancialMetricsCards';
@@ -112,6 +113,18 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
               />
             </TabsContent>
           </Tabs>
+        </div>
+      )}
+
+      {/* Sales Director Enhanced Analytics Dashboard */}
+      {user.role === 'sales_director' && (
+        <div className="space-y-8">
+          <SalesDirectorAnalytics
+            user={user}
+            quotations={quotations}
+            invoices={invoices}
+            users={users}
+          />
         </div>
       )}
 
