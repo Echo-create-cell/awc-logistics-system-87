@@ -8,7 +8,7 @@ import FinancialMetricsCards from '@/components/reports/FinancialMetricsCards';
 import ReportDataTable from '@/components/reports/ReportDataTable';
 import ReportsCharts from '@/components/reports/ReportsCharts';
 import UserActivityTable from '@/components/reports/UserActivityTable';
-import { generatePrintReport, generateCSVExport } from '@/components/reports/ReportExportUtils';
+import { generatePrintReport, generateCSVExport, generatePDFReport } from '@/components/reports/ReportExportUtils';
 
 interface ReportsViewProps {
   user: User;
@@ -65,6 +65,15 @@ const ReportsView = ({ user, quotations, invoices, users: propUsers }: ReportsVi
     generateCSVExport(reportType, quotations, filteredData);
   };
 
+  const handleExportPDF = async () => {
+    try {
+      await generatePDFReport(filteredData, summary, dateRange, reportType, user, reportData);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    }
+  };
+
   // Role-based access control - Only sales agents are restricted
   if (user.role === 'sales_agent') {
     return (
@@ -89,6 +98,7 @@ const ReportsView = ({ user, quotations, invoices, users: propUsers }: ReportsVi
         userRole={user.role}
         onPrint={handlePrint}
         onExportCSV={handleExportCSV}
+        onExportPDF={handleExportPDF}
       />
 
       <FinancialMetricsCards metrics={summary} />

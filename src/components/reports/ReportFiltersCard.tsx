@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Filter, Download, Printer } from 'lucide-react';
+import { Filter, Download, Printer, FileDown } from 'lucide-react';
 
 interface ReportFiltersCardProps {
   reportType: 'quotations' | 'financial' | 'users';
@@ -17,6 +17,7 @@ interface ReportFiltersCardProps {
   userRole: string;
   onPrint: () => void;
   onExportCSV: () => void;
+  onExportPDF?: () => Promise<void>;
 }
 
 const ReportFiltersCard = ({
@@ -28,7 +29,8 @@ const ReportFiltersCard = ({
   onStatusChange,
   userRole,
   onPrint,
-  onExportCSV
+  onExportCSV,
+  onExportPDF
 }: ReportFiltersCardProps) => {
   return (
     <>
@@ -55,6 +57,12 @@ const ReportFiltersCard = ({
             <Download size={16} />
             Export CSV
           </Button>
+          {(userRole === 'sales_director' || userRole === 'admin' || userRole === 'partner' || userRole === 'finance_officer') && onExportPDF && (
+            <Button variant="outline" onClick={onExportPDF} className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 hover:from-blue-600 hover:to-purple-700">
+              <FileDown size={16} />
+              Export PDF
+            </Button>
+          )}
           <Button onClick={onPrint} className="flex items-center gap-2">
             <Printer size={16} />
             Print Report
