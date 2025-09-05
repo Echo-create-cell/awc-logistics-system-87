@@ -8,8 +8,8 @@ import { Loader2, Mail, Lock, Eye, EyeOff, Building2, Shield } from 'lucide-reac
 import { ProfessionalLogo } from '@/components/ui/professional-logo';
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('i.arnold@africaworldcargo.com');
+  const [password, setPassword] = useState('Director@AWC');
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading } = useAuth();
 
