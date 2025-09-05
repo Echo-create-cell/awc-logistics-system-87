@@ -212,10 +212,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const addUser = (newUser: User) => {
     setUsers(prev => [newUser, ...prev]);
-    setUserCredentials(prev => ({
-      ...prev,
-      [newUser.email]: 'password' // Default password for new users
-    }));
+    // User credentials are managed by Supabase Auth
+    // No default hardcoded passwords
   };
 
   const updateUser = (userId: string, updatedUser: User) => {
@@ -245,10 +243,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const updateUserCredentials = (email: string, password: string) => {
-    setUserCredentials(prev => ({
-      ...prev,
-      [email]: password
-    }));
+    // Credentials are managed by Supabase Auth
+    // This method is kept for interface compatibility
+    console.warn('User credentials are managed by Supabase Auth, not locally');
   };
 
   return (
