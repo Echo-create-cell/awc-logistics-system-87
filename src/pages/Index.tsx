@@ -8,6 +8,10 @@ import { useToast } from '@/hooks/use-toast';
 import { useAppData } from '@/hooks/useAppData';
 import MainContent from '@/components/MainContent';
 import DailyNotificationSystem from '@/components/notifications/DailyNotificationSystem';
+import { NotificationPanel } from '@/components/layout/NotificationPanel';
+import { Toaster } from '@/components/ui/toaster';
+import { PersistentToaster } from '@/components/ui/persistent-toast';
+import { SystemNotificationProvider } from '@/components/providers/SystemNotificationProvider';
 
 
 const Index = () => {
@@ -42,7 +46,12 @@ const Index = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+    <SystemNotificationProvider
+      quotations={quotations}
+      invoices={invoices}
+      users={users}
+    >
+      <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <Sidebar
         userRole={user.role}
         activeTab={activeTab}
@@ -78,8 +87,20 @@ const Index = () => {
                     })}
                   </p>
                 </div>
+                {/* System Notifications Panel */}
+                <NotificationPanel />
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">
+                    {user.name.split(' ').map(n => n[0]).join('')}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Mobile notifications - show on smaller screens */}
+              <div className="lg:hidden flex items-center space-x-2">
+                <NotificationPanel />
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-sm">
                     {user.name.split(' ').map(n => n[0]).join('')}
                   </span>
                 </div>
@@ -136,7 +157,11 @@ const Index = () => {
         invoices={invoices}
       />
 
-    </div>
+      {/* Toast Notification Systems */}
+      <Toaster />
+      <PersistentToaster />
+      </div>
+    </SystemNotificationProvider>
   );
 };
 
