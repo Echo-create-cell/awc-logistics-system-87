@@ -123,7 +123,7 @@ export const showPersistentToast = ({
           <div className="flex gap-2 pt-2">
             <button 
               onClick={onAction}
-              className="text-sm bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-md font-medium transition-colors"
+              className="text-sm bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-md font-medium transition-colors animate-pulse"
             >
               View Details →
             </button>
@@ -135,7 +135,11 @@ export const showPersistentToast = ({
 
   return sonnerToast(toastContent, {
     duration,
-    className: `bg-white border border-gray-200 shadow-lg [&_button[data-close-button]]:bg-pink-500 [&_button[data-close-button]]:text-white [&_button[data-close-button]]:hover:bg-pink-600 [&_button[data-close-button]]:rounded-full [&_button[data-close-button]]:shadow-lg [&_button[data-close-button]]:shadow-pink-500/50`,
+    className: `bg-white border ${
+      actionRequired || priority === 'critical' 
+        ? 'border-destructive animate-notification-blink animate-border-blink' 
+        : 'border-gray-200'
+    } shadow-lg [&_button[data-close-button]]:bg-pink-500 [&_button[data-close-button]]:text-white [&_button[data-close-button]]:hover:bg-pink-600 [&_button[data-close-button]]:rounded-full [&_button[data-close-button]]:shadow-lg [&_button[data-close-button]]:shadow-pink-500/50`,
     closeButton: true,
     position: 'top-right',
     style: {
@@ -161,7 +165,7 @@ export const PersistentToaster = () => {
             pointerEvents: 'auto',
             maxWidth: '400px',
           },
-          className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg mb-3',
+          className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg mb-3 data-[action-required=true]:animate-notification-blink data-[priority=critical]:animate-notification-blink',
         }}
         richColors
         expand={false}
