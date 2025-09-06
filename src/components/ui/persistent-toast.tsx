@@ -137,7 +137,7 @@ export const showPersistentToast = ({
     duration,
     className: `bg-white border border-gray-200 shadow-lg [&_button[data-close-button]]:bg-pink-500 [&_button[data-close-button]]:text-white [&_button[data-close-button]]:hover:bg-pink-600 [&_button[data-close-button]]:rounded-full [&_button[data-close-button]]:shadow-lg [&_button[data-close-button]]:shadow-pink-500/50`,
     closeButton: true,
-    position: 'top-center',
+    position: 'top-right',
     style: {
       zIndex: 9999,
     }
@@ -147,7 +147,7 @@ export const showPersistentToast = ({
 export const PersistentToaster = () => {
   if (!NOTIFICATIONS_ENABLED) return null
   return (
-    <div className="fixed top-24 right-6 z-[9999] pointer-events-none max-w-sm">
+    <div className="fixed top-4 right-4 z-[9999] pointer-events-none max-w-sm">
       <Toaster 
         position="top-right"
         toastOptions={{
