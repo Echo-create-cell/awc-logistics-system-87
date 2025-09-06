@@ -242,18 +242,6 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
     });
   };
 
-  // Auto-trigger system startup notification
-  useEffect(() => {
-    if (user) {
-      notifySystemEvent(
-        'System Ready',
-        `Welcome ${user.name}! All systems are operational and ready for use.`,
-        'success',
-        true
-      );
-    }
-  }, [user]);
-
   // Monitor data changes and trigger notifications
   useEffect(() => {
     if (quotations.length > 0) {

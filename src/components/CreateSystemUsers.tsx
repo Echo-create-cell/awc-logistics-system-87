@@ -67,10 +67,6 @@ const CreateSystemUsers = () => {
           await createSystemUsers();
         } else {
           console.log('All 6 system users already exist');
-          toast({
-            title: "System Ready",
-            description: "All system users are available for login.",
-          });
         }
       } catch (error) {
         console.log('Error checking existing users:', error);
