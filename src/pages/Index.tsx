@@ -14,43 +14,9 @@ import { PersistentToaster } from '@/components/ui/persistent-toast';
 import { SystemNotificationProvider } from '@/components/providers/SystemNotificationProvider';
 
 
-const Index = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const {
-    activeTab,
-    quotations,
-    users,
-    invoices,
-    printPreview,
-    invoiceQuotation,
-    handleApproveQuotation,
-    handleRejectQuotation,
-    handleQuotationCreated,
-    handleGenerateInvoiceFromQuotation,
-    handleSaveInvoice,
-    handleEditInvoice,
-    handlePrintInvoice,
-    handleEditQuotation,
-    handleEditUser,
-    handleDeleteUser,
-    handleCreateUser,
-    handleTabChange,
-    setPrintPreview,
-    setActiveTab,
-    setInvoiceQuotation,
-  } = useAppData();
-
-  if (!user) {
-    return <LoginForm />;
-  }
+const IndexContent = ({ user, toast, activeTab, quotations, users, invoices, printPreview, invoiceQuotation, handleApproveQuotation, handleRejectQuotation, handleQuotationCreated, handleGenerateInvoiceFromQuotation, handleSaveInvoice, handleEditInvoice, handlePrintInvoice, handleEditQuotation, handleEditUser, handleDeleteUser, handleCreateUser, handleTabChange, setPrintPreview, setActiveTab, setInvoiceQuotation }: any) => {
 
   return (
-    <SystemNotificationProvider
-      quotations={quotations}
-      invoices={invoices}
-      users={users}
-    >
       <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <Sidebar
         userRole={user.role}
@@ -161,6 +127,71 @@ const Index = () => {
       <Toaster />
       <PersistentToaster />
       </div>
+  );
+};
+
+const Index = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const {
+    activeTab,
+    quotations,
+    users,
+    invoices,
+    printPreview,
+    invoiceQuotation,
+    handleApproveQuotation,
+    handleRejectQuotation,
+    handleQuotationCreated,
+    handleGenerateInvoiceFromQuotation,
+    handleSaveInvoice,
+    handleEditInvoice,
+    handlePrintInvoice,
+    handleEditQuotation,
+    handleEditUser,
+    handleDeleteUser,
+    handleCreateUser,
+    handleTabChange,
+    setPrintPreview,
+    setActiveTab,
+    setInvoiceQuotation,
+  } = useAppData();
+  
+  if (!user) {
+    return <LoginForm />;
+  }
+
+  return (
+    <SystemNotificationProvider
+      quotations={quotations}
+      invoices={invoices}
+      users={users}
+    >
+      <IndexContent 
+        user={user}
+        toast={toast}
+        activeTab={activeTab}
+        quotations={quotations}
+        users={users}
+        invoices={invoices}
+        printPreview={printPreview}
+        invoiceQuotation={invoiceQuotation}
+        handleApproveQuotation={handleApproveQuotation}
+        handleRejectQuotation={handleRejectQuotation}
+        handleQuotationCreated={handleQuotationCreated}
+        handleGenerateInvoiceFromQuotation={handleGenerateInvoiceFromQuotation}
+        handleSaveInvoice={handleSaveInvoice}
+        handleEditInvoice={handleEditInvoice}
+        handlePrintInvoice={handlePrintInvoice}
+        handleEditQuotation={handleEditQuotation}
+        handleEditUser={handleEditUser}
+        handleDeleteUser={handleDeleteUser}
+        handleCreateUser={handleCreateUser}
+        handleTabChange={handleTabChange}
+        setPrintPreview={setPrintPreview}
+        setActiveTab={setActiveTab}
+        setInvoiceQuotation={setInvoiceQuotation}
+      />
     </SystemNotificationProvider>
   );
 };
