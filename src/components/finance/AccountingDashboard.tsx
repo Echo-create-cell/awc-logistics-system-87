@@ -1,19 +1,24 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   TrendingUp, 
   TrendingDown, 
   DollarSign, 
+  Users, 
   FileText, 
-  Clock, 
-  AlertTriangle,
-  CheckCircle,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
   Building,
-  Users,
+  PieChart,
+  BarChart3,
+  AlertTriangle,
   Calendar
 } from 'lucide-react';
+import { operationalExpenses, pendingClientPayments, expenseSummary, USD_TO_RWF_RATE } from '@/data/operationalExpenses';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 import { ReportData } from '@/types/reports';
@@ -28,6 +33,33 @@ interface AccountingDashboardProps {
 
 const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }: AccountingDashboardProps) => {
   const formatCurrency = (amount: number) => `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+  
+  // Real operational alerts based on actual September 2025 data
+  const overdueExpenses = operationalExpenses.filter(expense => expense.status === 'overdue');
+  const urgentExpenses = operationalExpenses.filter(expense => expense.urgent > 0);
+  
+  const criticalAlerts = [
+    ...(overdueExpenses.length > 0 ? [{
+      type: 'critical' as const,
+      message: `${overdueExpenses.length} overdue operational expenses totaling $${metrics.urgentPayments?.toLocaleString() || '0'}`,
+      icon: AlertCircle
+    }] : []),
+    ...(urgentExpenses.length > 0 ? [{
+      type: 'warning' as const,
+      message: `${urgentExpenses.length} urgent payments require immediate attention`,
+      icon: Clock
+    }] : []),
+    ...(metrics.currentRatio < 1.0 ? [{
+      type: 'warning' as const,
+      message: `Current ratio of ${metrics.currentRatio.toFixed(2)} indicates potential liquidity issues`,
+      icon: TrendingDown
+    }] : []),
+    ...(metrics.cashFlow < 0 ? [{
+      type: 'critical' as const,
+      message: `Negative cash flow projection of $${Math.abs(metrics.cashFlow).toLocaleString()}`,
+      icon: AlertCircle
+    }] : [])
+  ];
   
   // Real-time operational data analysis
   const overdueInvoices = invoices.filter(invoice => {
@@ -69,6 +101,25 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
 
   return (
     <div className="space-y-6">
+      {/* Critical Alerts */}
+      {criticalAlerts.length > 0 && (
+        <div className="mb-6">
+          <Alert className="border-red-200 bg-red-50">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-700">
+              <div className="space-y-2">
+                {criticalAlerts.map((alert, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <alert.icon className="h-4 w-4" />
+                    <span>{alert.message}</span>
+                  </div>
+                ))}
+              </div>
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+
       {/* Key Performance Indicators */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="hover:shadow-lg transition-shadow">
@@ -147,7 +198,59 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
       </div>
 
       {/* Alerts and Notifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Real-Time Operational Expense Monitoring */}
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-semibold flex items-center gap-2 text-purple-700">
+              <BarChart3 className="h-5 w-5" />
+              September 2025 Operational Expenses
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-purple-600">Total Expenses</span>
+                <div className="text-right">
+                  <div className="font-semibold text-purple-700">
+                    ${metrics.operatingExpenses.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-purple-500">
+                    RWF {expenseSummary.totalRWF.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              <Progress 
+                value={Math.min(100, (metrics.urgentPayments / metrics.operatingExpenses) * 100)} 
+                className="h-2"
+              />
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="text-center p-2 bg-white/50 rounded">
+                  <div className="text-xs text-purple-600">Urgent Payments</div>
+                  <div className="font-semibold text-red-600">
+                    ${metrics.urgentPayments?.toLocaleString() || '0'}
+                  </div>
+                </div>
+                <div className="text-center p-2 bg-white/50 rounded">
+                  <div className="text-xs text-purple-600">Overdue Count</div>
+                  <div className="font-semibold text-amber-600">
+                    {overdueExpenses.length} items
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 p-3 bg-white/70 rounded-lg">
+                <div className="text-xs text-purple-600 mb-2">Expected Receivables</div>
+                <div className="font-semibold text-green-600">
+                  ${expenseSummary.pendingClientPaymentsUSD.toLocaleString()}
+                </div>
+                <div className="text-xs text-purple-500">
+                  From {pendingClientPayments.length} clients
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="border-red-200 bg-red-50">
           <CardHeader>
             <CardTitle className="text-red-700 flex items-center gap-2">

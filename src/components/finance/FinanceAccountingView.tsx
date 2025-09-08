@@ -27,6 +27,16 @@ import AuditTrail from './AuditTrail';
 import CashFlowManagement from './CashFlowManagement';
 import FinancialAnalytics from './FinancialAnalytics';
 import { generateAccountingReport, generateTaxReport, generateAuditReport } from './AccountingReportUtils';
+import { 
+  operationalExpenses, 
+  pendingClientPayments, 
+  expenseSummary, 
+  getTotalExpensesInUSD, 
+  getUrgentPaymentsInUSD, 
+  getOverdueExpenses, 
+  getCashFlowProjection,
+  USD_TO_RWF_RATE 
+} from '@/data/operationalExpenses';
 
 interface FinanceAccountingViewProps {
   user: User;
@@ -44,32 +54,47 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
 
   const { reportData } = useReportsData(quotations, invoices, users);
 
-  // Enhanced financial metrics for accounting using real operational data
+  // Enhanced financial metrics using real operational data
   const totalRevenue = reportData?.metrics?.totalRevenue || 0;
   const totalProfit = reportData?.metrics?.totalProfit || 0;
   const accountsReceivable = invoices.filter(i => i.status === 'pending').reduce((sum, i) => sum + i.totalAmount, 0);
   const overdueAmount = invoices.filter(i => i.status === 'overdue').reduce((sum, i) => sum + i.totalAmount, 0);
   const paidAmount = invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.totalAmount, 0);
-  const operatingExpenses = invoices.reduce((sum, i) => sum + (i.totalAmount - i.subTotal), 0);
+  
+  // Real operational expenses from September 2025 data
+  const operatingExpensesUSD = getTotalExpensesInUSD();
+  const urgentPaymentsUSD = getUrgentPaymentsInUSD();
+  const overdueExpenses = getOverdueExpenses();
+  const expectedReceivables = expenseSummary.pendingClientPaymentsUSD;
+  const cashFlowProjection = getCashFlowProjection();
+  
   const taxLiability = totalRevenue * 0.18; // 18% VAT rate
   
   const accountingMetrics = {
     ...reportData?.metrics,
-    accountsReceivable,
-    accountsPayable: operatingExpenses * 0.3, // Estimated accounts payable
-    currentRatio: accountsReceivable > 0 ? (paidAmount + accountsReceivable) / (operatingExpenses + taxLiability) : 1.2,
-    quickRatio: accountsReceivable > 0 ? paidAmount / (operatingExpenses + taxLiability) : 0.8,
-    debtToEquity: operatingExpenses > 0 ? operatingExpenses / (totalRevenue + accountsReceivable) : 0.3,
+    accountsReceivable: accountsReceivable + expectedReceivables,
+    accountsPayable: urgentPaymentsUSD,
+    currentRatio: accountsReceivable > 0 ? (paidAmount + accountsReceivable + expectedReceivables) / (operatingExpensesUSD + taxLiability) : 1.2,
+    quickRatio: accountsReceivable > 0 ? (paidAmount + expectedReceivables) / (operatingExpensesUSD + taxLiability) : 0.8,
+    debtToEquity: operatingExpensesUSD > 0 ? operatingExpensesUSD / (totalRevenue + accountsReceivable + expectedReceivables) : 0.3,
     profitMargin: totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0,
-    operatingExpenses,
+    operatingExpenses: operatingExpensesUSD,
     netIncome: totalProfit - taxLiability,
     taxLiability,
-    overdueAmount,
+    overdueAmount: overdueAmount + urgentPaymentsUSD,
     paidAmount,
-    cashFlow: paidAmount - operatingExpenses,
-    workingCapital: accountsReceivable - operatingExpenses,
-    revenueGrowth: 12.5, // Calculate from historical data if available
-    expenseRatio: totalRevenue > 0 ? (operatingExpenses / totalRevenue) * 100 : 0
+    cashFlow: cashFlowProjection,
+    workingCapital: (accountsReceivable + expectedReceivables) - operatingExpensesUSD,
+    revenueGrowth: 12.5,
+    expenseRatio: totalRevenue > 0 ? (operatingExpensesUSD / totalRevenue) * 100 : 0,
+    // Additional real operational metrics
+    totalExpensesRWF: expenseSummary.totalRWF,
+    totalExpensesUSD: expenseSummary.totalUSD,
+    urgentPayments: urgentPaymentsUSD,
+    overdueExpensesCount: overdueExpenses.length,
+    pendingClientPaymentsAmount: expectedReceivables,
+    operationalExpenses,
+    pendingClientPayments: pendingClientPayments
   };
 
   const handleExportAccountingReport = async () => {
