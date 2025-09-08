@@ -29,6 +29,7 @@ interface AccountingDashboardProps {
 const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }: AccountingDashboardProps) => {
   const formatCurrency = (amount: number) => `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
   
+  // Real-time operational data analysis
   const overdueInvoices = invoices.filter(invoice => {
     if (invoice.status === 'overdue') return true;
     if (invoice.status === 'pending' && invoice.dueDate) {
@@ -36,6 +37,20 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
     }
     return false;
   });
+
+  const pendingInvoicesValue = invoices.filter(i => i.status === 'pending').reduce((sum, i) => sum + i.totalAmount, 0);
+  const paidInvoicesValue = invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.totalAmount, 0);
+  const overdueValue = overdueInvoices.reduce((sum, i) => sum + i.totalAmount, 0);
+  
+  // Calculate month-over-month growth from real data
+  const currentMonth = new Date().getMonth();
+  const currentMonthInvoices = invoices.filter(i => new Date(i.createdAt).getMonth() === currentMonth);
+  const currentMonthRevenue = currentMonthInvoices.reduce((sum, i) => sum + i.totalAmount, 0);
+  
+  // Won quotations this month for business pipeline analysis  
+  const wonQuotations = quotations.filter(q => q.status === 'won');
+  const currentMonthQuotations = wonQuotations.filter(q => new Date(q.createdAt).getMonth() === currentMonth);
+  const quotationRevenue = currentMonthQuotations.reduce((sum, q) => sum + q.clientQuote, 0);
 
   const upcomingInvoices = invoices.filter(invoice => {
     if (invoice.status === 'pending' && invoice.dueDate) {
@@ -47,9 +62,10 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
     return false;
   });
 
+  // Real-time activity based on actual system data
   const recentTransactions = [...invoices, ...quotations]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 10);
+    .slice(0, 15); // Show more recent transactions for better business insight
 
   return (
     <div className="space-y-6">
@@ -64,11 +80,11 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {formatCurrency(metrics.totalRevenue)}
+              {formatCurrency(currentMonthRevenue)}
             </div>
             <div className="flex items-center gap-1 mt-1">
               <TrendingUp className="h-3 w-3 text-green-500" />
-              <span className="text-xs text-green-600">+12.5% from last month</span>
+              <span className="text-xs text-green-600">This month revenue</span>
             </div>
           </CardContent>
         </Card>
@@ -82,11 +98,11 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">
-              {formatCurrency(metrics.totalProfit)}
+              {formatCurrency(quotationRevenue)}
             </div>
             <div className="flex items-center gap-1 mt-1">
               <span className="text-xs text-muted-foreground">
-                Margin: {metrics.profitMargin?.toFixed(1)}%
+                From {currentMonthQuotations.length} won quotations
               </span>
             </div>
           </CardContent>
@@ -101,11 +117,11 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-amber-600">
-              {formatCurrency(metrics.accountsReceivable)}
+              {formatCurrency(pendingInvoicesValue)}
             </div>
             <div className="flex items-center gap-1 mt-1">
               <span className="text-xs text-muted-foreground">
-                {metrics.pendingInvoices} pending invoices
+                {invoices.filter(i => i.status === 'pending').length} pending invoices
               </span>
             </div>
           </CardContent>
@@ -114,17 +130,17 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Building className="h-4 w-4 text-purple-600" />
-              Operating Expenses
+              <AlertTriangle className="h-4 w-4 text-purple-600" />
+              Overdue Amount
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">
-              {formatCurrency(metrics.operatingExpenses)}
+              {formatCurrency(overdueValue)}
             </div>
             <div className="flex items-center gap-1 mt-1">
-              <TrendingDown className="h-3 w-3 text-green-500" />
-              <span className="text-xs text-green-600">-3.2% from last month</span>
+              <AlertTriangle className="h-3 w-3 text-red-500" />
+              <span className="text-xs text-red-600">{overdueInvoices.length} overdue invoices</span>
             </div>
           </CardContent>
         </Card>
@@ -259,15 +275,15 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
           <CardContent className="space-y-3">
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Current Ratio</span>
-              <span className="font-medium">{metrics.currentRatio}</span>
+              <span className="font-medium">{(metrics.currentRatio || 1.0).toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Quick Ratio</span>
-              <span className="font-medium">{metrics.quickRatio}</span>
+              <span className="font-medium">{(paidInvoicesValue / (metrics.operatingExpenses + metrics.taxLiability || 1)).toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Cash Ratio</span>
-              <span className="font-medium">0.65</span>
+              <span className="text-sm text-muted-foreground">Cash Position</span>
+              <span className="font-medium">{formatCurrency(paidInvoicesValue - metrics.operatingExpenses)}</span>
             </div>
           </CardContent>
         </Card>
@@ -279,15 +295,15 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
           <CardContent className="space-y-3">
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Gross Margin</span>
-              <span className="font-medium">{metrics.profitMargin?.toFixed(1)}%</span>
+              <span className="font-medium">{metrics.profitMargin?.toFixed(1) || '0.0'}%</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Net Margin</span>
-              <span className="font-medium">8.3%</span>
+              <span className="text-sm text-muted-foreground">Operating Margin</span>
+              <span className="font-medium">{((quotationRevenue - metrics.operatingExpenses) / quotationRevenue * 100 || 0).toFixed(1)}%</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">ROE</span>
-              <span className="font-medium">15.2%</span>
+              <span className="text-sm text-muted-foreground">Win Rate</span>
+              <span className="font-medium">{((wonQuotations.length / quotations.length) * 100 || 0).toFixed(1)}%</span>
             </div>
           </CardContent>
         </Card>
@@ -298,16 +314,19 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Asset Turnover</span>
-              <span className="font-medium">1.4x</span>
+              <span className="text-sm text-muted-foreground">Avg Deal Size</span>
+              <span className="font-medium">{formatCurrency(quotations.length > 0 ? quotations.reduce((sum, q) => sum + q.clientQuote, 0) / quotations.length : 0)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Receivables Days</span>
-              <span className="font-medium">32 days</span>
+              <span className="text-sm text-muted-foreground">Collection Period</span>
+              <span className="font-medium">{overdueInvoices.length > 0 ? Math.round(overdueInvoices.reduce((sum, inv) => {
+                const daysDiff = (new Date().getTime() - new Date(inv.dueDate || inv.createdAt).getTime()) / (1000 * 3600 * 24);
+                return sum + daysDiff;
+              }, 0) / overdueInvoices.length) : 0} days</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Win Rate</span>
-              <span className="font-medium">{metrics.winRate?.toFixed(1)}%</span>
+              <span className="text-sm text-muted-foreground">Active Clients</span>
+              <span className="font-medium">{[...new Set([...quotations.map(q => q.clientName), ...invoices.map(i => i.clientName)])].length}</span>
             </div>
           </CardContent>
         </Card>
