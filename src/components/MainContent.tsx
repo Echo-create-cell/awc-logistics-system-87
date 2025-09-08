@@ -32,6 +32,8 @@ interface MainContentProps {
   onCreateUser: (user: Omit<User, 'id' | 'createdAt'>) => void;
   invoiceQuotation: Quotation | null;
   onInvoiceQuotationClear: () => void;
+  quotationFilter?: 'overdue' | 'pending' | 'all';
+  invoiceFilter?: 'overdue' | 'pending' | 'all';
 }
 
 const MainContent = ({
@@ -54,6 +56,8 @@ const MainContent = ({
   onCreateUser,
   invoiceQuotation,
   onInvoiceQuotationClear,
+  quotationFilter,
+  invoiceFilter,
 }: MainContentProps) => {
   const renderContent = () => {
     switch (activeTab) {
@@ -77,6 +81,7 @@ const MainContent = ({
             onEdit={user.role === 'partner' ? undefined : onEditQuotation}
             onApprove={user.role === 'admin' ? onApproveQuotation : undefined}
             onReject={user.role === 'admin' ? onRejectQuotation : undefined}
+            initialFilter={quotationFilter}
           />
         );
       case 'create':
@@ -98,6 +103,7 @@ const MainContent = ({
             quotations={quotations}
             invoiceQuotation={invoiceQuotation}
             onInvoiceQuotationClear={onInvoiceQuotationClear}
+            initialFilter={invoiceFilter}
           />
         );
       case 'users':

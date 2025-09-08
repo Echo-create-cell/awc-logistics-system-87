@@ -21,10 +21,11 @@ interface InvoicesViewProps {
   quotations: Quotation[];
   invoiceQuotation: Quotation | null;
   onInvoiceQuotationClear: () => void;
+  initialFilter?: 'overdue' | 'pending' | 'all';
 }
 
 const InvoicesView = ({
-  user, invoices, onSave, onEdit, onPrint, setActiveTab, quotations, invoiceQuotation, onInvoiceQuotationClear
+  user, invoices, onSave, onEdit, onPrint, setActiveTab, quotations, invoiceQuotation, onInvoiceQuotationClear, initialFilter = 'all'
 }: InvoicesViewProps) => {
   const [modalInvoice, setModalInvoice] = useState<InvoiceData | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -91,7 +92,25 @@ const InvoicesView = ({
     }
   };
 
-  const displayedInvoices = invoices;
+  // Filter invoices based on initial filter
+  const getFilteredInvoices = () => {
+    if (initialFilter === 'overdue') {
+      // Show invoices that are overdue
+      const today = new Date()
+      return invoices.filter(invoice => 
+        invoice.status !== 'paid' && 
+        invoice.dueDate && 
+        new Date(invoice.dueDate) < today
+      )
+    } else if (initialFilter === 'pending') {
+      // Show pending invoices
+      return invoices.filter(invoice => invoice.status === 'pending')
+    }
+    // Default: show all invoices
+    return invoices
+  }
+
+  const displayedInvoices = getFilteredInvoices()
 
   // Helper function to get quotation volume for an invoice
   const getQuotationVolume = (invoice: InvoiceData) => {

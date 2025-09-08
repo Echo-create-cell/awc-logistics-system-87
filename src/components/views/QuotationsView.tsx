@@ -18,10 +18,11 @@ interface QuotationsViewProps {
   onEdit?: (quotation: Quotation) => void;
   onApprove?: (id: string) => void;
   onReject?: (id: string, reason: string) => void;
+  initialFilter?: 'overdue' | 'pending' | 'all';
 }
 
 const QuotationsView = ({
-  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onApprove, onReject
+  user, quotations, setActiveTab, onInvoiceFromQuotation, onEdit, onApprove, onReject, initialFilter = 'all'
 }: QuotationsViewProps) => {
   const [modalQuotation, setModalQuotation] = useState<Quotation|null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -125,9 +126,24 @@ const QuotationsView = ({
     onView: (quotation: Quotation) => handleViewQuotation(quotation),
   });
 
-  // All roles can see quotations - RLS policies handle security
-  // Sales agents can see all approved quotations for invoice generation
-  const filteredQuotations = quotations;
+  // Filter quotations based on initial filter
+  const getFilteredQuotations = () => {
+    if (initialFilter === 'overdue') {
+      // Show quotations that are overdue (pending for more than 7 days)
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+      return quotations.filter(q => 
+        q.status === 'pending' && new Date(q.createdAt) < sevenDaysAgo
+      )
+    } else if (initialFilter === 'pending') {
+      // Show all pending quotations
+      return quotations.filter(q => q.status === 'pending')
+    }
+    // Default: show all quotations
+    return quotations
+  }
+
+  const filteredQuotations = getFilteredQuotations()
 
   return (
     <div className="space-y-6">

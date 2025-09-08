@@ -15,6 +15,8 @@ export const useAppData = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [users, setUsers] = useState<User[]>(mockUsers);
+  const [quotationFilter, setQuotationFilter] = useState<'overdue' | 'pending' | 'all'>('all');
+  const [invoiceFilter, setInvoiceFilter] = useState<'overdue' | 'pending' | 'all'>('all');
   
   // Use Supabase hooks for permanent storage
   const { 
@@ -212,6 +214,24 @@ export const useAppData = () => {
     if (tab !== 'invoices') {
       setInvoiceQuotation(null);
     }
+    // Reset filters when changing tabs
+    if (tab !== 'quotations') {
+      setQuotationFilter('all');
+    }
+    if (tab !== 'invoices') {
+      setInvoiceFilter('all');
+    }
+  };
+
+  // Navigation functions for notifications
+  const navigateToQuotations = (filter: 'overdue' | 'pending' | 'all' = 'all') => {
+    setQuotationFilter(filter);
+    setActiveTab('quotations');
+  };
+
+  const navigateToInvoices = (filter: 'overdue' | 'pending' | 'all' = 'all') => {
+    setInvoiceFilter(filter);
+    setActiveTab('invoices');
   };
 
   return {
@@ -221,6 +241,8 @@ export const useAppData = () => {
     invoices,
     printPreview,
     invoiceQuotation,
+    quotationFilter,
+    invoiceFilter,
     handleApproveQuotation,
     handleRejectQuotation,
     handleQuotationCreated,
@@ -236,5 +258,7 @@ export const useAppData = () => {
     setPrintPreview,
     setActiveTab,
     setInvoiceQuotation,
+    navigateToQuotations,
+    navigateToInvoices,
   };
 };

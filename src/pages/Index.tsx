@@ -14,7 +14,7 @@ import { PersistentToaster } from '@/components/ui/persistent-toast';
 import { SystemNotificationProvider } from '@/components/providers/SystemNotificationProvider';
 
 
-const IndexContent = ({ user, toast, activeTab, quotations, users, invoices, printPreview, invoiceQuotation, handleApproveQuotation, handleRejectQuotation, handleQuotationCreated, handleGenerateInvoiceFromQuotation, handleSaveInvoice, handleEditInvoice, handlePrintInvoice, handleEditQuotation, handleEditUser, handleDeleteUser, handleCreateUser, handleTabChange, setPrintPreview, setActiveTab, setInvoiceQuotation }: any) => {
+const IndexContent = ({ user, toast, activeTab, quotations, users, invoices, printPreview, invoiceQuotation, quotationFilter, invoiceFilter, handleApproveQuotation, handleRejectQuotation, handleQuotationCreated, handleGenerateInvoiceFromQuotation, handleSaveInvoice, handleEditInvoice, handlePrintInvoice, handleEditQuotation, handleEditUser, handleDeleteUser, handleCreateUser, handleTabChange, setPrintPreview, setActiveTab, setInvoiceQuotation, navigateToQuotations, navigateToInvoices }: any) => {
 
   return (
       <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
@@ -85,6 +85,8 @@ const IndexContent = ({ user, toast, activeTab, quotations, users, invoices, pri
               invoices={invoices}
               users={users}
               invoiceQuotation={invoiceQuotation}
+              quotationFilter={quotationFilter}
+              invoiceFilter={invoiceFilter}
               onApproveQuotation={handleApproveQuotation}
               onRejectQuotation={handleRejectQuotation}
               onEditQuotation={handleEditQuotation}
@@ -140,6 +142,8 @@ const Index = () => {
     invoices,
     printPreview,
     invoiceQuotation,
+    quotationFilter,
+    invoiceFilter,
     handleApproveQuotation,
     handleRejectQuotation,
     handleQuotationCreated,
@@ -155,6 +159,8 @@ const Index = () => {
     setPrintPreview,
     setActiveTab,
     setInvoiceQuotation,
+    navigateToQuotations,
+    navigateToInvoices,
   } = useAppData();
   
   if (!user) {
@@ -166,6 +172,10 @@ const Index = () => {
       quotations={quotations}
       invoices={invoices}
       users={users}
+      navigationCallbacks={{
+        onNavigateToQuotations: navigateToQuotations,
+        onNavigateToInvoices: navigateToInvoices
+      }}
     >
       <IndexContent 
         user={user}
@@ -176,6 +186,8 @@ const Index = () => {
         invoices={invoices}
         printPreview={printPreview}
         invoiceQuotation={invoiceQuotation}
+        quotationFilter={quotationFilter}
+        invoiceFilter={invoiceFilter}
         handleApproveQuotation={handleApproveQuotation}
         handleRejectQuotation={handleRejectQuotation}
         handleQuotationCreated={handleQuotationCreated}
@@ -191,6 +203,8 @@ const Index = () => {
         setPrintPreview={setPrintPreview}
         setActiveTab={setActiveTab}
         setInvoiceQuotation={setInvoiceQuotation}
+        navigateToQuotations={navigateToQuotations}
+        navigateToInvoices={navigateToInvoices}
       />
     </SystemNotificationProvider>
   );

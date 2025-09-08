@@ -17,7 +17,12 @@ export interface SystemNotificationContext {
   relatedType?: 'quotation' | 'invoice' | 'user' | 'system'
 }
 
-export const useSystemNotifications = () => {
+interface NavigationCallbacks {
+  onNavigateToQuotations?: (filter?: 'overdue' | 'pending' | 'all') => void
+  onNavigateToInvoices?: (filter?: 'overdue' | 'pending' | 'all') => void
+}
+
+export const useSystemNotifications = (navigationCallbacks?: NavigationCallbacks) => {
   if (!NOTIFICATIONS_ENABLED) {
     const noop = (..._args: any[]) => undefined as any
     return {
@@ -133,9 +138,30 @@ ${context?.additionalInfo ? `**Additional Info:** ${JSON.stringify(context.addit
       persistent: context?.priority === 'critical' || context?.actionRequired,
       actionRequired: context?.actionRequired,
       onAction: () => {
-        // Show detailed notification information
-        if (context?.relatedType && context?.relatedId) {
-          showDetailedNotification(newNotification, context)
+        // Navigate to appropriate page with filters when action required
+        if (context?.actionRequired && context?.relatedType && navigationCallbacks) {
+          if (context.relatedType === 'quotation') {
+            // Navigate to quotations with appropriate filter
+            if (title.includes('Overdue')) {
+              navigationCallbacks.onNavigateToQuotations?.('overdue')
+            } else if (title.includes('Created') || title.includes('Rejected')) {
+              navigationCallbacks.onNavigateToQuotations?.('pending')
+            } else {
+              navigationCallbacks.onNavigateToQuotations?.('all')
+            }
+          } else if (context.relatedType === 'invoice') {
+            // Navigate to invoices with appropriate filter  
+            if (title.includes('Overdue')) {
+              navigationCallbacks.onNavigateToInvoices?.('overdue')
+            } else {
+              navigationCallbacks.onNavigateToInvoices?.('all')
+            }
+          }
+        } else {
+          // Show detailed notification information for non-actionable items
+          if (context?.relatedType && context?.relatedId) {
+            showDetailedNotification(newNotification, context)
+          }
         }
       }
     })

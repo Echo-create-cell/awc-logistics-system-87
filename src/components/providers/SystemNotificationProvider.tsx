@@ -33,13 +33,18 @@ interface SystemNotificationProviderProps {
   quotations?: Quotation[];
   invoices?: InvoiceData[];
   users?: User[];
+  navigationCallbacks?: {
+    onNavigateToQuotations?: (filter?: 'overdue' | 'pending' | 'all') => void
+    onNavigateToInvoices?: (filter?: 'overdue' | 'pending' | 'all') => void
+  }
 }
 
 export const SystemNotificationProvider: React.FC<SystemNotificationProviderProps> = ({
   children,
   quotations = [],
   invoices = [],
-  users = []
+  users = [],
+  navigationCallbacks
 }) => {
   const { user } = useAuth();
   const notificationManager = useNotificationManager();
@@ -107,8 +112,16 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
       priority,
       category: 'quotation',
       onAction: () => {
-        // Could navigate to quotation details
-        console.log('Navigate to quotation:', quotation.id);
+        // Navigate to quotations with appropriate filter based on action
+        if (navigationCallbacks?.onNavigateToQuotations) {
+          if (action.toLowerCase() === 'overdue') {
+            navigationCallbacks.onNavigateToQuotations('overdue')
+          } else if (action.toLowerCase() === 'created' || action.toLowerCase() === 'rejected') {
+            navigationCallbacks.onNavigateToQuotations('pending')
+          } else {
+            navigationCallbacks.onNavigateToQuotations('all')
+          }
+        }
       }
     });
   };
@@ -155,7 +168,16 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
       priority,
       category: 'invoice',
       onAction: () => {
-        console.log('Navigate to invoice:', invoice.id);
+        // Navigate to invoices with appropriate filter based on action
+        if (navigationCallbacks?.onNavigateToInvoices) {
+          if (action.toLowerCase() === 'overdue') {
+            navigationCallbacks.onNavigateToInvoices('overdue')
+          } else if (action.toLowerCase() === 'created' || action.toLowerCase() === 'generated') {
+            navigationCallbacks.onNavigateToInvoices('pending')
+          } else {
+            navigationCallbacks.onNavigateToInvoices('all')
+          }
+        }
       }
     });
   };
@@ -259,6 +281,19 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
           `${overdueCount} quotations are overdue and require attention`,
           'critical'
         );
+        // Show actionable notification that navigates when clicked
+        showPersistentToast({
+          title: "⚠️ Overdue Quotations",
+          description: `${overdueCount} quotations require immediate attention`,
+          variant: 'warning',
+          persistent: true,
+          priority: 'critical',
+          category: 'quotations',
+          actionRequired: true,
+          onAction: () => {
+            navigationCallbacks?.onNavigateToQuotations?.('overdue')
+          }
+        });
       }
     }
   }, [quotations]);
@@ -277,6 +312,19 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
           `${overdueInvoices} invoices are overdue and require follow-up`,
           'critical'
         );
+        // Show actionable notification that navigates when clicked
+        showPersistentToast({
+          title: "🚨 Overdue Invoices",
+          description: `${overdueInvoices} invoices require payment follow-up`,
+          variant: 'error',
+          persistent: true,
+          priority: 'critical',
+          category: 'invoices',
+          actionRequired: true,
+          onAction: () => {
+            navigationCallbacks?.onNavigateToInvoices?.('overdue')
+          }
+        });
       }
     }
   }, [invoices]);
