@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { X, CheckCircle, AlertCircle, XCircle, Info, Clock, Zap, AlertTriangle } from "lucide-react"
 
 const systemNotificationVariants = cva(
-  "relative w-full rounded-lg border p-4 shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out bg-white text-foreground",
+  "relative w-full rounded-lg border p-4 shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out bg-popover text-popover-foreground",
   {
     variants: {
       variant: {
@@ -141,20 +141,20 @@ export interface SystemNotificationProps
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">
                 {title && (
-                  <h4 className="text-sm font-semibold leading-tight mb-1">
+                  <h4 className="text-sm font-semibold leading-tight mb-1 text-popover-foreground">
                     {title}
                   </h4>
                 )}
                 {description && (
-                  <p className="text-sm opacity-90 leading-relaxed">
+                  <p className="text-sm text-popover-foreground leading-relaxed">
                     {description}
                   </p>
                 )}
                 
                 {(category || timestamp) && (
-                  <div className="flex items-center gap-2 mt-2 text-xs opacity-75">
+                  <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                     {category && (
-                      <span className="px-2 py-1 rounded-md bg-black/10 dark:bg-white/10">
+                      <span className="px-2 py-1 rounded-md bg-muted text-muted-foreground">
                         {category}
                       </span>
                     )}
