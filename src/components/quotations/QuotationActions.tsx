@@ -63,15 +63,8 @@ const QuotationActions = ({
         variant: 'default' as const,
         icon: FileText
       });
-    } else {
-      // Show view invoice link if invoice already exists
-      buttons.push({
-        label: 'View Invoice',
-        onClick: () => onInvoiceFromQuotation?.(row),
-        variant: 'outline' as const,
-        icon: FileText
-      });
     }
+    // Note: "View Invoice" button removed - users can view invoices through the invoices section
   }
 
   // Only sales_director can edit quotations
