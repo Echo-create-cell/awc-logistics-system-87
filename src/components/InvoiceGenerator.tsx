@@ -199,10 +199,18 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Generate Invoice</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Quotation Volume: <span className="font-medium">{getTotalVolume().toLocaleString()} kg</span>
-          </p>
+          <h2 className="text-2xl font-bold">Generate Invoice from Approved Quotation</h2>
+          <div className="mt-2 space-y-1">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium">Quotation #{quotation.id}</span> • 
+              Volume: <span className="font-medium">{getTotalVolume().toLocaleString()} kg</span> • 
+              <span className="capitalize">{quotation.freightMode?.toLowerCase() || 'freight'}</span> • 
+              <span className="font-medium text-green-600">{quotation.status.toUpperCase()}</span>
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {quotation.requestType} service from {quotation.countryOfOrigin || 'Origin'} to {quotation.destination}
+            </p>
+          </div>
           {validationErrors.length > 0 && (
             <div className="flex items-center gap-2 mt-2 text-sm text-red-600">
               <AlertCircle size={16} />

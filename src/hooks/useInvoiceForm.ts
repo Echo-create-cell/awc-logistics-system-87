@@ -154,15 +154,15 @@ export const useInvoiceForm = (quotation: Quotation) => {
           setClientsForSelection(mockClients);
       }
     } else {
-      // Fallback for when client is not in the list
+      // Create a complete client profile from quotation data
       const newClient: Client = {
         id: `custom-${quotation.id}`,
         companyName: quotation.clientName || 'N/A',
         contactPerson: '',
         tinNumber: '',
-        address: quotation.doorDelivery || '',
-        city: '',
-        country: '',
+        address: quotation.doorDelivery || quotation.destination || '',
+        city: quotation.destination ? quotation.destination.split(',')[0] : '',
+        country: quotation.countryOfOrigin || '',
         phone: '',
         email: ''
       };
@@ -170,11 +170,21 @@ export const useInvoiceForm = (quotation: Quotation) => {
       setSelectedClient(newClient);
     }
 
+    // Set default delivery date (30 days from now) and validity date (60 days from now)
+    const deliveryDate = new Date();
+    deliveryDate.setDate(deliveryDate.getDate() + 30);
+    const validityDate = new Date();
+    validityDate.setDate(validityDate.getDate() + 60);
+
     setInvoiceData(prev => ({
       ...prev,
       destination: quotation.destination || '',
       doorDelivery: quotation.doorDelivery || '',
-      currency: quotation.currency || 'USD'
+      currency: quotation.currency || 'USD',
+      deliverDate: deliveryDate.toISOString().split('T')[0],
+      validityDate: validityDate.toISOString().split('T')[0],
+      paymentConditions: 'Net 30 days', // Standard payment terms
+      awbNumber: '', // To be filled during actual shipping
     }));
 
     const setItemsFromQuotationFallback = () => {
@@ -185,11 +195,11 @@ export const useInvoiceForm = (quotation: Quotation) => {
         {
           id: '1',
           quantityKg: quantity,
-          commodity: `Services as per Quotation ${quotation.id}`,
+          commodity: quotation.cargoDescription || `${quotation.freightMode || 'Freight'} Services - ${quotation.requestType || 'Standard'} (Quotation #${quotation.id})`,
           charges: [
             {
               id: '1.1',
-              description: '',
+              description: `${quotation.freightMode || 'Freight'} charges from ${quotation.countryOfOrigin || 'Origin'} to ${quotation.destination || 'Destination'}`,
               rate: rate,
             }
           ],
@@ -222,7 +232,7 @@ export const useInvoiceForm = (quotation: Quotation) => {
           const clientRate = commodity.clientRate !== undefined ? commodity.clientRate : (commodity.rate || 0);
           charges = [{
             id: uuidv4(),
-            description: `Charge for ${commodity.name || 'N/A'}`,
+            description: `${quotation.freightMode || 'Freight'} charges for ${commodity.name || 'commodity'} - ${quotation.requestType || 'Standard'} service`,
             rate: clientRate,
           }];
           itemTotal = (commodity.quantityKg || 0) * clientRate;

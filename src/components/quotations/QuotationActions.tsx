@@ -54,13 +54,21 @@ const QuotationActions = ({
     });
   }
 
-  // Invoice generation for sales roles
+  // Invoice generation for sales roles - only for won quotations
   if ((user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won') {
     if (!row.linkedInvoiceIds || row.linkedInvoiceIds.length === 0) {
       buttons.push({
         label: 'Generate Invoice',
         onClick: () => onInvoiceFromQuotation?.(row),
         variant: 'default' as const,
+        icon: FileText
+      });
+    } else {
+      // Show view invoice link if invoice already exists
+      buttons.push({
+        label: 'View Invoice',
+        onClick: () => onInvoiceFromQuotation?.(row),
+        variant: 'outline' as const,
         icon: FileText
       });
     }
