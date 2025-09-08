@@ -29,6 +29,7 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
           { id: 'quotations', label: 'Quotation Approvals', icon: FileText },
           { id: 'invoices', label: 'All Invoices', icon: DollarSign },
           { id: 'documents', label: 'Documents', icon: FileText },
+          { id: 'finance', label: 'Finance & Accounting', icon: BarChart3 },
           { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
           { id: 'settings', label: 'Settings', icon: Settings },
           { id: 'logout', label: 'Logout', icon: LogOut },
@@ -52,6 +53,7 @@ const Sidebar = ({ userRole, activeTab, onTabChange }: SidebarProps) => {
       case 'finance_officer':
         return [
           { id: 'dashboard', label: 'Dashboard', icon: Home },
+          { id: 'finance', label: 'Finance & Accounting', icon: BarChart3 },
           { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
           { id: 'invoices', label: 'Invoice Management', icon: DollarSign },
           { id: 'logout', label: 'Logout', icon: LogOut },

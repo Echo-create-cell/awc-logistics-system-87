@@ -9,6 +9,7 @@ import ReportsView from './views/ReportsView';
 import SettingsView from './views/SettingsView';
 import DocumentsView from './views/DocumentsView';
 import UserActivityView from './views/UserActivityView';
+import FinanceAccountingView from './finance/FinanceAccountingView';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 
@@ -132,10 +133,31 @@ const MainContent = ({
             </div>
           );
         }
+      case 'finance':
+        // Professional Finance & Accounting Dashboard for finance officers and admins
+        if (user.role === 'finance_officer' || user.role === 'admin') {
+          return (
+            <FinanceAccountingView 
+              user={user} 
+              quotations={quotations} 
+              invoices={invoices} 
+              users={users}
+            />
+          );
+        } else {
+          return (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <h2 className="heading-sm">Access Restricted</h2>
+                <p className="text-body-sm">Only Finance Officers and Administrators can access the accounting system.</p>
+              </div>
+            </div>
+          );
+        }
       case 'reports':
         // Allow finance_officer, sales_director, admin, and partner to access reports
         if (user.role === 'finance_officer' || user.role === 'sales_director' || user.role === 'admin' || user.role === 'partner') {
-          return <ReportsView user={user} quotations={quotations} invoices={invoices} />;
+          return <ReportsView user={user} quotations={quotations} invoices={invoices} users={users} />;
         } else {
           return (
             <div className="flex items-center justify-center h-64">

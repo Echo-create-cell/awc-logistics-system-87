@@ -113,24 +113,24 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
 
       {/* Quick Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-100 border-green-200">
+        <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2 text-green-700">
+            <CardTitle className="text-sm font-medium flex items-center gap-2 text-emerald-700">
               <DollarSign className="h-4 w-4" />
               Net Income
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-700">
+            <div className="text-2xl font-bold text-emerald-700">
               ${accountingMetrics.netIncome.toLocaleString()}
             </div>
-            <p className="text-xs text-green-600 mt-1">
+            <p className="text-xs text-emerald-600 mt-1">
               Profit margin: {accountingMetrics.profitMargin.toFixed(1)}%
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2 text-blue-700">
               <Building className="h-4 w-4" />
@@ -147,7 +147,7 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2 text-purple-700">
               <TrendingUp className="h-4 w-4" />
@@ -164,18 +164,18 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2 text-orange-700">
+            <CardTitle className="text-sm font-medium flex items-center gap-2 text-amber-700">
               <PieChart className="h-4 w-4" />
               Debt-to-Equity
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-700">
+            <div className="text-2xl font-bold text-amber-700">
               {accountingMetrics.debtToEquity.toFixed(2)}
             </div>
-            <p className="text-xs text-orange-600 mt-1">
+            <p className="text-xs text-amber-600 mt-1">
               Leverage ratio
             </p>
           </CardContent>
