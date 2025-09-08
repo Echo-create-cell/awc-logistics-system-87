@@ -26,6 +26,7 @@ import TaxReporting from './TaxReporting';
 import AuditTrail from './AuditTrail';
 import CashFlowManagement from './CashFlowManagement';
 import FinancialAnalytics from './FinancialAnalytics';
+import FinanceNavigationPanel from './FinanceNavigationPanel';
 import { generateAccountingReport, generateTaxReport, generateAuditReport } from './AccountingReportUtils';
 import { 
   operationalExpenses, 
@@ -124,7 +125,7 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
 
   return (
     <div className="space-y-6">
-      {/* Header Section */}
+      {/* Header Section with Navigation Links */}
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
@@ -135,19 +136,43 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
             Professional financial accounting, reporting, and analysis dashboard for comprehensive business management.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExportAccountingReport} className="flex items-center gap-2">
-            <FileBarChart size={16} />
-            Accounting Report
-          </Button>
-          <Button variant="outline" onClick={handleExportTaxReport} className="flex items-center gap-2">
-            <Receipt size={16} />
-            Tax Report
-          </Button>
-          <Button variant="outline" onClick={handleExportAuditReport} className="flex items-center gap-2">
-            <Users size={16} />
-            Audit Trail
-          </Button>
+        <div className="flex flex-col gap-3">
+          {/* Navigation Links for Cross-Dashboard Access */}
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.open('/?view=reports', '_blank')}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 border-blue-200"
+            >
+              <Building size={14} />
+              Admin Dashboard
+            </Button>
+            <Button 
+              variant="outline"
+              size="sm" 
+              onClick={() => window.open('/?view=dashboard', '_blank')}
+              className="flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 text-emerald-700 border-emerald-200"
+            >
+              <Users size={14} />
+              Partner View
+            </Button>
+          </div>
+          {/* Export Options */}
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleExportAccountingReport} className="flex items-center gap-2">
+              <FileBarChart size={16} />
+              Accounting Report
+            </Button>
+            <Button variant="outline" onClick={handleExportTaxReport} className="flex items-center gap-2">
+              <Receipt size={16} />
+              Tax Report
+            </Button>
+            <Button variant="outline" onClick={handleExportAuditReport} className="flex items-center gap-2">
+              <Users size={16} />
+              Audit Trail
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -221,6 +246,12 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
           </CardContent>
         </Card>
       </div>
+
+      {/* Cross-Platform Navigation Panel */}
+      <FinanceNavigationPanel 
+        userRole={user.role} 
+        onNavigate={(view) => console.log(`Navigating to: ${view}`)}
+      />
 
       {/* Main Accounting Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

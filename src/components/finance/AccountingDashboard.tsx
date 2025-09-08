@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { generateCSVExport } from '@/components/reports/ReportExportUtils';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -16,7 +18,10 @@ import {
   PieChart,
   BarChart3,
   AlertTriangle,
-  Calendar
+  Calendar,
+  Download,
+  Printer,
+  FileSpreadsheet
 } from 'lucide-react';
 import { operationalExpenses, pendingClientPayments, expenseSummary, USD_TO_RWF_RATE } from '@/data/operationalExpenses';
 import { User, Quotation } from '@/types';
@@ -33,6 +38,12 @@ interface AccountingDashboardProps {
 
 const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }: AccountingDashboardProps) => {
   const formatCurrency = (amount: number) => `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+  
+  // Excel/CSV export functionality
+  const handleExcelExport = () => {
+    const allData = [...quotations, ...invoices];
+    generateCSVExport('financial', quotations, allData);
+  };
   
   // Real operational alerts based on actual September 2025 data
   const overdueExpenses = operationalExpenses.filter(expense => expense.status === 'overdue');
@@ -101,6 +112,26 @@ const AccountingDashboard = ({ metrics, invoices, quotations, reportData, user }
 
   return (
     <div className="space-y-6">
+      {/* Action Buttons with Excel Export */}
+      <div className="flex justify-end gap-3 mb-6">
+        <Button 
+          variant="outline" 
+          onClick={handleExcelExport}
+          className="flex items-center gap-2 bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 text-green-700 border-green-200"
+        >
+          <FileSpreadsheet size={16} />
+          Export to Excel
+        </Button>
+        <Button variant="outline" className="flex items-center gap-2">
+          <Download size={16} />
+          Export PDF
+        </Button>
+        <Button variant="outline" className="flex items-center gap-2">
+          <Printer size={16} />
+          Print Report
+        </Button>
+      </div>
+
       {/* Critical Alerts */}
       {criticalAlerts.length > 0 && (
         <div className="mb-6">
