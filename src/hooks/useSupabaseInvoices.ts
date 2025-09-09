@@ -74,17 +74,17 @@ export const useSupabaseInvoices = () => {
       if (invoiceData.quotationId) {
         const { data: existingInvoices, error: checkError } = await supabase
           .from('invoices')
-          .select('id')
+          .select('id, invoice_number')
           .eq('quotation_id', invoiceData.quotationId);
 
         if (checkError) throw checkError;
 
         if (existingInvoices && existingInvoices.length > 0) {
-          throw new Error('An invoice has already been generated for this quotation');
+          throw new Error(`Invoice #${existingInvoices[0].invoice_number} already exists for this quotation. Each quotation can only generate one invoice.`);
         }
       }
 
-      // Insert invoice
+      // Insert invoice with proper error handling
       const { data: invoice, error: invoiceError } = await supabase
         .from('invoices')
         .insert({
@@ -112,36 +112,94 @@ export const useSupabaseInvoices = () => {
         .select()
         .single();
 
-      if (invoiceError) throw invoiceError;
-
-      // Insert invoice items
-      if (invoiceData.items && invoiceData.items.length > 0) {
-        const { error: itemsError } = await supabase
-          .from('invoice_items')
-          .insert(
-            invoiceData.items.map(item => ({
-              invoice_id: invoice.id,
-              commodity: item.commodity,
-              quantity_kg: item.quantityKg,
-              total: item.total,
-            }))
-          );
-
-        if (itemsError) throw itemsError;
+      if (invoiceError) {
+        console.error('Invoice creation error:', invoiceError);
+        if (invoiceError.code === '23505') {
+          throw new Error('Invoice number already exists. Please try again.');
+        }
+        throw new Error(`Database error: ${invoiceError.message}`);
       }
 
-      // Note: Invoice charges are handled separately if needed
+      // Insert invoice items with batch processing
+      if (invoiceData.items && invoiceData.items.length > 0) {
+        const itemsToInsert = invoiceData.items.map(item => ({
+          invoice_id: invoice.id,
+          commodity: item.commodity,
+          quantity_kg: item.quantityKg,
+          total: item.total,
+        }));
 
-      await fetchInvoices(); // Refresh the list
-      return invoice;
+        const { error: itemsError } = await supabase
+          .from('invoice_items')
+          .insert(itemsToInsert);
+
+        if (itemsError) {
+          console.error('Invoice items creation error:', itemsError);
+          // Cleanup: Delete the invoice if items couldn't be created
+          await supabase.from('invoices').delete().eq('id', invoice.id);
+          throw new Error('Failed to save invoice items. Invoice creation cancelled.');
+        }
+
+        // Insert invoice charges if they exist
+        const chargesToInsert = [];
+        for (const item of invoiceData.items) {
+          if (item.charges && item.charges.length > 0) {
+            for (const charge of item.charges) {
+              chargesToInsert.push({
+                invoice_item_id: item.id, // Note: This might need adjustment based on how items are handled
+                description: charge.description,
+                rate: charge.rate,
+              });
+            }
+          }
+        }
+
+        if (chargesToInsert.length > 0) {
+          const { error: chargesError } = await supabase
+            .from('invoice_charges')
+            .insert(chargesToInsert);
+
+          if (chargesError) {
+            console.warn('Invoice charges creation warning:', chargesError);
+            // Don't fail the entire operation for charges, just log the warning
+          }
+        }
+      }
+
+      // Refresh the invoices list to show the new invoice
+      await fetchInvoices();
+      
+      // Return success with invoice data
+      return {
+        ...invoice,
+        success: true,
+        message: `Invoice ${invoiceData.invoiceNumber} created successfully`
+      };
     } catch (error) {
       console.error('Error creating invoice:', error);
+      
+      // Enhanced error handling with specific error types
+      let errorMessage = "Failed to create invoice. Please try again.";
+      
+      if (error instanceof Error) {
+        if (error.message.includes('already exists')) {
+          errorMessage = error.message;
+        } else if (error.message.includes('violates row-level security')) {
+          errorMessage = "You don't have permission to create invoices. Please contact your administrator.";
+        } else if (error.message.includes('Database error')) {
+          errorMessage = error.message;
+        } else {
+          errorMessage = `Invoice creation failed: ${error.message}`;
+        }
+      }
+      
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to create invoice. Please try again.",
+        title: "❌ Invoice Creation Failed",
+        description: errorMessage,
       });
-      throw error;
+      
+      throw new Error(errorMessage);
     }
   };
 

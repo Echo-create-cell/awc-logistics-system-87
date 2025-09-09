@@ -127,21 +127,36 @@ export const useAppData = () => {
 
   const handleSaveInvoice = async (invoice: InvoiceData) => {
     try {
-      // Check if an invoice already exists for this quotation
+      // Professional validation and pre-checks
       if (invoice.quotationId) {
         const quotation = quotations.find(q => q.id === invoice.quotationId);
         if (quotation?.linkedInvoiceIds && quotation.linkedInvoiceIds.length > 0) {
-          throw new Error('An invoice has already been generated for this quotation');
+          throw new Error('An invoice has already been generated for this quotation. Each quotation can only generate one invoice.');
         }
       }
 
-      await createInvoice(invoice);
+      // Professional loading toast
+      toast({
+        title: "🔄 Processing Invoice",
+        description: "Creating invoice and saving to database...",
+        className: "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200",
+      });
+
+      const result = await createInvoice(invoice);
 
       if (invoice.quotationId) {
         const quotation = quotations.find(q => q.id === invoice.quotationId);
         
         if (quotation) {
+          // Enhanced notification with invoice details
           notifyInvoiceGenerated(quotation, invoice, { user });
+          
+          // Professional system notification
+          toast({
+            title: "🎯 Quotation Converted",
+            description: `Quotation #${quotation.id} successfully converted to Invoice #${invoice.invoiceNumber}`,
+            className: "bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200",
+          });
         }
         
         // Refresh quotations to update linkedInvoiceIds
@@ -151,11 +166,32 @@ export const useAppData = () => {
         notificationManager.notifyInvoiceCreated(invoice, { user });
       }
       
-      // Clear the invoice quotation after saving
+      // Professional completion - switch to invoices view with success state
       setInvoiceQuotation(null);
+      setActiveTab('invoices');
+      
+      // Final success notification
+      setTimeout(() => {
+        toast({
+          title: "✨ Operation Completed",
+          description: "Invoice has been saved and is now available in your invoices list.",
+          className: "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200",
+        });
+      }, 500);
+      
     } catch (error) {
       console.error('Failed to save invoice:', error);
-      // Re-throw to let the UI handle the error display
+      
+      // Enhanced error reporting for professional handling
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred while saving the invoice.';
+      
+      toast({
+        variant: "destructive",
+        title: "💥 Invoice Save Failed",
+        description: `${errorMessage}. Please review the form and try again, or contact support if the issue persists.`,
+      });
+      
+      // Re-throw to let the UI handle additional error display
       throw error;
     }
   };

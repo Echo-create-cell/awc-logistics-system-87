@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Printer, Save, AlertCircle } from 'lucide-react';
+import { Printer, Save, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { InvoiceData } from '@/types/invoice';
 import { Quotation } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,6 +9,7 @@ import ClientInformation from './invoice/ClientInformation';
 import InvoiceDetails from './invoice/InvoiceDetails';
 import InvoiceItems from './invoice/InvoiceItems';
 import { useInvoiceForm } from '@/hooks/useInvoiceForm';
+import { ProfessionalSaveButton } from '@/components/ui/professional-save-button';
 
 interface InvoiceGeneratorProps {
   quotation: Quotation;
@@ -146,21 +147,47 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
     return invoice;
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleSave = async () => {
     const invoice = getInvoicePayload();
     if (invoice) {
       try {
+        setIsSaving(true);
         await onSave?.(invoice);
+        
+        // Professional success notification with animation
         toast({
-          title: "Invoice Saved",
-          description: `Invoice ${invoice.invoiceNumber} has been created successfully with all required information.`,
+          title: "✅ Invoice Created Successfully",
+          description: (
+            <div className="space-y-2">
+              <p className="font-medium text-green-800">
+                Invoice #{invoice.invoiceNumber} has been generated
+              </p>
+              <div className="text-sm text-green-700">
+                <p>• Client: {invoice.clientName}</p>
+                <p>• Amount: {invoice.currency} {invoice.totalAmount.toLocaleString()}</p>
+                <p>• Due Date: {new Date(invoice.dueDate).toLocaleDateString()}</p>
+              </div>
+            </div>
+          ),
+          className: "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200",
         });
       } catch (error) {
         toast({
           variant: "destructive",
-          title: "Failed to Save Invoice",
-          description: error instanceof Error ? error.message : "An error occurred while saving the invoice.",
+          title: "❌ Invoice Save Failed",
+          description: (
+            <div className="space-y-2">
+              <p className="font-medium">
+                {error instanceof Error ? error.message : "An unexpected error occurred while saving the invoice."}
+              </p>
+              <p className="text-sm opacity-90">Please check all required fields and try again.</p>
+            </div>
+          ),
         });
+      } finally {
+        setIsSaving(false);
       }
     }
   };
@@ -197,42 +224,68 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">Generate Invoice from Approved Quotation</h2>
-          <div className="mt-2 space-y-1">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-medium">Quotation #{quotation.id}</span> • 
-              Volume: <span className="font-medium">{getTotalVolume().toLocaleString()} kg</span> • 
-              <span className="capitalize">{quotation.freightMode?.toLowerCase() || 'freight'}</span> • 
-              <span className="font-medium text-green-600">{quotation.status.toUpperCase()}</span>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {quotation.requestType} service from {quotation.countryOfOrigin || 'Origin'} to {quotation.destination}
+      <div className="flex justify-between items-start">
+        <div className="space-y-2">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Generate Professional Invoice
+          </h2>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+              <CheckCircle size={18} className="text-blue-600 flex-shrink-0" />
+              <div className="text-sm">
+                <p className="font-medium text-blue-900">From Approved Quotation #{quotation.id}</p>
+                <p className="text-blue-700">
+                  Volume: <span className="font-medium">{getTotalVolume().toLocaleString()} kg</span> • 
+                  <span className="capitalize ml-2">{quotation.freightMode?.toLowerCase() || 'freight'}</span> • 
+                  <span className="font-medium text-green-600 ml-2">{quotation.status.toUpperCase()}</span>
+                </p>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground flex items-center gap-2">
+              <span className="font-medium">Service Route:</span>
+              {quotation.requestType} from {quotation.countryOfOrigin || 'Origin'} to {quotation.destination}
             </p>
           </div>
           {validationErrors.length > 0 && (
-            <div className="flex items-center gap-2 mt-2 text-sm text-red-600">
-              <AlertCircle size={16} />
-              <span>{validationErrors.length} required field{validationErrors.length > 1 ? 's' : ''} missing</span>
+            <div className="flex items-start gap-3 mt-3 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
+              <AlertCircle size={18} className="text-amber-600 mt-0.5 flex-shrink-0" />
+              <div className="space-y-1">
+                <p className="font-medium text-amber-800">Complete Required Fields</p>
+                <div className="text-sm text-amber-700">
+                  <p>{validationErrors.length} field{validationErrors.length > 1 ? 's' : ''} need{validationErrors.length === 1 ? 's' : ''} attention:</p>
+                  <ul className="list-disc list-inside mt-1 space-y-0.5">
+                    {validationErrors.slice(0, 3).map((error, index) => (
+                      <li key={index} className="text-xs">{error}</li>
+                    ))}
+                    {validationErrors.length > 3 && (
+                      <li className="text-xs text-amber-600">+ {validationErrors.length - 3} more</li>
+                    )}
+                  </ul>
+                </div>
+              </div>
             </div>
           )}
         </div>
-        <div className="flex space-x-2">
-          <Button 
-            onClick={handleSave} 
-            className="bg-green-600 hover:bg-green-700"
+        <div className="flex space-x-3">
+          <ProfessionalSaveButton
+            isLoading={isSaving}
             disabled={validationErrors.length > 0}
+            onClick={handleSave}
+            variant="success"
+            loadingText="Creating Invoice..."
+            className="min-w-[160px]"
           >
-            <Save size={16} className="mr-2" />
-            Save Invoice
-          </Button>
+            Create Invoice
+          </ProfessionalSaveButton>
+          
           <Button 
             onClick={handlePrint} 
             variant="outline"
+            className="border-2 border-blue-300 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 font-medium px-6 py-3"
             disabled={validationErrors.length > 0}
+            size="lg"
           >
-            <Printer size={16} className="mr-2" />
+            <Printer size={18} className="mr-2" />
             Print Preview
           </Button>
         </div>
