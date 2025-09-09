@@ -18,7 +18,8 @@ import {
   FileBarChart,
   Users,
   AlertTriangle,
-  CheckCircle2
+  CheckCircle2,
+  Crown
 } from 'lucide-react';
 import FinancialStatements from './FinancialStatements';
 import AccountingDashboard from './AccountingDashboard';
@@ -28,6 +29,8 @@ import AuditTrail from './AuditTrail';
 import CashFlowManagement from './CashFlowManagement';
 import FinancialAnalytics from './FinancialAnalytics';
 import FinanceNavigationPanel from './FinanceNavigationPanel';
+import ProfessionalSystemNavigation from '@/components/navigation/ProfessionalSystemNavigation';
+import ProfessionalPDFReports from '@/components/reports/ProfessionalPDFReports';
 import { generateAccountingReport, generateTaxReport, generateAuditReport } from './AccountingReportUtils';
 import { 
   operationalExpenses, 
@@ -254,9 +257,15 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
         onNavigate={(view) => console.log(`Navigating to: ${view}`)}
       />
 
+      {/* Professional System Navigation */}
+      <ProfessionalSystemNavigation 
+        currentUser={user}
+        onNavigate={(view) => console.log(`Professional Navigation to: ${view}`)}
+      />
+
       {/* Main Accounting Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             Dashboard
@@ -284,6 +293,10 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
           <TabsTrigger value="audit" className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4" />
             Audit Trail
+          </TabsTrigger>
+          <TabsTrigger value="professional" className="flex items-center gap-2">
+            <Crown className="h-4 w-4" />
+            Professional Reports
           </TabsTrigger>
         </TabsList>
 
@@ -350,6 +363,15 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
             users={users}
             reportPeriod={reportPeriod}
             user={user}
+          />
+        </TabsContent>
+
+        <TabsContent value="professional" className="mt-6">
+          <ProfessionalPDFReports 
+            user={user}
+            quotations={quotations}
+            invoices={invoices}
+            users={users}
           />
         </TabsContent>
       </Tabs>
