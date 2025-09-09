@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import FinancialStatements from './FinancialStatements';
 import AccountingDashboard from './AccountingDashboard';
+import FinancialAnalysisReport from './FinancialAnalysisReport';
 import TaxReporting from './TaxReporting';
 import AuditTrail from './AuditTrail';
 import CashFlowManagement from './CashFlowManagement';
@@ -255,10 +256,14 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
 
       {/* Main Accounting Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             Dashboard
+          </TabsTrigger>
+          <TabsTrigger value="analysis" className="flex items-center gap-2">
+            <Calculator className="h-4 w-4" />
+            Analysis Report
           </TabsTrigger>
           <TabsTrigger value="statements" className="flex items-center gap-2">
             <FileBarChart className="h-4 w-4" />
@@ -290,6 +295,10 @@ const FinanceAccountingView = ({ user, quotations, invoices, users = [] }: Finan
             reportData={reportData}
             user={user}
           />
+        </TabsContent>
+
+        <TabsContent value="analysis" className="mt-6">
+          <FinancialAnalysisReport />
         </TabsContent>
 
         <TabsContent value="statements" className="mt-6">
