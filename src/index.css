@@ -145,7 +145,65 @@
   }
 }
 
-@layer components {
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom animations */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Enhanced button interactions */
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
+
+.group:hover .group-hover\:rotate-6 {
+  transform: rotate(6deg);
+}
+
+.group:hover .group-hover\:translate-x-1 {
+  transform: translateX(0.25rem);
+}
+
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, [role="button"] {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible, 
+a:focus-visible, 
+[role="button"]:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Enhanced hover effects */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
   /* Interactive Elements */
   .smooth-transition {
     @apply transition-all duration-300;

@@ -9,7 +9,8 @@ import ClientInformation from './invoice/ClientInformation';
 import InvoiceDetails from './invoice/InvoiceDetails';
 import InvoiceItems from './invoice/InvoiceItems';
 import { useInvoiceForm } from '@/hooks/useInvoiceForm';
-import { ProfessionalSaveButton } from '@/components/ui/professional-save-button';
+import { ProfessionalSaveButton, SaveSuccessNotification } from '@/components/ui/professional-save-button';
+import { ProfessionalLoading } from '@/components/ui/professional-loading';
 
 interface InvoiceGeneratorProps {
   quotation: Quotation;
@@ -148,6 +149,8 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
   };
 
   const [isSaving, setIsSaving] = useState(false);
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [savedInvoiceId, setSavedInvoiceId] = useState<string | null>(null);
 
   const handleSave = async () => {
     const invoice = getInvoicePayload();
@@ -157,6 +160,15 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
         await onSave?.(invoice);
         
         // Professional success notification with animation
+        // Show professional success notification
+        setSavedInvoiceId(invoice.invoiceNumber);
+        setShowSuccessNotification(true);
+        
+        // Auto-dismiss after 8 seconds
+        setTimeout(() => {
+          setShowSuccessNotification(false);
+        }, 8000);
+
         toast({
           title: "✅ Invoice Created Successfully",
           description: (
@@ -190,6 +202,27 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
         setIsSaving(false);
       }
     }
+  };
+
+  const handleViewInvoices = () => {
+    setShowSuccessNotification(false);
+    toast({
+      title: "Navigation",
+      description: "Redirecting to invoices list...",
+    });
+  };
+
+  const handlePrintInvoice = () => {
+    handlePrint();
+    setShowSuccessNotification(false);
+  };
+
+  const handleCreateAnother = () => {
+    setShowSuccessNotification(false);
+    toast({
+      title: "Ready",
+      description: "Ready to create another invoice",
+    });
   };
 
   const handlePrint = () => {
@@ -273,7 +306,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
             onClick={handleSave}
             variant="success"
             loadingText="Creating Invoice..."
-            className="min-w-[160px]"
+            className="min-w-[180px] group"
           >
             Create Invoice
           </ProfessionalSaveButton>
@@ -281,11 +314,11 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
           <Button 
             onClick={handlePrint} 
             variant="outline"
-            className="border-2 border-blue-300 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 font-medium px-6 py-3"
+            className="border-2 border-blue-300 hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] font-semibold px-8 py-4 text-lg group"
             disabled={validationErrors.length > 0}
             size="lg"
           >
-            <Printer size={18} className="mr-2" />
+            <Printer size={20} className="mr-3 transition-transform duration-200 group-hover:scale-110" />
             Print Preview
           </Button>
         </div>
@@ -318,6 +351,23 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
         onAddCharge={addCharge}
         onRemoveCharge={removeCharge}
         onUpdateCharge={updateCharge}
+      />
+
+      <ProfessionalLoading 
+        isLoading={isSaving} 
+        step="Saving invoice data and generating document..."
+      />
+
+      <SaveSuccessNotification
+        isVisible={showSuccessNotification}
+        invoiceNumber={savedInvoiceId || "INV-000"}
+        clientName={selectedClient.companyName}
+        amount={total}
+        currency="EUR"
+        onViewInvoices={handleViewInvoices}
+        onPrintInvoice={handlePrintInvoice}
+        onCreateAnother={handleCreateAnother}
+        onDismiss={() => setShowSuccessNotification(false)}
       />
     </div>
   );
