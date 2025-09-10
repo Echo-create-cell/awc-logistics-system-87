@@ -141,7 +141,8 @@ const InvoicesView = ({
   };
 
   // If user is creating invoice from a quotation, show InvoiceGenerator pre-filled
-  if ((user.role === 'sales_director' || user.role === 'sales_agent') && invoiceQuotation) {
+  // All roles except partners can generate invoices from approved quotations
+  if (user.role !== 'partner' && invoiceQuotation) {
     return (
       <div className="space-y-4">
         <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
