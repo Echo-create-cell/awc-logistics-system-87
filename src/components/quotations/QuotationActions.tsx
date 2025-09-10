@@ -54,8 +54,8 @@ const QuotationActions = ({
     });
   }
 
-  // Invoice generation for sales roles - only for won quotations
-  if ((user.role === 'sales_director' || user.role === 'sales_agent') && row.status === 'won') {
+  // Invoice generation for all roles except partners - only for won quotations
+  if (user.role !== 'partner' && row.status === 'won' && onInvoiceFromQuotation) {
     if (!row.linkedInvoiceIds || row.linkedInvoiceIds.length === 0) {
       buttons.push({
         label: 'Generate Invoice',
@@ -80,7 +80,7 @@ const QuotationActions = ({
   return (
     <div className="flex items-center gap-2">
       {/* Show badge if invoice is already generated */}
-      {(user.role === 'sales_director' || user.role === 'sales_agent') && 
+      {user.role !== 'partner' && 
        row.status === 'won' && 
        row.linkedInvoiceIds && 
        row.linkedInvoiceIds.length > 0 && (
