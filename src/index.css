@@ -149,7 +149,6 @@
   .text-balance {
     text-wrap: balance;
   }
-}
 
 /* Custom animations */
 @keyframes shimmer {
@@ -338,3 +337,4 @@ a:focus-visible,
   .smooth-entrance {
     @apply animate-fade-in;
   }
+}
