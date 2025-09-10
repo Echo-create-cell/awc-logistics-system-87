@@ -338,4 +338,3 @@ a:focus-visible,
   .smooth-entrance {
     @apply animate-fade-in;
   }
-}
