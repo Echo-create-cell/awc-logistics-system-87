@@ -84,6 +84,11 @@ export const useSupabaseInvoices = () => {
         }
       }
 
+      // Get current user ID for created_by field
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw new Error('Authentication required to create invoices');
+      if (!user) throw new Error('User not authenticated');
+
       // Insert invoice with proper error handling
       const { data: invoice, error: invoiceError } = await supabase
         .from('invoices')
@@ -108,6 +113,7 @@ export const useSupabaseInvoices = () => {
           deliver_date: invoiceData.deliverDate,
           validity_date: invoiceData.validityDate,
           status: invoiceData.status,
+          created_by: user.id, // Add the missing created_by field
         })
         .select()
         .single();
