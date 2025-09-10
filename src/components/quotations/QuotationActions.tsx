@@ -55,8 +55,8 @@ const QuotationActions = ({
   }
 
   // Invoice generation access for all roles except partners
-  // All agents, sales directors, finance officers, and admins can generate invoices from approved (won) quotations
-  // regardless of who originally created the quotation
+  // ALL NON-PARTNER ROLES: admin, sales_director, sales_agent, finance_officer can generate invoices
+  // from approved (won) quotations regardless of who originally created the quotation
   if (user.role !== 'partner' && row.status === 'won' && onInvoiceFromQuotation) {
     if (!row.linkedInvoiceIds || row.linkedInvoiceIds.length === 0) {
       buttons.push({
