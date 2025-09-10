@@ -19,8 +19,32 @@ interface InvoiceGeneratorProps {
 }
 
 const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps) => {
+  console.log('🧾 InvoiceGenerator: Component rendering with quotation:', quotation);
   const { user } = useAuth();
   const { toast } = useToast();
+  
+  // Debug logging for user and quotation
+  console.log('🧾 InvoiceGenerator: User:', user);
+  console.log('🧾 InvoiceGenerator: Quotation details:', {
+    id: quotation?.id,
+    clientName: quotation?.clientName,
+    status: quotation?.status
+  });
+
+  // Safety check for quotation parameter
+  if (!quotation) {
+    console.error('🚨 InvoiceGenerator: No quotation provided');
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center space-y-4">
+          <div className="text-red-600">
+            <h3 className="text-lg font-semibold">Invoice Generation Error</h3>
+            <p className="text-sm">No quotation data available for invoice generation.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   const {
     clientsForSelection,
@@ -38,6 +62,11 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
     updateCharge,
     calculateTotals,
   } = useInvoiceForm(quotation);
+  
+  // Debug logging for invoice form data
+  console.log('🧾 InvoiceGenerator: selectedClient:', selectedClient);
+  console.log('🧾 InvoiceGenerator: items:', items);
+  console.log('🧾 InvoiceGenerator: invoiceData:', invoiceData);
 
   const generateInvoiceNumber = () => {
     const date = new Date();
@@ -361,7 +390,7 @@ const InvoiceGenerator = ({ quotation, onSave, onPrint }: InvoiceGeneratorProps)
       <SaveSuccessNotification
         isVisible={showSuccessNotification}
         invoiceNumber={savedInvoiceId || "INV-000"}
-        clientName={selectedClient.companyName}
+        clientName={selectedClient?.companyName || 'Unknown Client'}
         amount={total}
         currency="EUR"
         onViewInvoices={handleViewInvoices}
