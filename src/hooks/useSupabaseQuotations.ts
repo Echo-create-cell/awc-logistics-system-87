@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Quotation } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const useSupabaseQuotations = () => {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { user, isLoading: authLoading } = useAuth();
 
   const fetchQuotations = async () => {
     try {
@@ -296,8 +298,18 @@ export const useSupabaseQuotations = () => {
   };
 
   useEffect(() => {
-    fetchQuotations();
-  }, []);
+    // Only fetch data when auth is complete and user is logged in
+    if (!authLoading) {
+      if (user) {
+        console.log('Fetching quotations for authenticated user:', user.email);
+        fetchQuotations();
+      } else {
+        console.log('No user authenticated, clearing quotations');
+        setQuotations([]);
+        setLoading(false);
+      }
+    }
+  }, [user, authLoading]);
 
   return {
     quotations,

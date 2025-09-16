@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { InvoiceData } from '@/types/invoice';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const useSupabaseInvoices = () => {
   const [invoices, setInvoices] = useState<InvoiceData[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { user, isLoading: authLoading } = useAuth();
 
   const fetchInvoices = async () => {
     try {
@@ -273,8 +275,18 @@ export const useSupabaseInvoices = () => {
   };
 
   useEffect(() => {
-    fetchInvoices();
-  }, []);
+    // Only fetch data when auth is complete and user is logged in
+    if (!authLoading) {
+      if (user) {
+        console.log('Fetching invoices for authenticated user:', user.email);
+        fetchInvoices();
+      } else {
+        console.log('No user authenticated, clearing invoices');
+        setInvoices([]);
+        setLoading(false);
+      }
+    }
+  }, [user, authLoading]);
 
   return {
     invoices,
