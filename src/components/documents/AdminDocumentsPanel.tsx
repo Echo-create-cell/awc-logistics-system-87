@@ -22,7 +22,17 @@ export default function AdminDocumentsPanel() {
   const [isUploading, setIsUploading] = useState(false)
 
   const load = async () => setDocs(await getDocuments())
-  useEffect(() => { load() }, [])
+  
+  useEffect(() => { 
+    // Only load documents when user is authenticated
+    if (user) {
+      console.log('Loading documents for authenticated user:', user.email);
+      load();
+    } else {
+      console.log('No user authenticated, clearing documents');
+      setDocs([]);
+    }
+  }, [user])
 
   const onUpload = async () => {
     if (!files || !user) return

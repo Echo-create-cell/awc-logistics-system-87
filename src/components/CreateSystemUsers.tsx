@@ -40,11 +40,19 @@ const CreateSystemUsers = () => {
     }
   };
 
-  // Auto-create users on component mount
+  // Auto-create users on component mount - only when authenticated
   React.useEffect(() => {
     const autoCreateUsers = async () => {
       try {
-        console.log('Checking for existing system users...');
+        // Check if we have an authenticated session first
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session) {
+          console.log('No authenticated session, skipping system user creation');
+          return;
+        }
+        
+        console.log('Checked session, proceeding with user creation check...');
         
         // Check if users already exist by trying to fetch profiles
         const { data: existingProfiles, error: fetchError } = await supabase
@@ -70,9 +78,8 @@ const CreateSystemUsers = () => {
         }
       } catch (error) {
         console.log('Error checking existing users:', error);
-        // Try to create users anyway
-        console.log('Attempting to create users despite error...');
-        await createSystemUsers();
+        // Don't automatically create users if there's an error
+        console.log('Skipping automatic user creation due to error');
       }
     };
 
