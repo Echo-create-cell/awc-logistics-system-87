@@ -32,41 +32,51 @@ serve(async (req) => {
       }
     )
 
-    // System users with exact credentials specified
+    // Generate secure passwords for system users
+    const generateSecurePassword = (): string => {
+      const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+      let password = '';
+      for (let i = 0; i < 16; i++) {
+        password += charset.charAt(Math.floor(Math.random() * charset.length));
+      }
+      return password;
+    };
+
+    // System users with secure generated passwords
     const systemUsers: UserCredential[] = [
       {
         email: 'n.solange@africaworldcargo.com',
-        password: 'Action@AWC',
+        password: generateSecurePassword(),
         name: 'N. Solange',
         role: 'admin'
       },
       {
         email: 'i.arnold@africaworldcargo.com',
-        password: 'Director@AWC',
+        password: generateSecurePassword(),
         name: 'I. Arnold',
         role: 'sales_director'
       },
       {
         email: 'a.benon@africaworldcargo.com',
-        password: 'Agent@AWC',
+        password: generateSecurePassword(),
         name: 'A. Benon',
         role: 'sales_agent'
       },
       {
         email: 'n.mariemerci@africaworldcargo.com',
-        password: 'Agent2@AWC',
+        password: generateSecurePassword(),
         name: 'N. Marie-Merci',
         role: 'sales_agent'
       },
       {
         email: 'u.epiphanie@africaworldcargo.com',
-        password: 'Finance@AWC',
+        password: generateSecurePassword(),
         name: 'U. Epiphanie',
         role: 'finance_officer'
       },
       {
         email: 'k.peter@africaworldcargo.com',
-        password: 'Partner@AWC',
+        password: generateSecurePassword(),
         name: 'K. Peter',
         role: 'partner'
       }
@@ -115,11 +125,18 @@ serve(async (req) => {
             error: profileError.message
           })
         } else {
+          console.log(`✅ Created user: ${user.email} with role: ${user.role}`);
+          
+          // Log the generated password for this user (in production, send via secure channel)
+          console.log(`🔑 Generated password for ${user.email}: ${user.password}`);
+          
           results.push({
             email: user.email,
             success: true,
-            userId: authUser.user.id
-          })
+            userId: authUser.user.id,
+            message: `User created successfully with role: ${user.role}`,
+            temporaryPassword: user.password // Include in response for initial setup
+          });
         }
       } catch (error) {
         console.error(`Error processing user ${user.email}:`, error)

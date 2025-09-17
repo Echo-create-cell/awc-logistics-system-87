@@ -3,6 +3,7 @@ import html2canvas from 'html2canvas';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 import { ReportData } from '@/types/reports';
+import { escapeHtml, safeHtml, formatCurrencySafe, formatDateSafe } from "@/utils/sanitizeHtml";
 
 export const generateAccountingReport = async (
   invoices: InvoiceData[],
