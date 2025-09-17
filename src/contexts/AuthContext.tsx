@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const mockUsers: User[] = [
   {
     id: '1',
-    name: 'N. SOLANGE',
+    name: 'Action@AWC',
     email: 'n.solange@africaworldcargo.com',
     role: 'admin',
     status: 'active',
@@ -29,7 +29,7 @@ const mockUsers: User[] = [
   },
   {
     id: '2',
-    name: 'I. ARNOLD',
+    name: 'Director@AWC',
     email: 'i.arnold@africaworldcargo.com',
     role: 'sales_director',
     status: 'active',
@@ -37,7 +37,7 @@ const mockUsers: User[] = [
   },
   {
     id: '3',
-    name: 'A. BENON',
+    name: 'Agent@AWC',
     email: 'a.benon@africaworldcargo.com',
     role: 'sales_agent',
     status: 'active',
@@ -45,7 +45,7 @@ const mockUsers: User[] = [
   },
   {
     id: '4',
-    name: 'N. MARIEMERCI',
+    name: 'Agent2@AWC',
     email: 'n.mariemerci@africaworldcargo.com',
     role: 'sales_agent',
     status: 'active',
@@ -53,7 +53,7 @@ const mockUsers: User[] = [
   },
   {
     id: '5',
-    name: 'U. EPIPHANIE',
+    name: 'Finance@AWC',
     email: 'u.epiphanie@africaworldcargo.com',
     role: 'finance_officer',
     status: 'active',
@@ -61,7 +61,7 @@ const mockUsers: User[] = [
   },
   {
     id: '6',
-    name: 'K. PETER',
+    name: 'Partner@AWC',
     email: 'k.peter@africaworldcargo.com',
     role: 'partner',
     status: 'active',
