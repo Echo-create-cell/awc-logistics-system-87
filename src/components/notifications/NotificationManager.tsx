@@ -15,10 +15,11 @@ interface NotificationManagerProps {
  * This component manages all notification systems in a unified way to prevent
  * notifications from scattering across the screen. It ensures:
  * 
- * 1. Consistent positioning (top-4 right-4)
- * 2. Proper z-index stacking order
+ * 1. Consistent positioning (fixed top-4 right-4 - EXACT SAME SPOT)
+ * 2. Proper z-index stacking order (all notifications overlap in same position)
  * 3. Professional spacing between different notification types
  * 4. Coordinated timing to prevent overlap
+ * 5. Overdue alerts positioned in same fixed location
  */
 export const NotificationManager: React.FC<NotificationManagerProps> = ({
   quotations = [],
@@ -27,26 +28,24 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({
   if (!NOTIFICATIONS_ENABLED) return null;
 
   return (
-    <>
-      {/* Z-Index Hierarchy (highest to lowest):
+    <div className="notification-container">
+      {/* Z-Index Hierarchy (highest to lowest) - ALL OVERLAP IN SAME POSITION:
           99999: Standard Toast System (urgent system messages)
-          99998: Persistent Notifications (user actions, confirmations)
+          99998: Persistent Notifications (user actions, confirmations)  
           99997: System Notifications (inline notifications)
           99996: Daily Notifications (scheduled summaries)
-          99995: Background Notifications (low priority) */}
+          99995: Overdue Notifications (positioned exactly the same) */}
 
-      {/* Standard Toast System - Highest Priority */}
+      {/* All notification systems positioned at top-4 right-4 */}
       <Toaster />
-
-      {/* Persistent Toast System - High Priority */}
       <PersistentToaster />
-
-      {/* Daily Notification System - Lower Priority */}
+      
+      {/* Daily Notification System - Same Fixed Position */}  
       <DailyNotificationSystem 
         quotations={quotations}
         invoices={invoices}
       />
-    </>
+    </div>
   );
 };
 

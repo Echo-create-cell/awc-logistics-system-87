@@ -179,9 +179,9 @@ const DailyNotificationSystem: React.FC<DailyNotificationSystemProps> = ({
   const currentNotification = notifications[currentNotificationIndex];
 
   return (
-    <div className="fixed top-4 right-4 z-[99995] max-w-sm" style={{ marginTop: '300px' }}>
+    <div className="fixed top-4 right-4 z-[99995] max-w-sm pointer-events-none">
       <div className={`
-        transform transition-all duration-700 ease-out
+        transform transition-all duration-700 ease-out pointer-events-auto
         ${isVisible ? 'translate-x-0 opacity-100 scale-100' : 'translate-x-full opacity-0 scale-95'}
       `}>
         <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden backdrop-blur-sm">

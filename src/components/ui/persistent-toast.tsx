@@ -164,13 +164,14 @@ export const PersistentToaster = () => {
             position: 'relative',
             pointerEvents: 'auto',
             maxWidth: '400px',
+            marginBottom: '4px',
           },
-          className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg mb-2 data-[action-required=true]:animate-notification-blink data-[priority=critical]:animate-notification-blink',
+          className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg data-[action-required=true]:animate-notification-blink data-[priority=critical]:animate-notification-blink',
         }}
         richColors
         expand={false}
-        visibleToasts={5}
-        gap={8}
+        visibleToasts={3}
+        gap={4}
         offset={0}
       />
     </div>

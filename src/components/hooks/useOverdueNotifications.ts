@@ -11,6 +11,12 @@ interface UseOverdueNotificationsProps {
   checkIntervalMinutes?: number
 }
 
+/**
+ * Hook for managing overdue notifications
+ * 
+ * IMPORTANT: All overdue notifications are positioned in the same fixed location
+ * (top-4 right-4) to prevent them from scattering across the screen.
+ */
 export const useOverdueNotifications = ({ 
   quotations, 
   invoices, 
@@ -25,7 +31,7 @@ export const useOverdueNotifications = ({
     const checkOverdueItems = () => {
       const now = new Date()
 
-      // Check overdue quotations (follow-up dates)
+      // Check overdue quotations (follow-up dates) - positioned at top-4 right-4
       quotations.forEach(quotation => {
         if (quotation.status === 'pending' && quotation.followUpDate) {
           const followUpDate = new Date(quotation.followUpDate)
@@ -34,6 +40,7 @@ export const useOverdueNotifications = ({
           if (daysPastDue > 0) {
             const notificationKey = `quotation-${quotation.id}-overdue-${daysPastDue}`
             if (!notifiedItems.current.has(notificationKey)) {
+              // Force overdue notification to same fixed position
               notifyQuotationOverdue(quotation, daysPastDue)
               notifiedItems.current.add(notificationKey)
             }
@@ -41,7 +48,7 @@ export const useOverdueNotifications = ({
         }
       })
 
-      // Check overdue invoices
+      // Check overdue invoices - positioned at top-4 right-4
       invoices.forEach(invoice => {
         if (invoice.status === 'pending' && invoice.dueDate) {
           const dueDate = new Date(invoice.dueDate)
@@ -50,6 +57,7 @@ export const useOverdueNotifications = ({
           if (daysPastDue > 0) {
             const notificationKey = `invoice-${invoice.id}-overdue-${daysPastDue}`
             if (!notifiedItems.current.has(notificationKey)) {
+              // Force overdue notification to same fixed position  
               notifyInvoiceOverdue(invoice, daysPastDue)
               notifiedItems.current.add(notificationKey)
             }

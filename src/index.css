@@ -233,11 +233,13 @@
   --shadow-info-glow: 0 10px 25px -5px rgba(59, 130, 246, 0.25), 0 4px 12px -4px rgba(59, 130, 246, 0.15);
   --shadow-destructive-glow: 0 10px 25px -5px rgba(239, 68, 68, 0.25), 0 4px 12px -4px rgba(239, 68, 68, 0.15);
 
-  /* Professional Notification Container - Fixed Position */
-  --notification-container-top: 1rem; /* top-4 */
-  --notification-container-right: 1rem; /* right-4 */
-  --notification-max-width: 420px;
-  --notification-gap: 0.5rem; /* gap-2 */
+  /* Professional Notification Container - Single Fixed Position */
+  --notification-position: fixed;
+  --notification-top: 1rem;
+  --notification-right: 1rem;
+  --notification-max-width: 400px;
+  --notification-max-height: calc(100vh - 2rem);
+  --notification-gap: 4px;
 }
 
 .animate-shimmer {
@@ -358,21 +360,57 @@ a:focus-visible,
     @apply bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-md -translate-y-0.5;
   }
 
-  /* Professional Notification System */
+  /* Professional Notification System - All Notifications Fixed in Same Position */
   .notification-container {
-    @apply fixed z-[99999];
-    top: var(--notification-container-top);
-    right: var(--notification-container-right);
-    max-width: var(--notification-max-width);
-    pointer-events: none;
+    position: fixed !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    max-width: 400px !important;
+    max-height: calc(100vh - 2rem) !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    flex-direction: column-reverse !important;
+    gap: 4px !important;
   }
 
   .notification-item {
-    @apply pointer-events-auto mb-2 transform transition-all duration-300 ease-out;
+    @apply pointer-events-auto transform transition-all duration-300 ease-out;
+    position: relative !important;
+    margin-bottom: 0 !important;
   }
 
   .notification-stacked {
-    @apply space-y-2;
+    @apply flex flex-col-reverse;
+    gap: 4px !important;
+  }
+
+  /* Force ALL overdue, critical, and urgent notifications to same position */
+  .overdue-notification,
+  .critical-notification,
+  .urgent-notification,
+  [data-priority="critical"],
+  [data-category*="overdue"],
+  [data-type*="overdue"] {
+    position: fixed !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    z-index: 99999 !important;
+    max-width: 400px !important;
+    pointer-events: auto !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  /* Ensure no notifications extend below the viewport */
+  [role="alert"],
+  [role="status"],
+  .toast,
+  .notification,
+  .alert {
+    max-height: calc(100vh - 2rem) !important;
+    overflow: hidden !important;
   }
 
   .interactive-button {
