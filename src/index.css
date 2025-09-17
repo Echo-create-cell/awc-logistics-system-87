@@ -232,6 +232,12 @@
   --shadow-warning-glow: 0 10px 25px -5px rgba(245, 158, 11, 0.25), 0 4px 12px -4px rgba(245, 158, 11, 0.15);
   --shadow-info-glow: 0 10px 25px -5px rgba(59, 130, 246, 0.25), 0 4px 12px -4px rgba(59, 130, 246, 0.15);
   --shadow-destructive-glow: 0 10px 25px -5px rgba(239, 68, 68, 0.25), 0 4px 12px -4px rgba(239, 68, 68, 0.15);
+
+  /* Professional Notification Container - Fixed Position */
+  --notification-container-top: 1rem; /* top-4 */
+  --notification-container-right: 1rem; /* right-4 */
+  --notification-max-width: 420px;
+  --notification-gap: 0.5rem; /* gap-2 */
 }
 
 .animate-shimmer {
@@ -350,6 +356,23 @@ a:focus-visible,
   
   .sidebar-item-active {
     @apply bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-md -translate-y-0.5;
+  }
+
+  /* Professional Notification System */
+  .notification-container {
+    @apply fixed z-[99999];
+    top: var(--notification-container-top);
+    right: var(--notification-container-right);
+    max-width: var(--notification-max-width);
+    pointer-events: none;
+  }
+
+  .notification-item {
+    @apply pointer-events-auto mb-2 transform transition-all duration-300 ease-out;
+  }
+
+  .notification-stacked {
+    @apply space-y-2;
   }
 
   .interactive-button {

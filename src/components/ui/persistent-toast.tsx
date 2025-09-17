@@ -143,7 +143,7 @@ export const showPersistentToast = ({
     closeButton: true,
     position: 'top-right',
     style: {
-      zIndex: 9999,
+      zIndex: 99998,
     }
   })
 }
@@ -151,7 +151,7 @@ export const showPersistentToast = ({
 export const PersistentToaster = () => {
   if (!NOTIFICATIONS_ENABLED) return null
   return (
-    <div className="fixed top-4 right-4 z-[9999] pointer-events-none max-w-sm">
+    <div className="fixed top-4 right-4 z-[99998] pointer-events-none max-w-sm">
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -165,12 +165,12 @@ export const PersistentToaster = () => {
             pointerEvents: 'auto',
             maxWidth: '400px',
           },
-          className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg mb-3 data-[action-required=true]:animate-notification-blink data-[priority=critical]:animate-notification-blink',
+          className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg mb-2 data-[action-required=true]:animate-notification-blink data-[priority=critical]:animate-notification-blink',
         }}
         richColors
         expand={false}
         visibleToasts={5}
-        gap={12}
+        gap={8}
         offset={0}
       />
     </div>

@@ -9,8 +9,7 @@ import { useAppData } from '@/hooks/useAppData';
 import MainContent from '@/components/MainContent';
 import DailyNotificationSystem from '@/components/notifications/DailyNotificationSystem';
 import { NotificationPanel } from '@/components/layout/NotificationPanel';
-import { Toaster } from '@/components/ui/toaster';
-import { PersistentToaster } from '@/components/ui/persistent-toast';
+import NotificationManager from '@/components/notifications/NotificationManager';
 import { SystemNotificationProvider } from '@/components/providers/SystemNotificationProvider';
 
 
@@ -119,15 +118,11 @@ const IndexContent = ({ user, toast, activeTab, quotations, users, invoices, pri
         />
       )}
       
-      {/* Daily Notification System */}
-      <DailyNotificationSystem 
+      {/* Centralized Notification Management System */}
+      <NotificationManager 
         quotations={quotations}
         invoices={invoices}
       />
-
-      {/* Toast Notification Systems */}
-      <Toaster />
-      <PersistentToaster />
       </div>
   );
 };

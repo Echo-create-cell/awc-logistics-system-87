@@ -179,7 +179,7 @@ const DailyNotificationSystem: React.FC<DailyNotificationSystemProps> = ({
   const currentNotification = notifications[currentNotificationIndex];
 
   return (
-    <div className="fixed top-4 right-4 z-[9999] max-w-sm">
+    <div className="fixed top-4 right-4 z-[99995] max-w-sm" style={{ marginTop: '300px' }}>
       <div className={`
         transform transition-all duration-700 ease-out
         ${isVisible ? 'translate-x-0 opacity-100 scale-100' : 'translate-x-full opacity-0 scale-95'}
