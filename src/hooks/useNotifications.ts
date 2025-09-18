@@ -60,16 +60,6 @@ export const useNotifications = () => {
     };
   }
   const { toast } = useToast();
-  
-  // Safely get auth context - avoid circular dependency in AuthProvider
-  let user: User | null = null;
-  try {
-    const authContext = useAuth();
-    user = authContext.user;
-  } catch (error) {
-    // useAuth not available (likely being called from within AuthProvider)
-    console.log('Auth context not available, proceeding without user context');
-  }
 
   // Helper function to send email notifications
   const sendEmailNotification = async (
@@ -331,11 +321,6 @@ export const useNotifications = () => {
       variant: "success",
       duration: 10000, // Longer duration for password info
     });
-    
-    // Send email to specific user if available
-    if (user?.id) {
-      sendEmailNotification(user.id, title, description, "success", "high");
-    }
   };
 
   const notifyError = (message: string, context?: NotificationContext) => {
@@ -346,11 +331,6 @@ export const useNotifications = () => {
       description: message,
       variant: "destructive",
     });
-    
-    // Send email to current user if available
-    if (user?.id) {
-      sendEmailNotification(user.id, title, message, "destructive", "medium");
-    }
   };
 
   const notifyUserRoleChanged = (user: User, oldRole: string, newRole: string, context?: NotificationContext) => {
@@ -465,11 +445,6 @@ export const useNotifications = () => {
       description,
       variant: "destructive",
     });
-    
-    // Send email to current user and admins
-    if (user?.id) {
-      sendEmailNotification(user.id, title, description, "destructive", "medium");
-    }
   };
 
   const notifyUnauthorizedAccess = (resource: string, context?: NotificationContext) => {
@@ -496,11 +471,6 @@ export const useNotifications = () => {
       description,
       variant: "default",
     });
-    
-    // Send email to current user
-    if (user?.id) {
-      sendEmailNotification(user.id, title, description, "success", "low");
-    }
   };
 
   const notifyDataImported = (dataType: string, recordCount: number, context?: NotificationContext) => {
@@ -512,11 +482,6 @@ export const useNotifications = () => {
       description,
       variant: "default",
     });
-    
-    // Send email to current user
-    if (user?.id) {
-      sendEmailNotification(user.id, title, description, "success", "low");
-    }
   };
 
   // Network & Connectivity Notifications
@@ -558,11 +523,6 @@ export const useNotifications = () => {
       description,
       variant: "destructive",
     });
-    
-    // Send email to current user
-    if (user?.id) {
-      sendEmailNotification(user.id, title, description, "destructive", "low");
-    }
   };
 
   const notifyFormSaved = (formType: string, context?: NotificationContext) => {
@@ -574,11 +534,6 @@ export const useNotifications = () => {
       description,
       variant: "default",
     });
-    
-    // Send email to current user
-    if (user?.id) {
-      sendEmailNotification(user.id, title, description, "success", "low");
-    }
   };
 
   // Custom notification for any operation
@@ -588,12 +543,6 @@ export const useNotifications = () => {
       description,
       variant,
     });
-    
-    // Send email to current user for custom notifications
-    if (user?.id) {
-      const emailVariant = variant === "destructive" ? "destructive" : variant === "default" ? "default" : "success";
-      sendEmailNotification(user.id, title, description, emailVariant, "medium");
-    }
   };
 
   return {
