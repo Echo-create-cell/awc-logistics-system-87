@@ -197,9 +197,11 @@ const DailyNotificationSystem: React.FC<DailyNotificationSystemProps> = ({
               </div>
               <button
                 onClick={() => setIsVisible(false)}
-                className="hover:bg-white/20 rounded-full p-1.5 transition-all duration-300 hover:scale-110 hover:rotate-90"
+                className="bg-red-500/90 hover:bg-red-600 text-white rounded-full p-2 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-red-500/50 focus:ring-2 focus:ring-red-300 focus:outline-none"
+                aria-label="Close daily notification"
+                title="Close daily notification"
               >
-                <X className="w-4 h-4 drop-shadow-lg" />
+                <X className="w-4 h-4 drop-shadow-sm" />
               </button>
             </div>
           </div>

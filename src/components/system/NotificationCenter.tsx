@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Bell, BellOff, Filter, Trash2, Settings, MoreVertical } from 'lucide-react'
+import { Bell, BellOff, Filter, Trash2, Settings, MoreVertical, X } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Separator } from '@/components/ui/separator'
 
@@ -208,9 +208,10 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           e.stopPropagation()
                           onDeleteNotification(notification.id)
                         }}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="bg-red-500/90 hover:bg-red-600 text-white rounded-full p-2 transition-all duration-200 hover:scale-110 shadow-md hover:shadow-red-500/50 focus:ring-2 focus:ring-red-300 focus:outline-none opacity-100"
+                        title="Delete notification"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <X className="h-3 w-3 drop-shadow-sm" />
                       </Button>
                     </div>
                   </div>

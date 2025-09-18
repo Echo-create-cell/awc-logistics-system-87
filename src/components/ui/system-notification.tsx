@@ -170,10 +170,11 @@ export interface SystemNotificationProps
                     e.stopPropagation()
                     handleClose()
                   }}
-                  className="flex-shrink-0 p-1.5 rounded-full bg-pink-500 text-white hover:bg-pink-600 shadow-lg shadow-pink-500/50 transition-colors"
+                  className="flex-shrink-0 p-2 rounded-full bg-red-500/90 hover:bg-red-600 text-white shadow-lg hover:shadow-red-500/50 transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-red-300 focus:outline-none"
                   aria-label="Close notification"
+                  title="Close notification"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-4 w-4 drop-shadow-sm" />
                 </button>
               )}
             </div>
