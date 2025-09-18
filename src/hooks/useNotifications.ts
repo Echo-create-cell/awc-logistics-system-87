@@ -84,6 +84,22 @@ export const useNotifications = () => {
     }
   };
 
+  // Helper function to get users by role
+  const getUsersByRole = async (roles: ('admin' | 'sales_director' | 'sales_agent' | 'finance_officer' | 'partner')[]): Promise<string[]> => {
+    try {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .in('role', roles)
+        .eq('status', 'active');
+      
+      return profiles?.map(p => p.user_id) || [];
+    } catch (error) {
+      console.error('Failed to get users by role:', error);
+      return [];
+    }
+  };
+
   // Helper function to get all user IDs for system-wide notifications
   const getAllUserIds = async (): Promise<string[]> => {
     try {
@@ -99,28 +115,42 @@ export const useNotifications = () => {
     }
   };
 
-  // Helper function to send notification to relevant users
-  const notifyRelevantUsers = async (
+  // Helper function to send role-based notifications
+  const notifyByRoles = async (
     title: string, 
     description: string, 
+    roles: ('admin' | 'sales_director' | 'sales_agent' | 'finance_officer' | 'partner')[],
     variant: "default" | "destructive" | "success" | "warning" = "default",
-    priority: "low" | "medium" | "high" | "critical" = "medium",
-    targetUsers?: string[]
+    priority: "low" | "medium" | "high" | "critical" = "medium"
   ) => {
     try {
-      let userIds = targetUsers;
+      const userIds = await getUsersByRole(roles);
       
-      // If no specific users provided, notify all active users
-      if (!userIds) {
-        userIds = await getAllUserIds();
-      }
-
       // Send email to all relevant users
       for (const userId of userIds) {
         await sendEmailNotification(userId, title, description, variant, priority);
       }
     } catch (error) {
-      console.error('Failed to send notifications to users:', error);
+      console.error('Failed to send role-based notifications:', error);
+    }
+  };
+
+  // Helper function to send notification to all users
+  const notifyAllUsers = async (
+    title: string, 
+    description: string, 
+    variant: "default" | "destructive" | "success" | "warning" = "default",
+    priority: "low" | "medium" | "high" | "critical" = "medium"
+  ) => {
+    try {
+      const userIds = await getAllUserIds();
+      
+      // Send email to all users
+      for (const userId of userIds) {
+        await sendEmailNotification(userId, title, description, variant, priority);
+      }
+    } catch (error) {
+      console.error('Failed to send notifications to all users:', error);
     }
   };
 
@@ -135,8 +165,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "default", "medium");
+    // Send email to Sales Director, Sales Agents, and Admin
+    notifyByRoles(title, description, ["sales_director", "sales_agent", "admin"], "default", "medium");
   };
 
   const notifyQuotationUpdated = (quotation: Quotation, context?: NotificationContext) => {
@@ -149,8 +179,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "default", "medium");
+    // Send email to Sales Director, Sales Agents, and Admin  
+    notifyByRoles(title, description, ["sales_director", "sales_agent", "admin"], "default", "medium");
   };
 
   const notifyQuotationApproved = (quotation: Quotation, context?: NotificationContext) => {
@@ -163,8 +193,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "success", "high");
+    // Send email to Sales Director, Sales Agents, Admin, and Finance Officer
+    notifyByRoles(title, description, ["sales_director", "sales_agent", "admin", "finance_officer"], "success", "high");
   };
 
   const notifyQuotationRejected = (quotation: Quotation, reason: string, context?: NotificationContext) => {
@@ -177,8 +207,8 @@ export const useNotifications = () => {
       variant: "destructive",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "destructive", "high");
+    // Send email to Sales Director, Sales Agents, and Admin
+    notifyByRoles(title, description, ["sales_director", "sales_agent", "admin"], "destructive", "high");
   };
 
   const notifyQuotationFeedback = (quotation: Quotation, feedback: string, context?: NotificationContext) => {
@@ -207,8 +237,8 @@ export const useNotifications = () => {
       variant,
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, variant, newStatus === 'won' ? "high" : "medium");
+    // Send email to Sales Director, Sales Agents, Admin, and Finance Officer for status changes
+    notifyByRoles(title, description, ["sales_director", "sales_agent", "admin", "finance_officer"], variant, newStatus === 'won' ? "high" : "medium");
   };
 
   // Invoice Notifications
@@ -222,8 +252,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "success", "medium");
+    // Send email to Finance Officer, Sales Director, and Admin
+    notifyByRoles(title, description, ["finance_officer", "sales_director", "admin"], "success", "medium");
   };
 
   const notifyInvoiceUpdated = (invoice: InvoiceData, context?: NotificationContext) => {
@@ -236,8 +266,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "default", "medium");
+    // Send email to Finance Officer, Sales Director, and Admin
+    notifyByRoles(title, description, ["finance_officer", "sales_director", "admin"], "default", "medium");
   };
 
   const notifyInvoiceGenerated = (quotation: Quotation, invoice: InvoiceData, context?: NotificationContext) => {
@@ -250,8 +280,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "success", "high");
+    // Send email to Finance Officer, Sales Director, and Admin
+    notifyByRoles(title, description, ["finance_officer", "sales_director", "admin"], "success", "high");
   };
 
   const notifyInvoicePrinted = (invoice: InvoiceData, context?: NotificationContext) => {
@@ -264,8 +294,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "default", "low");
+    // Send email to Finance Officer and Admin
+    notifyByRoles(title, description, ["finance_officer", "admin"], "default", "low");
   };
 
   // User Management Notifications
@@ -279,8 +309,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "success", "medium");
+    // Send email to Admin only for user creation
+    notifyByRoles(title, description, ["admin"], "success", "medium");
   };
 
   const notifyUserUpdated = (user: User, context?: NotificationContext) => {
@@ -293,8 +323,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "default", "low");
+    // Send email to Admin only for user updates
+    notifyByRoles(title, description, ["admin"], "default", "low");
   };
 
   const notifyUserDeleted = (userName: string, context?: NotificationContext) => {
@@ -307,8 +337,8 @@ export const useNotifications = () => {
       variant: "destructive",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "destructive", "high");
+    // Send email to Admin only for user deletion
+    notifyByRoles(title, description, ["admin"], "destructive", "high");
   };
 
   const notifyPasswordReset = (userName: string, newPassword: string, context?: NotificationContext) => {
@@ -343,8 +373,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "default", "high");
+    // Send email to Admin and Sales Director for role changes
+    notifyByRoles(title, description, ["admin", "sales_director"], "default", "high");
   };
 
   // System Operations Notifications
@@ -361,8 +391,8 @@ export const useNotifications = () => {
       variant,
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, variant, success ? "medium" : "critical");
+    // Send email to Admin and Sales Director for system backups
+    notifyByRoles(title, description, ["admin", "sales_director"], variant, success ? "medium" : "critical");
   };
 
   const notifyDataReset = (context?: NotificationContext) => {
@@ -375,8 +405,8 @@ export const useNotifications = () => {
       variant: "destructive",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "destructive", "critical");
+    // Send email to all users for system reset (critical system event)
+    notifyAllUsers(title, description, "destructive", "critical");
   };
 
   const notifySystemMaintenance = (message: string, context?: NotificationContext) => {
@@ -388,8 +418,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, message, "warning", "high");
+    // Send email to Admin and Sales Director for system maintenance
+    notifyByRoles(title, message, ["admin", "sales_director"], "warning", "high");
   };
 
   // Authentication Notifications
@@ -457,8 +487,8 @@ export const useNotifications = () => {
       variant: "destructive",
     });
     
-    // Send email to all users for security alerts
-    notifyRelevantUsers(title, description, "destructive", "critical");
+    // Send email to Admin for security alerts
+    notifyByRoles(title, description, ["admin"], "destructive", "critical");
   };
 
   // Data Operations Notifications
@@ -495,8 +525,8 @@ export const useNotifications = () => {
       variant: "destructive",
     });
     
-    // Send email to all users for system-wide issues
-    notifyRelevantUsers(title, description, "destructive", "high");
+    // Send email to Admin and Sales Director for connection issues
+    notifyByRoles(title, description, ["admin", "sales_director"], "destructive", "high");
   };
 
   const notifyConnectionRestored = (context?: NotificationContext) => {
@@ -509,8 +539,8 @@ export const useNotifications = () => {
       variant: "default",
     });
     
-    // Send email to all users
-    notifyRelevantUsers(title, description, "success", "medium");
+    // Send email to Admin and Sales Director for connection restored
+    notifyByRoles(title, description, ["admin", "sales_director"], "success", "medium");
   };
 
   // Validation & Error Notifications

@@ -50,7 +50,7 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
   const { user } = useAuth();
   const notificationManager = useNotificationManager();
 
-  // Helper function to send email notifications
+  // Helper function to send email notifications with role-based routing
   const sendEmailNotification = async (
     userId: string, 
     title: string, 
@@ -73,6 +73,32 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
     }
   };
 
+  // Helper function to send notifications to users by role
+  const notifyUsersByRole = async (
+    title: string, 
+    description: string, 
+    roles: ('admin' | 'sales_director' | 'sales_agent' | 'finance_officer' | 'partner')[],
+    variant: "default" | "destructive" | "success" | "warning" = "default",
+    priority: "low" | "medium" | "high" | "critical" = "medium"
+  ) => {
+    try {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .in('role', roles)
+        .eq('status', 'active');
+      
+      const userIds = profiles?.map(p => p.user_id) || [];
+      
+      // Send email to all relevant users
+      for (const userId of userIds) {
+        await sendEmailNotification(userId, title, description, variant, priority);
+      }
+    } catch (error) {
+      console.error('Failed to send role-based notifications:', error);
+    }
+  };
+
   // System-wide persistent notification function
   const notifySystemEvent = (
     title: string,
@@ -91,10 +117,8 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
       }
     });
     
-    // Send email to all users for system-wide events
-    if (user?.id) {
-      sendEmailNotification(user.id, title, description, variant === 'error' ? 'destructive' : variant === 'success' ? 'success' : 'default', 'high');
-    }
+    // Send email to Admin and Sales Director for system events
+    notifyUsersByRole(title, description, ["admin", "sales_director"], variant === 'error' ? 'destructive' : variant === 'success' ? 'success' : 'default', 'high');
   };
 
   // Quotation flow notifications
@@ -102,10 +126,8 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
     const baseTitle = `Quotation ${action}`;
     const description = `${quotation.clientName} - ${quotation.destination} | ${details || quotation.cargoDescription || 'Processing'}`;
     
-    // Send email notification
-    if (user?.id) {
-      sendEmailNotification(user.id, baseTitle, description, 'default', 'medium');
-    }
+    // Send email notification to Sales Director, Sales Agents, and Admin
+    notifyUsersByRole(baseTitle, description, ["sales_director", "sales_agent", "admin"], 'default', 'medium');
     let variant: 'success' | 'warning' | 'info' | 'error' = 'info';
     let priority: 'low' | 'medium' | 'high' | 'critical' = 'medium';
 
