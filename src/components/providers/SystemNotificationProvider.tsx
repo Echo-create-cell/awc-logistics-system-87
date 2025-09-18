@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotificationManager } from '@/hooks/useNotificationManager';
 import { showPersistentToast } from '@/components/ui/persistent-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { Quotation, User } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 
@@ -49,6 +50,29 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
   const { user } = useAuth();
   const notificationManager = useNotificationManager();
 
+  // Helper function to send email notifications
+  const sendEmailNotification = async (
+    userId: string, 
+    title: string, 
+    description: string, 
+    variant: "default" | "destructive" | "success" | "warning" = "default",
+    priority: "low" | "medium" | "high" | "critical" = "medium"
+  ) => {
+    try {
+      await supabase.functions.invoke('send-notification-email', {
+        body: {
+          userId,
+          title,
+          description,
+          variant,
+          priority
+        }
+      });
+    } catch (error) {
+      console.error('Failed to send email notification:', error);
+    }
+  };
+
   // System-wide persistent notification function
   const notifySystemEvent = (
     title: string,
@@ -63,10 +87,14 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
       persistent,
       priority: 'medium',
       onAction: () => {
-        // Could navigate to relevant section or show more details
         console.log('System event details:', { title, description });
       }
     });
+    
+    // Send email to all users for system-wide events
+    if (user?.id) {
+      sendEmailNotification(user.id, title, description, variant === 'error' ? 'destructive' : variant === 'success' ? 'success' : 'default', 'high');
+    }
   };
 
   // Quotation flow notifications
@@ -74,6 +102,10 @@ export const SystemNotificationProvider: React.FC<SystemNotificationProviderProp
     const baseTitle = `Quotation ${action}`;
     const description = `${quotation.clientName} - ${quotation.destination} | ${details || quotation.cargoDescription || 'Processing'}`;
     
+    // Send email notification
+    if (user?.id) {
+      sendEmailNotification(user.id, baseTitle, description, 'default', 'medium');
+    }
     let variant: 'success' | 'warning' | 'info' | 'error' = 'info';
     let priority: 'low' | 'medium' | 'high' | 'critical' = 'medium';
 
