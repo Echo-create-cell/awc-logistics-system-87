@@ -14,7 +14,7 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      "fixed top-4 right-4 z-[99999] flex max-h-screen w-full flex-col-reverse gap-1 p-0 sm:max-w-[420px] overflow-hidden",
+      "professional-notification-zone professional-notification-stack",
       className
     )}
     {...props}
@@ -23,15 +23,15 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-xl border bg-background/95 p-6 pr-8 shadow-2xl backdrop-blur-lg transition-all duration-500 ease-out data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-elegant-slide-in data-[state=closed]:animate-elegant-slide-out",
+  "professional-notification-item professional-toast group relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-xl p-6 pr-8 transition-all duration-600 ease-out data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-professional-slide-in data-[state=closed]:animate-professional-slide-out",
   {
     variants: {
       variant: {
-        default: "border-border/30 bg-card/95 text-card-foreground shadow-elegant backdrop-blur-xl",
-        destructive: "border-destructive/30 bg-destructive/5 text-destructive backdrop-blur-xl shadow-destructive-glow animate-gentle-bounce",
-        success: "border-emerald-500/30 bg-emerald-50/95 text-emerald-900 backdrop-blur-xl shadow-success-glow dark:bg-emerald-950/20 dark:text-emerald-100",
-        warning: "border-amber-500/30 bg-amber-50/95 text-amber-900 backdrop-blur-xl shadow-warning-glow dark:bg-amber-950/20 dark:text-amber-100",
-        info: "border-blue-500/30 bg-blue-50/95 text-blue-900 backdrop-blur-xl shadow-info-glow dark:bg-blue-950/20 dark:text-blue-100",
+        default: "text-card-foreground animate-subtle-glow-pulse",
+        destructive: "text-destructive --glow-color:rgba(239,68,68,0.4) animate-subtle-glow-pulse",
+        success: "text-emerald-900 dark:text-emerald-100 --glow-color:rgba(34,197,94,0.4) animate-subtle-glow-pulse",
+        warning: "text-amber-900 dark:text-amber-100 --glow-color:rgba(245,158,11,0.4) animate-subtle-glow-pulse",
+        info: "text-blue-900 dark:text-blue-100 --glow-color:rgba(59,130,246,0.4) animate-subtle-glow-pulse",
       },
     },
     defaultVariants: {

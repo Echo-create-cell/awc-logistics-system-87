@@ -179,64 +179,69 @@ const DailyNotificationSystem: React.FC<DailyNotificationSystemProps> = ({
   const currentNotification = notifications[currentNotificationIndex];
 
   return (
-    <div className="fixed top-4 right-4 z-[99995] max-w-sm pointer-events-none">
+    <div className="professional-notification-zone">
       <div className={`
-        transform transition-all duration-700 ease-out pointer-events-auto
-        ${isVisible ? 'translate-x-0 opacity-100 scale-100' : 'translate-x-full opacity-0 scale-95'}
+        professional-notification-item professional-toast w-96 max-w-sm
+        transform transition-all duration-700 ease-out
+        ${isVisible ? 'translate-x-0 opacity-100 scale-100 animate-professional-slide-in' : 'translate-x-full opacity-0 scale-95 animate-professional-slide-out'}
+        hover:scale-102 hover:-translate-x-1
+        animate-subtle-glow-pulse --glow-color:rgba(59,130,246,0.3)
       `}>
-        <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden backdrop-blur-sm">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-700 p-4 text-white shadow-lg">
+        <div className="overflow-hidden backdrop-blur-xl">
+          {/* Professional Header with Enhanced Gradient */}
+          <div className="bg-gradient-to-r from-primary via-primary-glow to-primary-dark p-4 text-primary-foreground shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Bell className="w-5 h-5 animate-pulse" />
-                <span className="font-semibold text-sm">Daily Business Summary</span>
+                <Bell className="w-5 h-5 animate-pulse drop-shadow-lg" />
+                <span className="font-semibold text-sm tracking-wide">Daily Business Summary</span>
               </div>
               <button
                 onClick={() => setIsVisible(false)}
-                className="hover:bg-white/20 rounded-full p-1.5 transition-all duration-200 hover:scale-110"
+                className="hover:bg-white/20 rounded-full p-1.5 transition-all duration-300 hover:scale-110 hover:rotate-90"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4 drop-shadow-lg" />
               </button>
             </div>
           </div>
 
-          {/* Content */}
-          <div className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 mt-1">
+          {/* Professional Content Area */}
+          <div className="p-5 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 dark:from-slate-800 dark:via-slate-800/90 dark:to-slate-900/80">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 mt-1 p-2 rounded-full bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm shadow-lg">
                 {currentNotification.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                <h3 className="font-semibold text-foreground text-sm mb-2 tracking-tight">
                   {currentNotification.title}
                 </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   {currentNotification.message}
                 </p>
               </div>
             </div>
 
-            {/* Priority indicator */}
-            <div className="flex items-center justify-between mt-4">
+            {/* Enhanced Priority and Navigation */}
+            <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/30">
               <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${
-                  currentNotification.priority === 'high' ? 'bg-red-400' :
-                  currentNotification.priority === 'medium' ? 'bg-yellow-400' :
-                  'bg-green-400'
+                <div className={`w-2.5 h-2.5 rounded-full shadow-lg animate-pulse ${
+                  currentNotification.priority === 'high' ? 'bg-red-400 shadow-red-400/50' :
+                  currentNotification.priority === 'medium' ? 'bg-yellow-400 shadow-yellow-400/50' :
+                  'bg-green-400 shadow-green-400/50'
                 }`} />
-                <span className="text-xs text-gray-500 capitalize">
+                <span className="text-xs text-muted-foreground capitalize font-medium tracking-wide">
                   {currentNotification.priority} Priority
                 </span>
               </div>
               
               {notifications.length > 1 && (
-                <div className="flex gap-1">
+                <div className="flex gap-2">
                   {notifications.map((_, index) => (
                     <div
                       key={index}
-                      className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                        index === currentNotificationIndex ? 'bg-blue-500' : 'bg-gray-300'
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        index === currentNotificationIndex 
+                          ? 'bg-primary scale-125 shadow-lg shadow-primary/50' 
+                          : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
                       }`}
                     />
                   ))}
@@ -245,9 +250,9 @@ const DailyNotificationSystem: React.FC<DailyNotificationSystemProps> = ({
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="bg-gradient-to-r from-gray-50 to-blue-50 px-4 py-3 border-t border-gray-100">
-            <p className="text-xs text-gray-600 text-center font-medium">
+          {/* Professional Footer */}
+          <div className="bg-gradient-to-r from-gray-50/90 via-blue-50/60 to-indigo-50/30 dark:from-slate-700/50 dark:via-slate-800/30 dark:to-slate-900/20 px-5 py-3 border-t border-border/20 backdrop-blur-sm">
+            <p className="text-xs text-muted-foreground text-center font-medium tracking-wide">
               {new Date().toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 month: 'short', 

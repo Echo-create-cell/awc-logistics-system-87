@@ -89,90 +89,88 @@ export const showPersistentToast = ({
     ? 7000 
     : 5000
 
-  const toastContent = (
-    <div className="flex items-start gap-3 w-full">
-      <Icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
-        variant === 'success' ? 'text-emerald-600' :
-        variant === 'warning' ? 'text-amber-600' :
-        variant === 'error' ? 'text-red-600' :
-        variant === 'critical' ? 'text-red-700' :
-        variant === 'info' ? 'text-blue-600' :
-        variant === 'pending' ? 'text-orange-600' :
-        'text-foreground'
-      }`} />
-      
-      <div className="flex-1 space-y-1">
-        <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-sm">
-            {category ? `${category}: ${title}` : title}
-          </h4>
-          {priority === 'critical' && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 animate-pulse">
-              URGENT
-            </span>
-          )}
+  const iconClassName = `h-5 w-5 mt-0.5 flex-shrink-0 ${
+    variant === 'success' ? 'text-emerald-600' :
+    variant === 'warning' ? 'text-amber-600' :
+    variant === 'error' ? 'text-red-600' :
+    variant === 'critical' ? 'text-red-700' :
+    variant === 'info' ? 'text-blue-600' :
+    variant === 'pending' ? 'text-orange-600' :
+    'text-foreground'
+  }`
+
+  return sonnerToast.custom(
+    () => (
+      <div className="professional-notification-item professional-toast group min-w-[356px] max-w-md p-4 flex items-start gap-3 pointer-events-auto relative overflow-hidden">
+        {/* Professional gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/5 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-white/10 pointer-events-none" />
+        
+        {/* Icon with enhanced styling */}
+        <div className="flex-shrink-0 relative z-10 p-1 rounded-full bg-white/20 backdrop-blur-sm">
+          <Icon className={iconClassName} />
         </div>
         
-        {description && (
-          <p className="text-sm opacity-90">
-            {description}
-          </p>
-        )}
-        
-        {actionRequired && (
-          <div className="flex gap-2 pt-2">
-            <button 
-              onClick={onAction}
-              className="text-sm bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-md font-medium transition-colors animate-pulse"
-            >
-              View Details →
-            </button>
+        {/* Content with professional typography */}
+        <div className="flex-1 relative z-10">
+          <div className="font-semibold text-foreground leading-tight mb-1 tracking-tight">
+            {category ? `${category}: ${title}` : title}
           </div>
-        )}
+          {description && (
+            <div className="text-sm text-muted-foreground leading-relaxed opacity-90">
+              {description}
+            </div>
+          )}
+          
+          {/* Enhanced Action Button */}
+          {actionRequired && (
+            <div className="flex gap-2 pt-2">
+              <button 
+                onClick={onAction}
+                className="text-sm bg-primary/20 text-primary hover:bg-primary/30 px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-lg"
+              >
+                View Details →
+              </button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  )
-
-  return sonnerToast(toastContent, {
-    duration,
-    className: `bg-white border ${
-      actionRequired || priority === 'critical' 
-        ? 'border-destructive animate-notification-blink animate-border-blink' 
-        : 'border-gray-200'
-    } shadow-lg [&_button[data-close-button]]:bg-pink-500 [&_button[data-close-button]]:text-white [&_button[data-close-button]]:hover:bg-pink-600 [&_button[data-close-button]]:rounded-full [&_button[data-close-button]]:shadow-lg [&_button[data-close-button]]:shadow-pink-500/50`,
-    closeButton: true,
-    position: 'top-right',
-    style: {
-      zIndex: 99998,
+    ),
+    {
+      duration,
+      position: 'top-right',
+      style: {
+        zIndex: 99998,
+      }
     }
-  })
+  )
 }
 
-export const PersistentToaster = () => {
-  if (!NOTIFICATIONS_ENABLED) return null
+export function PersistentToaster() {
+  if (!NOTIFICATIONS_ENABLED) return null;
+  
   return (
-    <div className="fixed top-4 right-4 z-[99998] pointer-events-none max-w-sm">
+    <div className="professional-notification-zone">
       <Toaster 
         position="top-right"
-        toastOptions={{
-          style: {
-            background: 'white',
-            color: 'hsl(var(--foreground))',
-            border: '1px solid hsl(var(--border))',
-            borderRadius: '8px',
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            position: 'relative',
-            pointerEvents: 'auto',
-            maxWidth: '400px',
-            marginBottom: '4px',
-          },
-          className: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg data-[action-required=true]:animate-notification-blink data-[priority=critical]:animate-notification-blink',
-        }}
-        richColors
+        richColors={true}
         expand={false}
-        visibleToasts={3}
-        gap={4}
-        offset={0}
+        visibleToasts={4}
+        gap={8}
+        toastOptions={{
+          duration: 5000,
+          style: {
+            background: 'transparent',
+            border: 'none',
+            boxShadow: 'none',
+            padding: 0,
+            margin: 0,
+            width: '100%',
+            maxWidth: '400px',
+          },
+          className: 'professional-notification-item',
+          descriptionClassName: 'professional-toast-description',
+        }}
       />
     </div>
   )

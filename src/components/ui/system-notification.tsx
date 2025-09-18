@@ -4,17 +4,17 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { X, CheckCircle, AlertCircle, XCircle, Info, Clock, Zap, AlertTriangle } from "lucide-react"
 
 const systemNotificationVariants = cva(
-  "relative w-full rounded-lg border p-4 shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out bg-popover text-popover-foreground",
+  "professional-notification-item professional-toast relative w-full rounded-xl p-4 transition-all duration-500 ease-out animate-professional-slide-in",
   {
     variants: {
       variant: {
-        default: "border-gray-200 shadow-md",
-        success: "border-emerald-200 shadow-emerald-100/50",
-        warning: "border-amber-200 shadow-amber-100/50",
-        error: "border-red-200 shadow-red-100/50",
-        info: "border-blue-200 shadow-blue-100/50",
-        pending: "border-orange-200 shadow-orange-100/50",
-        critical: "border-red-300 shadow-red-200/50 ring-2 ring-red-500/50",
+        default: "text-popover-foreground animate-subtle-glow-pulse",
+        success: "text-emerald-900 dark:text-emerald-100 --glow-color:rgba(34,197,94,0.4) animate-subtle-glow-pulse",
+        warning: "text-amber-900 dark:text-amber-100 --glow-color:rgba(245,158,11,0.4) animate-subtle-glow-pulse",
+        error: "text-red-900 dark:text-red-100 --glow-color:rgba(239,68,68,0.4) animate-subtle-glow-pulse",
+        info: "text-blue-900 dark:text-blue-100 --glow-color:rgba(59,130,246,0.4) animate-subtle-glow-pulse",
+        pending: "text-orange-900 dark:text-orange-100 --glow-color:rgba(251,146,60,0.4) animate-subtle-glow-pulse",
+        critical: "text-red-900 dark:text-red-100 --glow-color:rgba(239,68,68,0.6) animate-subtle-glow-pulse ring-2 ring-red-500/30",
       },
       size: {
         default: "p-4",
@@ -22,18 +22,18 @@ const systemNotificationVariants = cva(
         lg: "p-6",
       },
       position: {
-        "top-right": "fixed top-4 right-4 z-[99997] max-w-sm pointer-events-auto",
-        "top-left": "fixed top-4 left-4 z-[99997] max-w-sm pointer-events-auto",
-        "bottom-right": "fixed bottom-4 right-4 z-[99997] max-w-sm pointer-events-auto",
-        "bottom-left": "fixed bottom-4 left-4 z-[99997] max-w-sm pointer-events-auto",
-        "top-center": "fixed top-4 left-1/2 transform -translate-x-1/2 z-[99997] max-w-sm pointer-events-auto",
+        "top-right": "professional-notification-item",
+        "top-left": "professional-notification-item",
+        "bottom-right": "professional-notification-item",
+        "bottom-left": "professional-notification-item", 
+        "top-center": "professional-notification-item",
         inline: "relative w-full",
       },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
-      position: "inline",
+      position: "top-right",
     },
   }
 )
@@ -112,10 +112,9 @@ export interface SystemNotificationProps
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
           systemNotificationVariants({ variant, size, position }),
-          "animate-in slide-in-from-top-1 fade-in duration-300 cursor-pointer",
-          !isVisible && "animate-out slide-out-to-top-1 fade-out duration-300",
-          "hover:shadow-lg transition-all duration-200",
-          priority === 'critical' && "ring-2 ring-red-500/50 ring-opacity-75",
+          "cursor-pointer hover:scale-102 hover:-translate-x-1",
+          !isVisible && "animate-professional-slide-out",
+          priority === 'critical' && "animate-professional-stack-adjust",
           className
         )}
         onClick={() => !dismissible || handleClose()}
