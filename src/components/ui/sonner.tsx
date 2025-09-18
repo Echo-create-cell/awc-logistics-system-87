@@ -32,7 +32,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground group-[.toast]:rounded-lg group-[.toast]:px-3 group-[.toast]:py-1.5 group-[.toast]:text-sm group-[.toast]:font-medium group-[.toast]:transition-colors group-[.toast]:hover:bg-muted/80",
           closeButton:
-            "group-[.toast]:bg-background group-[.toast]:text-foreground group-[.toast]:border group-[.toast]:border-border group-[.toast]:hover:bg-muted group-[.toast]:transition-colors group-[.toast]:rounded-lg",
+            "group-[.toast]:bg-red-500/90 group-[.toast]:hover:bg-red-600 group-[.toast]:text-white group-[.toast]:shadow-lg group-[.toast]:hover:shadow-red-500/50 group-[.toast]:transition-all group-[.toast]:duration-200 group-[.toast]:hover:scale-110 group-[.toast]:focus:ring-2 group-[.toast]:focus:ring-red-300 group-[.toast]:focus:outline-none group-[.toast]:rounded-full group-[.toast]:border-none",
           title: "group-[.toast]:text-foreground group-[.toast]:font-semibold group-[.toast]:text-sm",
           content: "group-[.toast]:flex group-[.toast]:flex-col group-[.toast]:gap-1",
         },

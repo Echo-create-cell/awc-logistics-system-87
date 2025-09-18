@@ -134,6 +134,18 @@ export const showPersistentToast = ({
             </div>
           )}
         </div>
+        
+        {/* Always visible close button */}
+        <button
+          onClick={() => sonnerToast.dismiss()}
+          className="absolute top-2 right-2 p-2 rounded-full bg-red-500/90 hover:bg-red-600 text-white shadow-lg hover:shadow-red-500/50 transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-red-300 focus:outline-none z-20"
+          aria-label="Close notification"
+          title="Close notification"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
     ),
     {
