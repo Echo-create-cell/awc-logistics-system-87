@@ -1,6 +1,7 @@
 import { Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 import { User } from '@/types';
+import { showPersistentToast } from '@/components/ui/persistent-toast';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -22,7 +23,13 @@ export const generatePrintReport = (
     
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
-      alert('Please allow popups to generate the PDF report. Check your browser settings and try again.');
+      showPersistentToast({
+        title: 'Popup Blocked',
+        description: 'Please allow popups to generate the PDF report. Check your browser settings and try again.',
+        variant: 'warning',
+        category: 'Print',
+        persistent: false
+      });
       return;
     }
 
@@ -266,7 +273,13 @@ export const generatePrintReport = (
   console.log('PDF generation completed successfully');
   } catch (error) {
     console.error('Error generating PDF:', error);
-    alert('Error generating PDF report. Please try again.');
+    showPersistentToast({
+      title: 'PDF Generation Failed',
+      description: 'Error generating PDF report. Please try again.',
+      variant: 'error',
+      category: 'Reports',
+      persistent: false
+    });
   }
 };
 
@@ -337,7 +350,13 @@ export const generateCSVExport = (
     }
   } catch (error) {
     console.error('Error exporting CSV:', error);
-    alert('Failed to export data. Please try again.');
+    showPersistentToast({
+      title: 'CSV Export Failed',
+      description: 'Failed to export data. Please try again.',
+      variant: 'error',
+      category: 'Export',
+      persistent: false
+    });
   }
 };
 
@@ -541,7 +560,13 @@ export const generateGenericCSVExport = (
   filename: string
 ) => {
   if (!data.length) {
-    alert('No data to export');
+    showPersistentToast({
+      title: 'No Data',
+      description: 'No data to export',
+      variant: 'warning',
+      category: 'Export',
+      persistent: false
+    });
     return;
   }
   
@@ -581,6 +606,12 @@ export const generateGenericCSVExport = (
     }
   } catch (error) {
     console.error('Error exporting generic CSV:', error);
-    alert('Failed to export data. Please try again.');
+    showPersistentToast({
+      title: 'CSV Export Failed',
+      description: 'Failed to export data. Please try again.',
+      variant: 'error',
+      category: 'Export',
+      persistent: false
+    });
   }
 };

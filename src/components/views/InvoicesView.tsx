@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { showPersistentToast } from '@/components/ui/persistent-toast';
 import InvoiceGenerator from '@/components/InvoiceGenerator';
 import SearchableTable from '@/components/SearchableTable';
 import PartnerDataFilter from '@/components/partner/PartnerDataFilter';
@@ -88,7 +89,13 @@ const InvoicesView = ({
       }
     } catch (error) {
       console.error('Error exporting invoices to CSV:', error);
-      alert('Failed to export invoices. Please try again.');
+      showPersistentToast({
+        title: 'Invoice Export Failed',
+        description: 'Failed to export invoices. Please try again.',
+        variant: 'error',
+        category: 'Export',
+        persistent: false
+      });
     }
   };
 

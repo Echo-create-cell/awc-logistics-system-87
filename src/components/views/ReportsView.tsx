@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { showPersistentToast } from '@/components/ui/persistent-toast';
 import { useReportsData } from '@/hooks/useReportsData';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
@@ -70,7 +71,13 @@ const ReportsView = ({ user, quotations, invoices, users: propUsers }: ReportsVi
       await generatePDFReport(filteredData, summary, dateRange, reportType, user, reportData);
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
+      showPersistentToast({
+        title: 'PDF Generation Failed',
+        description: 'Failed to generate PDF. Please try again.',
+        variant: 'error',
+        category: 'Reports',
+        persistent: false
+      });
     }
   };
 

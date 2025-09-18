@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import { showPersistentToast } from '@/components/ui/persistent-toast';
 import html2canvas from 'html2canvas';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
@@ -225,7 +226,13 @@ export const generateAccountingReport = async (
     console.log('Accounting report generated successfully');
   } catch (error) {
     console.error('Error generating accounting report:', error);
-    alert('Failed to generate accounting report. Please try again.');
+    showPersistentToast({
+      title: 'Report Generation Failed',
+      description: 'Failed to generate accounting report. Please try again.',
+      variant: 'error',
+      category: 'Reports',
+      persistent: false
+    });
   }
 };
 
@@ -356,7 +363,13 @@ export const generateTaxReport = async (
     console.log('Tax report generated successfully');
   } catch (error) {
     console.error('Error generating tax report:', error);
-    alert('Failed to generate tax report. Please try again.');
+    showPersistentToast({
+      title: 'Tax Report Failed',
+      description: 'Failed to generate tax report. Please try again.',
+      variant: 'error',
+      category: 'Reports',
+      persistent: false
+    });
   }
 };
 
@@ -540,7 +553,13 @@ export const generateAuditReport = async (
     console.log('Audit report generated successfully');
   } catch (error) {
     console.error('Error generating audit report:', error);
-    alert('Failed to generate audit report. Please try again.');
+    showPersistentToast({
+      title: 'Audit Report Failed',
+      description: 'Failed to generate audit report. Please try again.',
+      variant: 'error',
+      category: 'Reports',
+      persistent: false
+    });
   }
 };
 
@@ -651,6 +670,12 @@ export const generateFinancialStatements = async (data: any) => {
     console.log('Financial statement generated successfully');
   } catch (error) {
     console.error('Error generating financial statement:', error);
-    alert('Failed to generate financial statement. Please try again.');
+    showPersistentToast({
+      title: 'Financial Statement Failed',
+      description: 'Failed to generate financial statement. Please try again.',
+      variant: 'error',
+      category: 'Reports',
+      persistent: false
+    });
   }
 };

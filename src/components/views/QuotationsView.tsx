@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { showPersistentToast } from '@/components/ui/persistent-toast';
 import EnhancedSearchableTable from '@/components/enhanced/EnhancedSearchableTable';
 import PartnerDataFilter from '@/components/partner/PartnerDataFilter';
 import { Button } from '@/components/ui/button';
@@ -113,7 +114,13 @@ const QuotationsView = ({
       }
     } catch (error) {
       console.error('Error exporting quotations to CSV:', error);
-      alert('Failed to export quotations. Please try again.');
+      showPersistentToast({
+        title: 'Quotation Export Failed',
+        description: 'Failed to export quotations. Please try again.',
+        variant: 'error',
+        category: 'Export',
+        persistent: false
+      });
     }
   };
 

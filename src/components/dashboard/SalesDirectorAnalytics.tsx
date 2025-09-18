@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { showPersistentToast } from '@/components/ui/persistent-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,7 +69,13 @@ const SalesDirectorAnalytics = ({ user, quotations, invoices, users }: SalesDire
       await generatePDFReport(filteredData, summary, dateRange, reportType, user, reportData);
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
+      showPersistentToast({
+        title: 'PDF Generation Failed',
+        description: 'Failed to generate PDF. Please try again.',
+        variant: 'error',
+        category: 'Reports',
+        persistent: false
+      });
     }
   };
 

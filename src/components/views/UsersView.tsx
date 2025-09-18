@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { showPersistentToast } from '@/components/ui/persistent-toast';
 import EnhancedSearchableTable from '@/components/enhanced/EnhancedSearchableTable';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -101,7 +102,13 @@ const UsersView = ({ users: propUsers }: UsersViewProps) => {
       }
     } catch (error) {
       console.error('Error exporting users to CSV:', error);
-      alert('Failed to export users. Please try again.');
+      showPersistentToast({
+        title: 'User Export Failed',
+        description: 'Failed to export users. Please try again.',
+        variant: 'error',
+        category: 'Export',
+        persistent: false
+      });
     }
   };
 

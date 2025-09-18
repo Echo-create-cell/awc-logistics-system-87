@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
+import { showPersistentToast } from '@/components/ui/persistent-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -200,7 +201,13 @@ const UserLogsMonitor = ({ users, quotations, invoices }: UserLogsMonitorProps) 
       }
     } catch (error) {
       console.error('Error exporting user logs to CSV:', error);
-      alert('Failed to export user logs. Please try again.');
+      showPersistentToast({
+        title: 'Export Failed',
+        description: 'Failed to export user logs. Please try again.',
+        variant: 'error',
+        category: 'Export',
+        persistent: false
+      });
     }
   };
 

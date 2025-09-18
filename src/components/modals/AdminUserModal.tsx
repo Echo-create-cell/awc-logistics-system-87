@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { showPersistentToast } from '@/components/ui/persistent-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -95,7 +96,13 @@ const AdminUserModal = ({
     if (!form.name || !form.email) return;
     
     if (!isEditing && (!password || password !== confirmPassword)) {
-      alert('Password is required and must match confirmation for new users');
+      showPersistentToast({
+        title: 'Password Error',
+        description: 'Password is required and must match confirmation for new users',
+        variant: 'error',
+        category: 'User Management',
+        persistent: false
+      });
       return;
     }
 
@@ -108,7 +115,13 @@ const AdminUserModal = ({
       }
       onClose();
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'An error occurred');
+      showPersistentToast({
+        title: 'User Creation Failed',
+        description: error instanceof Error ? error.message : 'An error occurred',
+        variant: 'error',
+        category: 'User Management',
+        persistent: false
+      });
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +135,13 @@ const AdminUserModal = ({
       await onDelete(user.id);
       onClose();
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'An error occurred');
+      showPersistentToast({
+        title: 'User Update Failed',
+        description: error instanceof Error ? error.message : 'An error occurred',
+        variant: 'error',
+        category: 'User Management',
+        persistent: false
+      });
     } finally {
       setIsLoading(false);
     }
@@ -136,7 +155,13 @@ const AdminUserModal = ({
       const newPassword = await onResetPassword(user.id);
       setShowCredentials(true);
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'An error occurred');
+      showPersistentToast({
+        title: 'Password Reset Failed',
+        description: error instanceof Error ? error.message : 'An error occurred',
+        variant: 'error',
+        category: 'User Management',
+        persistent: false
+      });
     } finally {
       setIsLoading(false);
     }

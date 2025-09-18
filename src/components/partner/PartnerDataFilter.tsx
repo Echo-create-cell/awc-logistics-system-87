@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { showPersistentToast } from '@/components/ui/persistent-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -124,7 +125,13 @@ const PartnerDataFilter = ({
       }));
       
       if (exportData.length === 0) {
-        alert('No data to export');
+        showPersistentToast({
+          title: 'No Data',
+          description: 'No data to export',
+          variant: 'warning',
+          category: 'Export',
+          persistent: false
+        });
         return;
       }
       
@@ -157,7 +164,13 @@ const PartnerDataFilter = ({
       console.log(`Successfully exported ${exportData.length} records to CSV`);
     } catch (error) {
       console.error('Error exporting partner data to CSV:', error);
-      alert('Failed to export data. Please try again.');
+      showPersistentToast({
+        title: 'Export Failed',
+        description: 'Failed to export data. Please try again.',
+        variant: 'error',
+        category: 'Export',
+        persistent: false
+      });
     }
   };
 
