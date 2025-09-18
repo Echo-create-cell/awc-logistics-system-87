@@ -3,14 +3,13 @@ import { useState, useMemo } from 'react';
 import { User, Quotation } from '@/types';
 import { InvoiceData } from '@/types/invoice';
 import { ReportData, ReportFilters, FinancialMetrics, UserActivity } from '@/types/reports';
-import { useAuth } from '@/contexts/AuthContext';
 
 export const useReportsData = (
   quotations: Quotation[],
   invoices: InvoiceData[],
-  users: User[]
+  users: User[],
+  user?: User | null
 ) => {
-  const { user } = useAuth();
   const [filters, setFilters] = useState<ReportFilters>({
     dateRange: {
       from: new Date(new Date().getFullYear(), 0, 1), // Start of current year

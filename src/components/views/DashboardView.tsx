@@ -30,7 +30,7 @@ const DashboardView = ({ user, users, quotations, invoices, onTabChange }: Dashb
     { id: '3', name: 'Finance Officer', email: 'finance@example.com', role: 'finance_officer', status: 'active', createdAt: new Date().toISOString() }
   ];
 
-  const { reportData } = useReportsData(quotations, invoices, mockUsers);
+  const { reportData } = useReportsData(quotations, invoices, mockUsers, user);
 
   const getRoleDescription = (role: string) => {
     switch (role) {
