@@ -60,7 +60,16 @@ export const useNotifications = () => {
     };
   }
   const { toast } = useToast();
-  const { user } = useAuth();
+  
+  // Safely get auth context - avoid circular dependency in AuthProvider
+  let user: User | null = null;
+  try {
+    const authContext = useAuth();
+    user = authContext.user;
+  } catch (error) {
+    // useAuth not available (likely being called from within AuthProvider)
+    console.log('Auth context not available, proceeding without user context');
+  }
 
   // Helper function to send email notifications
   const sendEmailNotification = async (
