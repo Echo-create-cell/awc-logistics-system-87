@@ -164,13 +164,21 @@ const InvoicePrintPreview = ({ invoice, onClose, onPrint }: InvoicePrintPreviewP
               <p className="text-gray-600 text-sm">Review and print your invoice</p>
             </div>
           </div>
-          <div className="flex space-x-2">
-            <Button onClick={handlePrint} className="bg-blue-600 hover:bg-blue-700">
+          <div className="flex space-x-3">
+            <Button 
+              onClick={handlePrint} 
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 min-w-[120px]"
+            >
               <Printer size={16} className="mr-2" />
-              Print
+              Print Invoice
             </Button>
-            <Button variant="outline" onClick={onClose}>
-              <X size={16} />
+            <Button 
+              variant="outline" 
+              onClick={onClose}
+              className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-105 min-w-[100px]"
+            >
+              <X size={16} className="mr-2" />
+              Close
             </Button>
           </div>
         </div>

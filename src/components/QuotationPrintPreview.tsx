@@ -208,20 +208,20 @@ const QuotationPrintPreview = ({ quotation, onClose, onPrint }: QuotationPrintPr
               <p className="text-sm text-gray-600">Preview and print quotation details</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button 
               onClick={handlePrint}
-              className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 min-w-[120px]"
             >
-              <Printer size={16} />
-              Print
+              <Printer size={16} className="mr-2" />
+              Print Quotation
             </Button>
             <Button 
               variant="outline" 
               onClick={onClose}
-              className="gap-2"
+              className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-105 min-w-[100px]"
             >
-              <X size={16} />
+              <X size={16} className="mr-2" />
               Close
             </Button>
           </div>

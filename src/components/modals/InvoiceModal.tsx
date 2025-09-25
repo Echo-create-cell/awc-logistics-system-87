@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CheckCircle, FileText, Calendar, DollarSign } from "lucide-react";
+import { AlertCircle, CheckCircle, FileText, Calendar, DollarSign, X } from "lucide-react";
 
 interface InvoiceModalProps {
   open: boolean;
@@ -240,27 +240,35 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
           )}
         </div>
         
-        <DialogFooter className="pt-6 border-t border-gray-100 bg-gray-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
+        <DialogFooter className="pt-6 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
           <div className="flex justify-end gap-3 w-full">
             {isPaid && (
               <Button 
                 onClick={handlePrint} 
                 variant="outline" 
-                className="bg-white border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400"
+                className="bg-white border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 shadow-sm transition-all duration-200 hover:shadow-md"
               >
                 <FileText className="h-4 w-4 mr-2" />
                 Print Invoice
               </Button>
             )}
             <DialogClose asChild>
-              <Button variant="outline" className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
-                Cancel
+              <Button 
+                variant="outline" 
+                className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-105 min-w-[100px]"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Close
               </Button>
             </DialogClose>
             {!isPaid && (
               <Button 
                 onClick={handleSave} 
-                className={`${isMarkedAsPaid ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
+                className={`${
+                  isMarkedAsPaid 
+                    ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800' 
+                    : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'
+                } text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 min-w-[140px]`}
               >
                 {isMarkedAsPaid ? (
                   <>
@@ -268,7 +276,10 @@ const InvoiceModal = ({ open, invoice, onClose, onSave, onPrint }: InvoiceModalP
                     Save & Mark Paid
                   </>
                 ) : (
-                  'Save Changes'
+                  <>
+                    <FileText className="h-4 w-4 mr-2" />
+                    Save Changes
+                  </>
                 )}
               </Button>
             )}
