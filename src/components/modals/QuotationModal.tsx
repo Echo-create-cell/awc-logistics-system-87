@@ -69,33 +69,35 @@ const QuotationModal = ({ open, quotation, onClose, onSave, user, viewOnly = fal
         badge={quotation ? getStatusBadge(quotation.status) : undefined}
         size="xl"
       >
-        <div className="space-y-6">
-          {quotation && (
-            <div className="text-sm text-muted-foreground bg-muted/30 p-4 rounded-lg border border-border/20">
-              <div className="flex items-center justify-between">
-                <span>Client: <strong className="text-foreground">{quotation.clientName}</strong></span>
-                <span>Quote: <strong className="text-foreground">{quotation.currency} {quotation.clientQuote?.toLocaleString()}</strong></span>
+        <div className="flex flex-col h-full">
+          <div className="flex-1 space-y-6">
+            {quotation && (
+              <div className="text-sm text-muted-foreground bg-muted/30 p-4 rounded-lg border border-border/20">
+                <div className="flex items-center justify-between">
+                  <span>Client: <strong className="text-foreground">{quotation.clientName}</strong></span>
+                  <span>Quote: <strong className="text-foreground">{quotation.currency} {quotation.clientQuote?.toLocaleString()}</strong></span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+            
+            {quotation && (
+              <QuotationForm
+                quotation={quotation}
+                onSave={handleSaveForm}
+                onClose={onClose}
+                user={user}
+                viewOnly={viewOnly}
+              />
+            )}
+          </div>
           
-          {quotation && (
-            <QuotationForm
-              quotation={quotation}
-              onSave={handleSaveForm}
-              onClose={onClose}
-              user={user}
-              viewOnly={viewOnly}
+          <div className="flex-shrink-0 pt-6 border-t border-border/10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 sticky bottom-0">
+            <ActionButtonGroup
+              buttons={actionButtons}
+              alignment="right"
+              size="sm"
             />
-          )}
-        </div>
-        
-        <div className="pt-6 border-t border-border/10">
-          <ActionButtonGroup
-            buttons={actionButtons}
-            alignment="right"
-            size="sm"
-          />
+          </div>
         </div>
       </ModalWrapper>
       

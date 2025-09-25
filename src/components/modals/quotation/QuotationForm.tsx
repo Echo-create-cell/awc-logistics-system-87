@@ -52,43 +52,66 @@ const QuotationForm = ({ quotation, onSave, onClose, user, viewOnly = false }: Q
   };
 
   return (
-    <div className="space-y-6 pt-4">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        <QuotationFormMain
-          clientName={clientName}
-          onClientNameChange={(e) => setClientName(e.target.value)}
-          quotationData={quotationData}
-          onQuotationChange={handleDetailsChange}
-          onSelectChange={handleSelectChange}
-          commodities={commodities}
-          currency={currency}
-          updateCommodity={updateCommodity}
-          removeCommodity={removeCommodity}
-          addCommodity={addCommodity}
-          viewOnly={viewOnly}
-        />
-        <QuotationFormSidebar
-          currency={currency}
-          buyRate={buyRate}
-          clientQuote={clientQuote}
-          profit={profit}
-          profitPercentage={profitPercentage}
-          remarks={remarks}
-          onRemarksChange={setRemarks}
-          followUpDate={followUpDate}
-          onFollowUpDateChange={setFollowUpDate}
-          viewOnly={viewOnly}
-        />
+    <div className="flex flex-col h-full">
+      <div className="flex-1 space-y-6 pt-4 min-h-0">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start h-full">
+          <div className="lg:col-span-2 min-h-0">
+            <QuotationFormMain
+              clientName={clientName}
+              onClientNameChange={(e) => setClientName(e.target.value)}
+              quotationData={quotationData}
+              onQuotationChange={handleDetailsChange}
+              onSelectChange={handleSelectChange}
+              commodities={commodities}
+              currency={currency}
+              updateCommodity={updateCommodity}
+              removeCommodity={removeCommodity}
+              addCommodity={addCommodity}
+              viewOnly={viewOnly}
+            />
+          </div>
+          <div className="lg:col-span-1">
+            <QuotationFormSidebar
+              currency={currency}
+              buyRate={buyRate}
+              clientQuote={clientQuote}
+              profit={profit}
+              profitPercentage={profitPercentage}
+              remarks={remarks}
+              onRemarksChange={setRemarks}
+              followUpDate={followUpDate}
+              onFollowUpDateChange={setFollowUpDate}
+              viewOnly={viewOnly}
+            />
+          </div>
+        </div>
       </div>
+      
       {!viewOnly && (
-        <div className="flex justify-end gap-2 pt-4 border-t">
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSave}>Save Changes</Button>
+        <div className="flex-shrink-0 flex justify-end gap-3 pt-6 border-t border-border/10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 sticky bottom-0 mt-6">
+          <Button 
+            variant="outline" 
+            onClick={onClose}
+            className="min-w-[100px] shadow-soft hover:shadow-medium transition-all duration-200"
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSave}
+            className="min-w-[120px] bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-soft hover:shadow-medium transition-all duration-200"
+          >
+            Save Changes
+          </Button>
         </div>
       )}
       {viewOnly && (
-        <div className="flex justify-end gap-2 pt-4 border-t">
-          <Button onClick={onClose}>Close</Button>
+        <div className="flex-shrink-0 flex justify-end pt-6 border-t border-border/10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 sticky bottom-0 mt-6">
+          <Button 
+            onClick={onClose}
+            className="min-w-[100px] bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 shadow-soft hover:shadow-medium transition-all duration-200"
+          >
+            Close
+          </Button>
         </div>
       )}
     </div>

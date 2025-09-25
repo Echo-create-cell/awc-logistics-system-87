@@ -49,8 +49,8 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = ({
 }) => {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className={`${sizeClasses[size]} bg-white border border-border/20 shadow-large ${className}`}>
-        <DialogHeader className="pb-6 border-b border-border/10">
+      <DialogContent className={`${sizeClasses[size]} bg-white border border-border/20 shadow-large max-h-[90vh] flex flex-col ${className}`}>
+        <DialogHeader className="pb-6 border-b border-border/10 flex-shrink-0">
           <div className="flex items-center gap-3">
             {Icon && (
               <div className={`p-2.5 rounded-lg ${iconVariantClasses[iconVariant]} shadow-soft`}>
@@ -75,7 +75,7 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = ({
           </div>
         </DialogHeader>
         
-        <div className="py-6">
+        <div className="flex-1 overflow-y-auto py-6 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
           {children}
         </div>
       </DialogContent>

@@ -28,7 +28,7 @@ const QuotationFormSidebar = ({
   viewOnly = false,
 }: QuotationFormSidebarProps) => {
   return (
-    <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-10">
+    <div className="space-y-6 sticky top-0">
       <PricingSummary
         currency={currency}
         buyRate={buyRate}
