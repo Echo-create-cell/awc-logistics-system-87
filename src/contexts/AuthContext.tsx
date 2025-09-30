@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
 import { useNotifications } from '@/hooks/useNotifications';
-import { supabase } from '@/integrations/supabase/client';
+import { API_ENDPOINTS, apiFetch } from '@/config/api';
 
 interface AuthContextType {
   user: User | null;
@@ -76,26 +76,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userCredentials, setUserCredentials] = useState<Record<string, string>>({});
   const { notifyLoginSuccess, notifyLoginFailed, notifyLogout } = useNotifications();
 
-  const establishSupabaseSession = async (email: string, password: string) => {
+  const establishPHPSession = async (email: string, password: string) => {
     try {
-      console.log('Establishing Supabase session for email:', email);
+      console.log('Establishing PHP session for email:', email);
       
-      // Sign in with the actual user email and password
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
+      const response = await apiFetch(API_ENDPOINTS.auth.login, {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
       });
 
-      if (error) {
-        console.error('Failed to sign in user:', error);
-        throw error;
+      if (response.user) {
+        console.log('User signed in successfully:', response);
+        return response.user;
       }
-
-      console.log('User signed in successfully:', data);
-      return true;
+      
+      return null;
     } catch (error) {
-      console.error('Failed to establish Supabase session:', error);
-      return false;
+      console.error('Failed to establish PHP session:', error);
+      return null;
     }
   };
 
@@ -103,32 +101,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const initializeAuth = async () => {
       console.log('Initializing auth...');
       
-      // Check for existing Supabase session first
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (session?.user && !error) {
-        // Get user profile from Supabase
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .single();
+      try {
+        // Check for existing PHP session
+        const response = await apiFetch(API_ENDPOINTS.auth.session);
         
-        if (profile) {
+        if (response.authenticated && response.user) {
           const user: User = {
-            id: profile.id,
-            name: profile.name,
-            email: profile.email,
-            role: profile.role,
-            status: profile.status,
-            createdAt: profile.created_at
+            id: response.user.id,
+            name: response.user.name,
+            email: response.user.email,
+            role: response.user.role,
+            status: 'active',
+            createdAt: new Date().toISOString()
           };
           setUser(user);
           localStorage.setItem('awc_user', JSON.stringify(user));
-          console.log('Auth initialization complete - user restored from Supabase session');
+          console.log('Auth initialization complete - user restored from PHP session');
+        } else {
+          console.log('No active PHP session found');
+          localStorage.removeItem('awc_user');
         }
-      } else {
-        console.log('No active Supabase session found');
+      } catch (error) {
+        console.error('Session check error:', error);
         localStorage.removeItem('awc_user');
       }
       
@@ -144,43 +138,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       console.log('Attempting to login with email:', email);
       
-      // Sign in directly with Supabase using real credentials
-      const sessionEstablished = await establishSupabaseSession(email, password);
+      const userData = await establishPHPSession(email, password);
       
-      if (sessionEstablished) {
-        // Get the user profile from Supabase
-        const { data: { session } } = await supabase.auth.getSession();
+      if (userData) {
+        const user: User = {
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          status: userData.status,
+          createdAt: new Date().toISOString()
+        };
         
-        if (session?.user) {
-          console.log('Fetching profile for user:', session.user.id);
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-          
-          console.log('Profile query result:', { profile, profileError });
-          
-          if (profileError) {
-            console.error('Profile error details:', profileError);
-            throw new Error('Failed to fetch user profile');
-          }
-          
-          const user: User = {
-            id: profile.id,
-            name: profile.name,
-            email: profile.email,
-            role: profile.role,
-            status: profile.status,
-            createdAt: profile.created_at
-          };
-          
-          setUser(user);
-          localStorage.setItem('awc_user', JSON.stringify(user));
-          notifyLoginSuccess(user);
-          setIsLoading(false);
-          return true;
-        }
+        setUser(user);
+        localStorage.setItem('awc_user', JSON.stringify(user));
+        notifyLoginSuccess(user);
+        setIsLoading(false);
+        return true;
       }
       
       throw new Error('Authentication failed');
@@ -195,12 +169,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     const currentUser = user;
     
-    // Sign out from Supabase
+    // Sign out from PHP
     try {
-      await supabase.auth.signOut();
-      console.log('Supabase sign out successful');
+      await apiFetch(API_ENDPOINTS.auth.logout, {
+        method: 'POST',
+      });
+      console.log('PHP sign out successful');
     } catch (error) {
-      console.error('Supabase signout error:', error);
+      console.error('PHP signout error:', error);
     }
     
     setUser(null);
@@ -243,9 +219,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const updateUserCredentials = (email: string, password: string) => {
-    // Credentials are managed by Supabase Auth
+    // Credentials are managed by PHP backend
     // This method is kept for interface compatibility
-    console.warn('User credentials are managed by Supabase Auth, not locally');
+    console.warn('User credentials are managed by PHP backend, not locally');
   };
 
   return (
