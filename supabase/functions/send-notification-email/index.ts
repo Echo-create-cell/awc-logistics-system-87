@@ -43,7 +43,7 @@ const handler = async (req: Request): Promise<Response> => {
     const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
       .select('email, name')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .single();
 
     if (profileError || !profile?.email) {
